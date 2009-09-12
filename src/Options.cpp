@@ -32,7 +32,7 @@ Options::~Options(void)
 
 void		Options::readOptionSettings(void)
 {
-	QSettings       settings("Epitech", "QNetsoul");
+	QSettings	settings("Epitech", "QNetsoul");
 
 	settings.beginGroup("Options");
 	this->_server = settings.value("ip", QString("ns-server.epita.fr")).toString();
@@ -47,7 +47,7 @@ void		Options::readOptionSettings(void)
 
 void		Options::writeOptionSettings(void)
 {
-	QSettings       settings("Epitech", "QNetsoul");
+	QSettings	settings("Epitech", "QNetsoul");
 
 	settings.beginGroup("Options");
 	settings.setValue("ip", this->_server);
@@ -55,7 +55,7 @@ void		Options::writeOptionSettings(void)
 	settings.setValue("login", this->_login);
 	settings.setValue("location", this->_location);
 	settings.setValue("comment", this->_comment);
-	if (this->_savePassword == true)
+	if (true == this->_savePassword)
 	{
 		settings.setValue("password", this->_password);
 		settings.setValue("savepassword", true);

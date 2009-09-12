@@ -49,7 +49,7 @@ void	PortraitResolver::addRequest(const QString& login, bool fun)
 {
 	if (this->_dir.exists(buildFilename(login, fun)))
 		return;
-	Request*	request = new Request;
+	PortraitRequest*	request = new PortraitRequest;
 
 	request->login = login;
 	request->fun = fun;

@@ -31,7 +31,7 @@ QString	LocationResolver::resolve(const QHostAddress& hostAddress)
 {
 	QString			result;
 	const QString	ip = hostAddress.toString();
-	
+
 	rackLocation(result, ip);
 	smLocation(result, ip);
 	restLocation(result, ip);
@@ -40,7 +40,7 @@ QString	LocationResolver::resolve(const QHostAddress& hostAddress)
 
 void	LocationResolver::rackLocation(QString& result, const QString& ip)
 {
-	Location	location[] = 
+	Location	location[] =
 	{
 		{"ip20",	"10.246."},
 		{"pasteur",	"10.247."},
@@ -49,7 +49,7 @@ void	LocationResolver::rackLocation(QString& result, const QString& ip)
 		{"cisco",	"10.250."},
 		{"",		""}
 	};
-	
+
 	for (int i = 0; !location[i].name.isEmpty(); ++i)
 	{
 		if (ip.startsWith(location[i].ip))
@@ -72,16 +72,16 @@ void	LocationResolver::smLocation(QString& result, const QString& ip)
 
 void	LocationResolver::restLocation(QString& result, const QString& ip)
 {
-	Location	locations[] = 
+	Location	locations[] =
 	{
-		{"bocal",		"10.242."},
-		{"astek",		"10.252."},
+		{"Bocal",		"10.242."},
+		{"Lab Astek",	"10.224.1"},
 		{"labtech",		"10.253."},
-		{"wireless",	"10.142."},
+		{"Wireless",	"10.142."},
 		{"lse",			"10.227.42."},
 		{"esl",			"10.224.5"},
 		{"lrde",		"62.139."},
-		{"lab-free",	"10.224.6"},
+		{"Lab Free",	"10.224.6"},
 		{"GameDevLab",	"10.226.1."},
 		{"lab-scia",	"10.226.2."},
 		{"lab-srs",		"10.226.3."},

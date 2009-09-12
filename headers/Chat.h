@@ -18,20 +18,25 @@
 #ifndef CHAT_H
 #define CHAT_H
 
-#include <QMainWindow>
+#include <QWidget>
 #include "ui_Chat.h"
 
-class	Chat : public QMainWindow, public Ui_Chat
+class	QStatusBar;
+
+class	Chat : public QWidget, public Ui_Chat
 {
 	Q_OBJECT
-	
+
 public:
-	Chat(const QString& name, QWidget* parent);
+	Chat(const QString& name);
 	virtual ~Chat(void);
 
-	void	insertMessage(const QString& login, const QString& message, const QColor& color);
-	void	notifyTypingStatus(const QString& login, bool typing);
-	
+	QString		getFormatedDateTime(void) const;
+	void		insertSmileys(void);
+	QString		replaceUrls(const QString&);
+	void		insertMessage(const QString& login, const QString& message, const QColor& color);
+	void		notifyTypingStatus(const QString& login, bool typing);
+
 signals:
 	void	msgToSend(const QString&, const QString&);
 	void	typingSignal(const QString&, bool);
@@ -42,7 +47,7 @@ protected:
 
 private slots:
 	void	sendMessage(void);
-	void	handleTypingSignal(const QString&);
+	void	handleTypingSignal(void);
 };
 
 #endif // CHAT_H

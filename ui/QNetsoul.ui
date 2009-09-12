@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>335</width>
-    <height>682</height>
+    <width>411</width>
+    <height>470</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,7 +37,20 @@ p, li { white-space: pre-wrap; }
     <item row="0" column="0">
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
-       <widget class="QListView" name="contactsListView"/>
+       <widget class="QTreeView" name="contactsTreeView">
+        <property name="indentation">
+         <number>0</number>
+        </property>
+        <property name="sortingEnabled">
+         <bool>true</bool>
+        </property>
+        <property name="animated">
+         <bool>true</bool>
+        </property>
+        <attribute name="headerVisible">
+         <bool>false</bool>
+        </attribute>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QComboBox" name="statusComboBox">
@@ -91,7 +104,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>335</width>
+     <width>411</width>
      <height>27</height>
     </rect>
    </property>
@@ -123,6 +136,8 @@ p, li { white-space: pre-wrap; }
     </property>
     <addaction name="actionAdd_a_contact"/>
     <addaction name="actionRemove_selected_contact"/>
+    <addaction name="actionRefresh"/>
+    <addaction name="separator"/>
     <addaction name="action_Load_contacts"/>
     <addaction name="actionSave_contacts_as"/>
     <addaction name="actionToggle_sort_contacts"/>
@@ -266,6 +281,21 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionRefresh">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../Images.qrc">
+     <normaloff>:/images/sort.png</normaloff>:/images/sort.png</iconset>
+   </property>
+   <property name="text">
+    <string>Refresh contacts</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
    </property>
   </action>
  </widget>

@@ -26,7 +26,10 @@ HEADERS += headers/QNetsoul.h \
     headers/InputTextEdit.h \
     headers/LocationResolver.h \
     headers/PortraitResolver.h \
-    headers/Request.h
+    headers/Smileys.h \
+    headers/VieDeMerde.h \
+    headers/PortraitRequest.h \
+    headers/Status.h
 FORMS += ui/QNetsoul.ui \
     ui/Options.ui \
     ui/AddContact.ui \
@@ -45,7 +48,8 @@ SOURCES += src/main.cpp \
     src/ContactsReader.cpp \
     src/InputTextEdit.cpp \
     src/LocationResolver.cpp \
-    src/PortraitResolver.cpp
+    src/PortraitResolver.cpp \
+    src/VieDeMerde.cpp
 
 # Output
 DESTDIR = .
@@ -53,3 +57,4 @@ OBJECTS_DIR = obj
 MOC_DIR = moc
 UI_SOURCES_DIR = ui
 UI_HEADERS_DIR = headers
+win32:RC_FILE = Windows/windowsIcon.rc

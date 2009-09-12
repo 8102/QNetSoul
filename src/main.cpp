@@ -21,7 +21,7 @@
 int	main(int argc, char** argv)
 {
   QApplication	app(argc, argv);
-  QNetsoul	netsoul;
+  QNetsoul		netsoul;
 
   netsoul.show();
   return app.exec();

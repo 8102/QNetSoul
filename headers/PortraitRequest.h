@@ -15,16 +15,16 @@
 	along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef STATE_H
-#define STATE_H
+#ifndef PORTRAIT_REQUEST_H
+#define PORTRAIT_REQUEST_H
 
-#include <QString>
-
-struct State
+struct	PortraitRequest
 {
-	const char*		state;
-	const char*		pixmap;
-	const QString	displayState;
+	int			id;
+	bool		fun;
+	QBuffer		buffer;
+	QByteArray	bytes;
+	QString		login;
 };
 
-#endif // STATE_H
+#endif // PORTRAIT_REQUEST_H

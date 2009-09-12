@@ -25,12 +25,12 @@ enum {LOGIN, LOGOUT, ACTIF, AWAY, LOCK, SERVER, TOTAL};
 
 static const State	states[] =
 {
-	{"login", ":/images/log-in", "Login"},
-	{"logout", ":/images/offline", "Offline"},
-	{"actif", ":/images/online", "Active"},
-	{"away", ":/images/away", "Away"},
-	{"lock", ":/images/lock", "Locked"},
-	{"server", ":/images/server", "Server"},
+	{"login", ":/images/log-in", QObject::tr("Login")},
+	{"logout", ":/images/offline", QObject::tr("Offline")},
+	{"actif", ":/images/online", QObject::tr("Online")},
+	{"away", ":/images/away", QObject::tr("Away")},
+	{"lock", ":/images/lock", QObject::tr("Locked")},
+	{"server", ":/images/server", QObject::tr("Server")},
 	{NULL, NULL, NULL}
 };
 
@@ -133,7 +133,8 @@ void	ContactWidget::updateConnectionPoint(const QString& id, const QString& stat
 					}
 					else
 					{
-						this->_connections[i].state = state;
+						//this->_connections[i].state = state;
+						this->_connections[i].state = states[j].displayState;
 					}
 					updateState();
 					return;
@@ -180,15 +181,15 @@ void	ContactWidget::updateState(void)
 			{
 				++online;
 			}
-			else if (states[AWAY].state != this->_connections[i].state)
+			else if (states[AWAY].state == this->_connections[i].state)
 			{
 				++away;
 			}
-			else if (states[LOCK].state != this->_connections[i].state)
+			else if (states[LOCK].state == this->_connections[i].state)
 			{
 				++lock;
 			}
-			else if (states[SERVER].state != this->_connections[i].state)
+			else if (states[SERVER].state == this->_connections[i].state)
 			{
 				++server;
 			}
@@ -199,7 +200,7 @@ void	ContactWidget::updateState(void)
 			this->_pixmap = states[ACTIF].pixmap;
 			this->statusLabel->setPixmap(QPixmap(states[ACTIF].pixmap));
 		}
-		else if (away > lock && away > server)
+		else if (away >= lock && away >= server)
 		{
 			this->_state = states[AWAY].displayState;
 			this->_pixmap = states[AWAY].pixmap;

@@ -18,6 +18,7 @@
 #include <iostream>
 #include <QByteArray>
 #include "Url.h"
+#include "Status.h"
 #include "QNetsoul.h"
 #include "ContactWidget.h"
 #include "ContactsReader.h"
@@ -38,7 +39,7 @@ QNetsoul::QNetsoul(QWidget* parent)
 	setupUi(this);
 	setupTrayIcon();
 	setupStatusButton();
-	this->contactsListView->setModel(this->_standardItemModel);
+	this->contactsTreeView->setModel(this->_standardItemModel);
 	connectQNetsoulItems();
 	connectActionsSignals();
 	connectNetworkSignals();
@@ -59,7 +60,7 @@ void	QNetsoul::closeEvent(QCloseEvent* event)
 		return;
 	}
 	static bool	firstTime = true;
-	
+
 	if (this->_trayIcon->isVisible())
 	{
 		this->_oldPos = this->pos();
@@ -120,11 +121,13 @@ void	QNetsoul::updateMenuBar(const QAbstractSocket::SocketState& state)
 	{
 		actionConnect->setEnabled(false);
 		actionDisconnect->setEnabled(true);
+		actionRefresh->setEnabled(true);
 	}
 	else if (QAbstractSocket::UnconnectedState == state)
 	{
 		actionConnect->setEnabled(true);
 		actionDisconnect->setEnabled(false);
+		actionRefresh->setEnabled(false);
 	}
 }
 
@@ -197,7 +200,7 @@ void	QNetsoul::saveStateBeforeQuiting(void)
 
 void	QNetsoul::showConversation(const QModelIndex& index)
 {
-	ContactWidget*	cw = static_cast<ContactWidget*>(contactsListView->indexWidget(index));
+	ContactWidget*	cw = dynamic_cast<ContactWidget*>(this->contactsTreeView->indexWidget(index));
 	if (NULL != cw)
 	{
 		showConversation(cw->aliasLabel->text());
@@ -233,18 +236,14 @@ void	QNetsoul::openOptionsDialog(QLineEdit* newLineFocus)
 		}
 		this->_options->show();
 	}
-	else
-	{
-		this->_options->activateWindow();
-	}
 }
 
 void	QNetsoul::loadContacts(void)
 {
 	const QString fileName =
-             QFileDialog::getOpenFileName(this, tr("Open Contacts File"),
-                                          QDir::currentPath(),
-                                          tr("XML Files (*.xml)"));
+			 QFileDialog::getOpenFileName(this, tr("Open Contacts File"),
+										  QDir::currentPath(),
+										  tr("XML Files (*.xml)"));
 	if (false == fileName.isEmpty())
 		loadContacts(fileName);
 }
@@ -261,7 +260,7 @@ void	QNetsoul::saveContactsAs(void)
 
 void	QNetsoul::toggleSortContacts(void)
 {
-	this->contactsListView->model()->sort(0);
+	this->contactsTreeView->model()->sort(0, Qt::AscendingOrder);
 }
 
 void	QNetsoul::handleClicksOnTrayIcon(QSystemTrayIcon::ActivationReason reason)
@@ -303,8 +302,9 @@ void	QNetsoul::addContact(const QString& login, const QString& alias)
 		ContactWidget*	widget = new ContactWidget(this, login, alias);
 		QStandardItem*	newItem = new QStandardItem();
 		newItem->setSizeHint(widget->size());
-		this->_standardItemModel->insertRow(this->_standardItemModel->rowCount(), newItem);
-		this->contactsListView->setIndexWidget(newItem->index(), widget);
+		//this->_standardItemModel->insertRow(this->_standardItemModel->rowCount(), newItem);
+		this->_standardItemModel->appendRow(newItem);
+		this->contactsTreeView->setIndexWidget(newItem->index(), widget);
 		this->_addContact->loginLineEdit->clear();
 		if (QAbstractSocket::ConnectedState == this->_network->state())
 		{
@@ -314,11 +314,10 @@ void	QNetsoul::addContact(const QString& login, const QString& alias)
 	}
 }
 
-// Ca a l'air vraiment trop simple :)=
 void	QNetsoul::removeSelectedContact(void)
 {
-	const	int row = this->contactsListView->currentIndex().row();
-	this->contactsListView->model()->removeRow(row);
+	const	int row = this->contactsTreeView->currentIndex().row();
+	this->contactsTreeView->model()->removeRow(row);
 }
 
 void	QNetsoul::sendStatus(const int& status) const
@@ -336,12 +335,31 @@ void	QNetsoul::sendStatus(const int& status) const
 // A REVOIR si ça ne marche pas...
 void	QNetsoul::changeStatus(const QString& login, const QString& id, const QString& state)
 {
+	static const Status		status[] =
+	{
+		{"login", QObject::tr("logged in")},
+		{"logout", QObject::tr("offline")},
+		{"actif", QObject::tr("online")},
+		{"away", QObject::tr("away")},
+		{"lock", QObject::tr("locked")},
+		{"server", QObject::tr("deamonized")},
+		{NULL, NULL}
+	};
 	ContactWidget*	contactWidget = getContact(login);
 
 	if (NULL != contactWidget)
 	{
 		if (NULL != this->_trayIcon)
-			this->_trayIcon->showMessage(login, "is now " + state, QSystemTrayIcon::NoIcon);
+		{
+			for (int i = 0; (status[i].state); ++i)
+			{
+				if (state == status[i].state)
+				{
+					this->_trayIcon->showMessage(login, tr("is now ") + status[i].translation, QSystemTrayIcon::NoIcon);
+					break;
+				}
+			}
+		}
 		if (0 == contactWidget->getConnectionsSize())
 		{
 			refreshContact(login);
@@ -396,7 +414,7 @@ void	QNetsoul::showConversation(const QString& login, const QString& message)
 		if (false == window->isVisible())
 		{
 			window->setVisible(true);
-			window->outputTextEdit->clear();
+			window->outputTextBrowser->clear();
 			window->inputTextEdit->clear();
 			window->inputTextEdit->setFocus();
 		}
@@ -404,10 +422,13 @@ void	QNetsoul::showConversation(const QString& login, const QString& message)
 		{
 			window->showNormal();
 		}
-		//window->activateWindow(); // Option ?
+		//window->raise();
+		//QApplication::setActiveWindow(window);
 	}
 	if (window && false == message.isEmpty())
 	{
+		if (NULL != this->_trayIcon)
+			this->_trayIcon->showMessage(login, tr(" is talking to you."));
 		window->insertMessage(login, QString(url_decode(message.toStdString().c_str())), QColor(204, 0, 0));
 	}
 }
@@ -450,7 +471,7 @@ void	QNetsoul::processHandShaking(int step, QStringList args)
 			message.append(url_encode(location.toStdString().c_str()));
 			message.append(' ');
 			message.append(url_encode(comment.toStdString().c_str()));
-			message.append("\n");
+			message.append('\n');
 			std::cout << message.data() << std::endl;
 			this->_network->sendMessage(message);
 			break;
@@ -489,18 +510,16 @@ void	QNetsoul::transmitMsg(const QString& login, const QString& msg)
 }
 
 // A FAIRE: il faut trouver la bonne commande... ~~
-void	QNetsoul::transmitTypingStatus(const QString& /*login*/, bool /*status*/)
+void	QNetsoul::transmitTypingStatus(const QString& /*login*/, bool status)
 {
-	/*
 	if (!status)
 		this->_network->sendMessage("user_cmd UserTyping\n");
 	std::cerr << std::boolalpha << status << std::endl;
-	*/
 }
 
 void	QNetsoul::notifyTypingStatus(const QString& login, bool typing)
 {
-	QMap<QString, Chat*>::iterator    it;
+	QHash<QString, Chat*>::iterator    it;
 	it = this->_windowsChat.find(login);
 	if (it != this->_windowsChat.end())
 	{
@@ -521,6 +540,7 @@ void	QNetsoul::setPortrait(const QString& login)
 	if (NULL != chat)
 	{
 		chat->portraitLabel->setPixmap(QPixmap("./portraits/" + filename));
+		chat->setWindowIcon(QIcon("./portraits/" + filename));
 	}
 	ContactWidget*	cw = getContact(login);
 	if (NULL != cw)
@@ -534,14 +554,14 @@ void	QNetsoul::aboutQNetSoul(void)
 
 Chat*	QNetsoul::getChat(const QString& login) const
 {
-	QMap<QString, Chat*>::const_iterator	cit;
+	QHash<QString, Chat*>::const_iterator	cit;
 
 	cit = this->_windowsChat.find(login);
 	if (this->_windowsChat.end() == cit)
 		return (NULL);
 	return (cit.value());
 }
-	
+
 bool	QNetsoul::doesThisContactAlreadyExist(const QString& contact) const
 {
 	if (getContact(contact))
@@ -558,7 +578,7 @@ ContactWidget*	QNetsoul::getContact(const QString& login) const
 		QStandardItem*	standardItem = this->_standardItemModel->item(i);
 		if (standardItem != NULL)
 		{
-			QWidget*		widget = this->contactsListView->indexWidget(standardItem->index());
+			QWidget*		widget = this->contactsTreeView->indexWidget(standardItem->index());
 			ContactWidget*	contactWidget = dynamic_cast<ContactWidget*>(widget);
 			if (contactWidget != NULL)
 			{
@@ -582,7 +602,7 @@ QStringList		QNetsoul::getContactLogins(void) const
 		QStandardItem*	standardItem = this->_standardItemModel->item(i);
 		if (standardItem != NULL)
 		{
-			QWidget*		widget = this->contactsListView->indexWidget(standardItem->index());
+			QWidget*		widget = this->contactsTreeView->indexWidget(standardItem->index());
 			ContactWidget*	contactWidget = dynamic_cast<ContactWidget*>(widget);
 			if (contactWidget != NULL)
 			{
@@ -603,7 +623,7 @@ QList<ContactWidget*>		QNetsoul::getContactWidgets(void) const
 		QStandardItem*	standardItem = this->_standardItemModel->item(i);
 		if (standardItem != NULL)
 		{
-			QWidget*		widget = this->contactsListView->indexWidget(standardItem->index());
+			QWidget*		widget(this->contactsTreeView->indexWidget(standardItem->index()));
 			ContactWidget*	contactWidget = dynamic_cast<ContactWidget*>(widget);
 			if (contactWidget != NULL)
 			{
@@ -636,26 +656,33 @@ void	QNetsoul::watchLogContacts(void)
 void	QNetsoul::watchLogContact(const QString& contact)
 {
 	QByteArray	netMsg("user_cmd watch_log_user ");
-	netMsg.append(contact);
-	netMsg.append('\n');
+	netMsg.append(contact + '\n');
 	this->_network->sendMessage(netMsg);
 }
 
 void	QNetsoul::refreshContact(const QString& contact) const
 {
 	QByteArray	message("user_cmd who ");
-	message.append(contact + "\n");
+	message.append(contact + '\n');
 	this->_network->sendMessage(message);
 }
 
 void	QNetsoul::refreshContacts(void) const
 {
 	const QStringList	contacts = getContactLogins();
+	const int			size = contacts.size();
 
-	const int	size = contacts.size();
-	for (int i = 0; i < size; ++i)
+	if (size > 0)
 	{
-		refreshContact(contacts.at(i));
+		QByteArray	netMsg("user_cmd who {");
+		for (int i = 0; i < size; ++i)
+		{
+			netMsg.append(contacts.at(i));
+			if (i + 1 < size)
+				netMsg.append(',');
+		}
+		netMsg.append("}\n");
+		this->_network->sendMessage(netMsg);
 	}
 }
 
@@ -672,7 +699,7 @@ void	QNetsoul::resetAllContacts(void) const
 
 void	QNetsoul::setupTrayIcon(void)
 {
-	if (QSystemTrayIcon::isSystemTrayAvailable())
+	if (NULL == this->_trayIcon && QSystemTrayIcon::isSystemTrayAvailable())
 	{
 		this->_trayIcon = new QSystemTrayIcon(this);
 		QMenu*		trayIconMenu = new QMenu(this);
@@ -756,7 +783,7 @@ void	QNetsoul::saveContacts(const QString& fileName)
 void	QNetsoul::connectQNetsoulItems(void)
 {
 	connect(this->_addContact->addPushButton, SIGNAL(clicked()), SLOT(addContact()));
-	connect(contactsListView, SIGNAL(activated(const QModelIndex&)),
+	connect(this->contactsTreeView, SIGNAL(activated(const QModelIndex&)),
 			SLOT(showConversation(const QModelIndex&)));
 	connect(&this->_portraitResolver, SIGNAL(downloadedPortrait(const QString&)),
 			SLOT(setPortrait(const QString&)));
@@ -771,6 +798,7 @@ void	QNetsoul::connectActionsSignals(void)
 	// Account
 	connect(actionAdd_a_contact, SIGNAL(triggered()), SLOT(openAddContactDialog()));
 	connect(actionRemove_selected_contact, SIGNAL(triggered()), SLOT(removeSelectedContact()));
+	connect(actionRefresh, SIGNAL(triggered()), SLOT(refreshContacts()));
 	connect(action_Load_contacts, SIGNAL(triggered()), SLOT(loadContacts()));
 	connect(actionSave_contacts_as, SIGNAL(triggered()), SLOT(saveContactsAs()));
 	connect(actionToggle_sort_contacts, SIGNAL(triggered()), SLOT(toggleSortContacts()));
@@ -796,7 +824,7 @@ void	QNetsoul::connectNetworkSignals(void)
 
 Chat*	QNetsoul::createWindowChat(const QString& name)
 {
-	Chat*	chat = new Chat(name, this);
+	Chat*	chat = new Chat(name);
 	this->_windowsChat.insert(name, chat);
 	connect(chat, SIGNAL(msgToSend(const QString& , const QString&)), this, SLOT(transmitMsg(const QString&, const QString&)));
 	connect(chat, SIGNAL(typingSignal(const QString&, bool)), this, SLOT(transmitTypingStatus(const QString&, bool)));
@@ -805,7 +833,7 @@ Chat*	QNetsoul::createWindowChat(const QString& name)
 
 void	QNetsoul::deleteAllWindowChats(void)
 {
-	QMap<QString, Chat*>::const_iterator    cit = this->_windowsChat.constBegin();
+	QHash<QString, Chat*>::const_iterator    cit = this->_windowsChat.constBegin();
 
 	for (; cit != this->_windowsChat.constEnd(); ++cit)
 	{

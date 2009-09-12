@@ -37,7 +37,6 @@ private slots:
 	void	save(void);
 	
 private:
-	static Options*	_instance;
 	QString	_server;
 	QString	_port;
 	QString	_login;

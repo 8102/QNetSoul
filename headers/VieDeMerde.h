@@ -15,16 +15,33 @@
 	along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef STATE_H
-#define STATE_H
+#ifndef VIEDEMERDE_H
+#define VIEDEMERDE_H
 
-#include <QString>
+#include <QHttp>
+#include <QBuffer>
 
-struct State
+class	VieDeMerde : public QObject
 {
-	const char*		state;
-	const char*		pixmap;
-	const QString	displayState;
+	Q_OBJECT
+
+public:
+	VieDeMerde(void);
+	virtual ~VieDeMerde(void);
+
+	int		getALife(void);
+
+signals:
+	void	vdmReceived(const int& id, const QString& content);
+
+private slots:
+	void	finished(int requestId, bool error);
+
+private:
+	int			_id;
+	QBuffer		_buffer;
+	QByteArray	_bytes;
+	QHttp		_http;
 };
 
-#endif // STATE_H
+#endif // VIEDEMERDE_H

@@ -27,6 +27,7 @@
 #include "AddContact.h"
 #include "ui_QNetsoul.h"
 #include "PortraitResolver.h"
+#include "VieDeMerde.h" // DEBUG
 
 class	QMenu;
 class	QAction;
@@ -66,6 +67,7 @@ private slots:
 	void	addContact(const QList<Contact>);
 	void	addContact(const QString&, const QString& alias = "");
 	void	removeSelectedContact(void);
+	void	refreshContacts(void) const;
 	void	sendStatus(const int&) const;
 	void	changeStatus(const QString&, const QString&, const QString&);
 	void	updateContact(const QStringList&);
@@ -86,7 +88,6 @@ private:
 	void					watchLogContacts(void);
 	void					watchLogContact(const QString&);
 	void					refreshContact(const QString&) const;
-	void					refreshContacts(void) const;
 	void					resetAllContacts(void) const;
 	void					setupTrayIcon(void);
 	void					setupStatusButton(void);
@@ -106,10 +107,13 @@ private:
 	AddContact*				_addContact;
 	QStandardItemModel*		_standardItemModel;
 	QSystemTrayIcon*		_trayIcon;
-	QMap<QString, Chat*>	_windowsChat;
+	QHash<QString, Chat*>	_windowsChat;
 	QString					_timeStamp;
 	QPoint					_oldPos;
 	PortraitResolver		_portraitResolver;
+	
+	// Debug
+	VieDeMerde				_vdm;
 };
 
 #endif // QNETSOUL_H_

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>184</width>
-    <height>59</height>
+    <width>128</width>
+    <height>44</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -16,13 +16,10 @@
   <property name="windowTitle">
    <string>ContactWidget</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <property name="spacing">
-      <number>6</number>
-     </property>
-     <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
       <widget class="QLabel" name="statusLabel">
        <property name="minimumSize">
         <size>
@@ -47,12 +44,12 @@
        </property>
       </widget>
      </item>
-     <item>
+     <item row="0" column="1">
       <widget class="QLabel" name="aliasLabel">
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>35</height>
+         <height>20</height>
         </size>
        </property>
        <property name="text">
@@ -60,7 +57,7 @@
        </property>
       </widget>
      </item>
-     <item>
+     <item row="0" column="2">
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -73,7 +70,7 @@
        </property>
       </spacer>
      </item>
-     <item>
+     <item row="0" column="3">
       <widget class="QLabel" name="portraitLabel">
        <property name="minimumSize">
         <size>

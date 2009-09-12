@@ -44,7 +44,7 @@ void	do_url_encode(std::string &out, const char *in)
 {
 	char	buf[8];
 	
-	for (unsigned int i = 0; in[i]; i++)
+	for (unsigned int i = 0; in[i]; ++i)
 	{
 		if ((in[i] >= 'a' && in[i] <= 'z') ||
 			(in[i] >= 'A' && in[i] <= 'Z') ||
@@ -80,7 +80,7 @@ const char*	url_decode(const char *in)
 	out.clear();
 	memset(nb, 0, 5);
 	
-	for (i = 0; in[i]; i++)
+	for (i = 0; in[i]; ++i)
 	{
 		if (in[i] == '%' && in[i + 1] &&
 			((in[i + 1] >= '0' && in[i + 1] <= '9') ||

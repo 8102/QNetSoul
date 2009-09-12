@@ -23,7 +23,7 @@
 #include <QHttp>
 #include <QBuffer>
 #include <QObject>
-#include "Request.h"
+#include "PortraitRequest.h"
 
 class	PortraitResolver : public QObject
 {
@@ -46,9 +46,9 @@ signals:
 private:
 	void			setupPortraitDirectory(void);
 
-	QDir			_dir;
-	QHttp			_http;
-	QList<Request*>	_requests;
+	QDir					_dir;
+	QHttp					_http;
+	QList<PortraitRequest*>	_requests;
 };
 
 #endif // PORTRAITRESOLVER_H

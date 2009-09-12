@@ -19,48 +19,108 @@
 #include <QDateTime>
 #include <QScrollBar>
 #include <QCloseEvent>
+#include <QStatusBar>
 #include "Chat.h"
+#include "Smileys.h"
 #include "PortraitResolver.h"
 
-Chat::Chat(const QString& name, QWidget* parent) : QMainWindow(parent)
+Chat::Chat(const QString& name)
 {
 	setupUi(this);
 	setWindowTitle(name);
 	this->loginLabel->setText(name);
 	QDir	portraits("./portraits");
 	if (portraits.exists(PortraitResolver::buildFilename(name, false)))
-		this->portraitLabel->setPixmap(QPixmap("./portraits/" + PortraitResolver::buildFilename(name, false)));
+	{
+		const QString	path = "./portraits/" + PortraitResolver::buildFilename(name, false);
+
+		setWindowIcon(QIcon(path));
+		this->portraitLabel->setPixmap(QPixmap(path));
+	}
 	connect(this->inputTextEdit, SIGNAL(returnPressed()), SLOT(sendMessage()));
-	//connect(this->inputTextEdit, SIGNAL(textEdited(const QString&)), SLOT(handleTypingSignal(const QString&)));
-	connect(actionQuit, SIGNAL(triggered()), SLOT(close()));
+	//connect(this->inputTextEdit, SIGNAL(textChanged()), SLOT(handleTypingSignal()));
 }
 
 Chat::~Chat(void)
 {
 }
 
+QString	Chat::getFormatedDateTime(void) const
+{
+	return (QString('(' + QDateTime::currentDateTime().toString("h:m:s") + ')'));
+}
+
+void	Chat::insertSmileys(void)
+{
+	static const Smileys	smileys[] =
+	{
+		{":)", ":/images/smile.png"},
+		{";)", ":/images/wink.png"},
+		{"xD", ":/images/evilgrin.png"},
+		{":D", ":/images/grin.png"},
+		{"^^", ":/images/happy.png"},
+		{":o", ":/images/surprised.png"},
+		{":p", ":/images/tongue.png"},
+		{":}", ":/images/waii.png"},
+		{":(", ":/images/unhappy.png"},
+		{NULL, NULL}
+	};
+	bool				thereIsSmiley;
+	const QTextCursor	save = this->outputTextBrowser->textCursor();
+
+	this->outputTextBrowser->moveCursor(QTextCursor::StartOfBlock);
+	for (int i = 0; (NULL != smileys[i].smiley); ++i)
+	{
+		do
+		{
+			thereIsSmiley = this->outputTextBrowser->find(smileys[i].smiley, QTextDocument::FindWholeWords);
+			if (true == thereIsSmiley)
+			{
+				this->outputTextBrowser->textCursor().insertImage(QImage(smileys[i].imagePath));
+				this->outputTextBrowser->moveCursor(QTextCursor::StartOfBlock);
+			}
+		} while (thereIsSmiley);
+	}
+	this->outputTextBrowser->setTextCursor(save);
+}
+
+QString	Chat::replaceUrls(const QString& input)
+{
+	QString	result(input);
+
+	//result.replace(QRegExp("(http://[a-z0-9._/-]+)"), "<a href='\\1'>\\1</a>");
+	return (result);
+}
+
 void	Chat::insertMessage(const QString& login, const QString& msg, const QColor& color)
 {
-	bool		keepItOnMax = false;
-	QScrollBar*	scrollBar = this->outputTextEdit->verticalScrollBar();
+	int			scrollBarValue = -1;
+	QScrollBar*	scrollBar = this->outputTextBrowser->verticalScrollBar();
+
+	if (scrollBar && scrollBar->value() != scrollBar->maximum())
+		scrollBarValue = scrollBar->value();
+	QString	html("<p>");
+	html += QString("<span style=' color:%1;'>%2 %3</span>").arg(color.name()).arg(getFormatedDateTime()).arg(login);
+	html.append(": " + replaceUrls(msg) + "<br /></p>");
+	this->outputTextBrowser->moveCursor(QTextCursor::End);
+	this->outputTextBrowser->insertHtml(html);
+	insertSmileys();
 
 	if (scrollBar)
-		keepItOnMax = (scrollBar->value() == scrollBar->maximum());
-	this->outputTextEdit->setTextColor(color);
-	this->outputTextEdit->insertPlainText(QString("(" + QDateTime::currentDateTime().toString("h:m:s") + ") "));
-	this->outputTextEdit->insertPlainText(QString(login + ":"));
-	this->outputTextEdit->setTextColor(QColor(0, 0, 0));
-	this->outputTextEdit->insertPlainText(QString(" " + msg + '\n'));
-	if (scrollBar && keepItOnMax)
-		scrollBar->setValue(scrollBar->maximum());
+	{
+		if (scrollBarValue != -1)
+			scrollBar->setValue(scrollBarValue);
+		else
+			scrollBar->setValue(scrollBar->maximum());
+	}
 }
 
 void	Chat::notifyTypingStatus(const QString& login, bool typing)
 {
 	if (false == typing)
-		this->statusBar()->clearMessage();
+		setWindowTitle(login);
 	else
-		this->statusBar()->showMessage(QString(login + tr(" is currently typing a message...")));
+		setWindowTitle(QString(login + tr(" is currently typing a message...")));
 }
 
 void	Chat::keyPressEvent(QKeyEvent* event)
@@ -86,30 +146,30 @@ void	Chat::sendMessage(void)
 {
 	const QString	message = this->inputTextEdit->toPlainText();
 	const int		length = message.length();
-	
+
 	if (length > 0)
 	{
-		if (length < 150)
+		if (length < 300)
 		{
-			emit msgToSend(windowTitle(), message);
+			emit msgToSend(this->loginLabel->text(), message);
 			this->inputTextEdit->clear();
 		}
 		else
 		{
-			emit msgToSend(windowTitle(), message.left(150));
+			emit msgToSend(this->loginLabel->text(), message.left(150));
 			this->inputTextEdit->setPlainText(message.right(length - 150));
 		}
 	}
 }
 
-void	Chat::handleTypingSignal(const QString& text)
+void	Chat::handleTypingSignal(void)
 {
-	if (text.isEmpty())
+	if (this->inputTextEdit->toPlainText().isEmpty())
 	{
-		emit typingSignal(windowTitle(), true);
+		emit typingSignal(this->loginLabel->text(), true);
 	}
 	else
 	{
-		emit typingSignal(windowTitle(), false);
+		emit typingSignal(this->loginLabel->text(), false);
 	}
 }
