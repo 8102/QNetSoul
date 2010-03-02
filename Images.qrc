@@ -1,4 +1,4 @@
-RCC>
+<RCC>
   <qresource prefix="/" >
     <file>images/surprised.png</file>
     <file>images/tongue.png</file>

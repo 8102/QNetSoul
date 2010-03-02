@@ -1,6 +1,6 @@
                 === TODO LIST ===
 
-- Gérer les proxies...
+- Gérer les proxies... (les QLineEdit sont prêtes dans Options)
 - Url cliquables dans les fenêtres de chat.
 - Régler les problèmes de mis à jour de status
 - Régler les problèmes de focus

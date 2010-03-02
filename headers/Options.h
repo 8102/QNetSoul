@@ -39,8 +39,9 @@ class Options : public QDialog, public Ui_Options
 
   private slots:
   void	save(void);
-	
+
  private:
+  // Main Tab
   QString	_server;
   QString	_port;
   QString	_login;
@@ -49,6 +50,12 @@ class Options : public QDialog, public Ui_Options
   QString	_password;
   bool		_savePassword;
   bool		_connectOnOk;
+  // Advanced Tab
+  bool		_useProxy;
+  QString	_proxy;
+  QString	_proxyPort;
+  QString	_proxyLogin;
+  QString	_proxyPassword;
 };
 
 #endif // OPTIONS_H

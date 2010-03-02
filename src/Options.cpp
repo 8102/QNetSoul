@@ -34,7 +34,7 @@ void		Options::readOptionSettings(void)
 {
   QSettings	settings("Epitech", "QNetsoul");
 
-  settings.beginGroup("Options");
+  settings.beginGroup("MainOptions");
   this->_server = settings.value("ip", QString("ns-server.epita.fr")).toString();
   this->_port = settings.value("port", QString("4242")).toString();
   this->_login = settings.value("login", QString("")).toString();
@@ -43,19 +43,26 @@ void		Options::readOptionSettings(void)
   this->_password = settings.value("password", QString("")).toString();
   this->_savePassword = settings.value("savepassword", bool(false)).toBool();
   settings.endGroup();
+
+  settings.beginGroup("AdvancedOptions");
+  this->_useProxy = settings.value("useproxy", bool(false)).toBool();
+  this->_proxy = settings.value("proxy", QString("proxy.epita.net")).toString();
+  this->_proxyPort = settings.value("port", QString("3128")).toString();
+  this->_proxyLogin = settings.value("login", QString("")).toString();
+  this->_proxyPassword = settings.value("password", QString("")).toString();
+  settings.endGroup();
 }
 
 void		Options::writeOptionSettings(void)
 {
   QSettings	settings("Epitech", "QNetsoul");
 
-  settings.beginGroup("Options");
+  settings.beginGroup("MainOptions");
   settings.setValue("ip", this->_server);
   settings.setValue("port", this->_port);
   settings.setValue("login", this->_login);
   settings.setValue("location", this->_location);
   settings.setValue("comment", this->_comment);
-
   if (true == this->_savePassword)
     {
       settings.setValue("password", this->_password);
@@ -66,6 +73,17 @@ void		Options::writeOptionSettings(void)
       settings.remove("password");
       settings.setValue("savepassword", false);
     }
+  settings.endGroup();
+
+  settings.beginGroup("AdvancedOptions");
+  settings.setValue("proxy", this->_proxy);
+  settings.setValue("port", this->_proxyPort);
+  settings.setValue("login", this->_proxyLogin);
+  settings.setValue("password", this->_proxyPassword);
+  if (this->_useProxy)
+    settings.setValue("useproxy", true);
+  else
+    settings.setValue("useproxy", false);
   settings.endGroup();
 }
 
@@ -81,20 +99,40 @@ void	Options::update(void)
     this->savePasswordCheckBox->setCheckState(Qt::Checked);
   else
     this->savePasswordCheckBox->setCheckState(Qt::Unchecked);
+
+  this->proxyLineEdit->setText(this->_proxy);
+  this->proxyPortLineEdit->setText(this->_proxyPort);
+  this->proxyLoginLineEdit->setText(this->_proxyLogin);
+  this->proxyPasswordLineEdit->setText(this->_proxyPassword);
+  if (this->_useProxy)
+    {
+      this->proxyCheckBox->setCheckState(Qt::Checked);
+      this->proxyLineEdit->setEnabled(true);
+      this->proxyPortLineEdit->setEnabled(true);
+      this->proxyLoginLineEdit->setEnabled(true);
+      this->proxyPasswordLineEdit->setEnabled(true);
+    }
+  else
+    this->proxyCheckBox->setCheckState(Qt::Unchecked);
 }
 
 void	Options::save(void)
 {
+  // Advanced Options
+  this->_proxy = this->proxyLineEdit->text();
+  this->_proxyPort = this->proxyPortLineEdit->text();
+  this->_proxyLogin = this->proxyLoginLineEdit->text();
+  this->_proxyPassword = this->proxyPasswordLineEdit->text();
+  this->_useProxy = (Qt::Checked == this->proxyCheckBox->checkState());
+
+  // Main Options
   this->_server = this->serverLineEdit->text();
   this->_port = this->portLineEdit->text();
   this->_login = this->loginLineEdit->text();
   this->_password = this->passwordLineEdit->text();
   this->_location = this->locationLineEdit->text();
   this->_comment = this->commentLineEdit->text();
-  if (Qt::Checked == this->savePasswordCheckBox->checkState())
-    this->_savePassword = true;
-  else
-    this->_savePassword = false;
+  this->_savePassword = (Qt::Checked == this->savePasswordCheckBox->checkState());
   if (!this->_login.isEmpty() && !this->_password.isEmpty() && this->_connectOnOk)
     {
       emit loginPasswordFilled();
