@@ -20,11 +20,11 @@
 
 struct	ConnectionPoint
 {
-	QString	id;
-	QString	ip;
-	QString	state;
-	QString	comment;
-	QString	location;
+  QString	id;
+  QString	ip;
+  QString	state;
+  QString	comment;
+  QString	location;
 };
 
 #endif // CONNECTION_POINT_H

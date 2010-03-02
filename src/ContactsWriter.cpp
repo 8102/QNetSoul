@@ -19,7 +19,7 @@
 #include "ContactsWriter.h"
 
 ContactsWriter::ContactsWriter(const QList<ContactWidget*> list)
- : _contactList(list)
+    : _contactList(list)
 {
 }
 
@@ -29,29 +29,29 @@ ContactsWriter::~ContactsWriter(void)
 
 bool	ContactsWriter::writeFile(QIODevice* device)
 {
-	setDevice(device);
-	writeStartDocument();
-	writeDTD("<!DOCTYPE QNetSoul>");
-	writeStartElement("QNetSoul");
-	writeAttribute("version", "1.0");
-	const int size = this->_contactList.size();
-	for (int i = 0; i < size; ++i)
-		writeContact(this->_contactList[i]);
-	writeEndDocument();
-	return true;
+    setDevice(device);
+    writeStartDocument();
+    writeDTD("<!DOCTYPE QNetSoul>");
+    writeStartElement("QNetSoul");
+    writeAttribute("version", "1.0");
+    const int size = this->_contactList.size();
+    for (int i = 0; i < size; ++i)
+        writeContact(this->_contactList[i]);
+    writeEndDocument();
+    return true;
 }
 
 void	ContactsWriter::writeContact(const ContactWidget* contact)
 {
-	if (contact)
-	{
-		writeStartElement("contact");
-		writeTextElement("login", contact->getLogin());
-		writeTextElement("alias", contact->aliasLabel->text());
-		writeEndElement();
-	}
-	else
-	{
-		std::cerr << "writeContact failed." << std::endl;
-	}
+    if (contact)
+    {
+        writeStartElement("contact");
+        writeTextElement("login", contact->getLogin());
+        writeTextElement("alias", contact->aliasLabel->text());
+        writeEndElement();
+    }
+    else
+    {
+        std::cerr << "writeContact failed." << std::endl;
+    }
 }

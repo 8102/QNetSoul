@@ -19,8 +19,8 @@
 
 AddContact::AddContact(QWidget* parent) : QDialog(parent)
 {
-	setupUi(this);
-	connect(this->addPushButton, SIGNAL(clicked()), SLOT(setVisibility()));
+    setupUi(this);
+    connect(this->addPushButton, SIGNAL(clicked()), SLOT(setVisibility()));
 }
 
 AddContact::~AddContact(void)
@@ -29,8 +29,8 @@ AddContact::~AddContact(void)
 
 void	AddContact::setVisibility(void)
 {
-	if (Qt::Unchecked == this->closingCheckBox->checkState())
-	{
-		this->hide();
-	}
+    if (Qt::Unchecked == this->closingCheckBox->checkState())
+    {
+        this->hide();
+    }
 }

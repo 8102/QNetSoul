@@ -1,0 +1,7 @@
+                             === KNOWN BUGS ===
+
+- Le tri des contacts est défectueux.
+- Lorsqu'un contact se déco puis se reco en "away", il apparait online.
+- La fonction rafraichir ne marche pas...
+- Des contacts se déconnectent et apparaissent pourtant tjr online... (creuser du côté d'InterpretLine du Network)
+- Le time stamp n'est pas envoyé lors du handshaking.

@@ -105,7 +105,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>411</width>
-     <height>27</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOptions">
@@ -141,6 +141,8 @@ p, li { white-space: pre-wrap; }
     <addaction name="action_Load_contacts"/>
     <addaction name="actionSave_contacts_as"/>
     <addaction name="actionToggle_sort_contacts"/>
+    <addaction name="separator"/>
+    <addaction name="actionGet_a_life"/>
    </widget>
    <addaction name="menuQNetsoul"/>
    <addaction name="menuAccount"/>
@@ -296,6 +298,18 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="shortcut">
     <string>F5</string>
+   </property>
+  </action>
+  <action name="actionGet_a_life">
+   <property name="icon">
+    <iconset resource="../Images.qrc">
+     <normaloff>:/images/tongue.png</normaloff>:/images/tongue.png</iconset>
+   </property>
+   <property name="text">
+    <string>Get a life</string>
+   </property>
+   <property name="shortcut">
+    <string>F6</string>
    </property>
   </action>
  </widget>

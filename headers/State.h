@@ -22,9 +22,9 @@
 
 struct State
 {
-	const char*		state;
-	const char*		pixmap;
-	const QString	displayState;
+  const char*		state;
+  const char*		pixmap;
+  const QString		displayState;
 };
 
 #endif // STATE_H

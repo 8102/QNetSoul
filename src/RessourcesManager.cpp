@@ -21,51 +21,51 @@ RessourcesManager*	RessourcesManager::_instance = NULL;
 
 RessourcesManager*	RessourcesManager::getInstance(void)
 {
-	if (RessourcesManager::_instance == NULL)
-		RessourcesManager::_instance = new RessourcesManager();
-	return (RessourcesManager::_instance);
+    if (RessourcesManager::_instance == NULL)
+        RessourcesManager::_instance = new RessourcesManager();
+    return (RessourcesManager::_instance);
 }
 
 void		RessourcesManager::deleteInstance(void)
 {
-	delete RessourcesManager::_instance;
-	RessourcesManager::_instance = NULL;
+    delete RessourcesManager::_instance;
+    RessourcesManager::_instance = NULL;
 }
 
 const QPixmap&	RessourcesManager::getRessource(const int id) const
 {
-	if (id >= 0 && id < TOTAL)
-	{
-		return (*ressources[id]);
-	}
-	return (*ressources[OFFLINE]);
+    if (id >= 0 && id < TOTAL)
+    {
+        return (*ressources[id]);
+    }
+    return (*ressources[OFFLINE]);
 }
 
 RessourcesManager::RessourcesManager(void)
 {
-	static const char*	path[] =
-	{
-		":/images/offline.png",
-		":/images/online.png",
-		":/images/busy.png",
-		":/images/away.png",
-		":/images/log-in.png",
-		":/images/log-out.png",
-		":/images/chat.png"
-	};
+    static const char*	path[] =
+    {
+        ":/images/offline.png",
+        ":/images/online.png",
+        ":/images/busy.png",
+        ":/images/away.png",
+        ":/images/log-in.png",
+        ":/images/log-out.png",
+        ":/images/chat.png"
+    };
 
-	for (int i = 0; i < TOTAL; ++i)
-	{
-		ressources[i] = new QPixmap(path[i]);
-	}
+    for (int i = 0; i < TOTAL; ++i)
+    {
+        ressources[i] = new QPixmap(path[i]);
+    }
 }
 
 RessourcesManager::~RessourcesManager(void)
 {
-	for (int i = 0; i < TOTAL; ++i)
-	{
-		delete ressources[i];
-	}
+    for (int i = 0; i < TOTAL; ++i)
+    {
+        delete ressources[i];
+    }
 }
 
 RessourcesManager::RessourcesManager(const RessourcesManager&)
@@ -73,6 +73,6 @@ RessourcesManager::RessourcesManager(const RessourcesManager&)
 }
 
 RessourcesManager& RessourcesManager::operator=(const RessourcesManager&)
-{
-	return (*this);
+                                               {
+    return (*this);
 }

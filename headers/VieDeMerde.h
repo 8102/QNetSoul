@@ -18,30 +18,29 @@
 #ifndef VIEDEMERDE_H
 #define VIEDEMERDE_H
 
-#include <QHttp>
-#include <QBuffer>
+#include <QObject>
+#include <QNetworkReply>
+#include <QNetworkAccessManager>
 
 class	VieDeMerde : public QObject
 {
-	Q_OBJECT
+  Q_OBJECT
 
-public:
-	VieDeMerde(void);
-	virtual ~VieDeMerde(void);
+    public:
+  VieDeMerde(void);
+  virtual ~VieDeMerde(void);
 
-	int		getALife(void);
+  public slots:
+  void	getALife(void);
 
-signals:
-	void	vdmReceived(const int& id, const QString& content);
+ signals:
+  void	sendVieDeMerdeToQNetsoul(const QString& message);
 
-private slots:
-	void	finished(int requestId, bool error);
+  private slots:
+  void	replyFinished(QNetworkReply* reply);
 
-private:
-	int			_id;
-	QBuffer		_buffer;
-	QByteArray	_bytes;
-	QHttp		_http;
+ private:
+  QNetworkAccessManager*	_manager;
 };
 
 #endif // VIEDEMERDE_H
