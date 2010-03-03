@@ -1,9 +1,12 @@
                 === TODO LIST ===
 
+- Sur les erreurs, se reconnecter.
 - Appliquer un algo de cryptage pour ne pas laisser les passwords en clair.
 - Url cliquables dans les fenêtres de chat.
 - Régler les problèmes de mis à jour de status
 - Régler les problèmes de focus
+- Plugin PasteBin.
+- Inclure la possiblite de wizz une personne.
 - Pouvoir activer/désactiver les smileys
 - Activer ou pas une vie de merde au démarrage
 - Améliorer le typing notification (envoyer un stop au bout d'un moment)
