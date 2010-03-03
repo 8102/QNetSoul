@@ -45,7 +45,10 @@ QNetsoul::QNetsoul(QWidget* parent)
   connectNetworkSignals();
   readSettings();
   loadContacts("contacts.xml");
+  configureProxy();
   this->_portraitResolver.addRequest(getContactLogins());
+  //this->_vdm.getALife();
+  this->_cnf.getFact();
 }
 
 QNetsoul::~QNetsoul(void)
@@ -87,7 +90,7 @@ void	QNetsoul::connectToServer(void)
         {
 	  bool		ok;
 	  quint16	port = this->_options->portLineEdit->text().toUShort(&ok);
-	  if (true == ok)
+	  if (ok)
             {
 	      this->statusbar->showMessage(tr("Connecting..."), 3000);
 	      this->_network->connect(this->_options->serverLineEdit->text(), port);
@@ -572,6 +575,22 @@ void	QNetsoul::aboutQNetSoul(void)
   QMessageBox::about(this, "QNetSoul", this->whatsThis());
 }
 
+void	QNetsoul::setProxy(const QNetworkProxy& proxy)
+{
+  this->_vdm.setProxy(proxy);
+  this->_portraitResolver.setProxy(proxy);
+  this->_cnf.setProxy(proxy);
+}
+
+void	QNetsoul::configureProxy(void)
+{
+  if (this->_options->isProxyEnabled())
+    {
+      const QNetworkProxy	proxy = this->_options->getProxy();
+      setProxy(proxy);
+    }
+}
+
 Chat*	QNetsoul::getChat(const QString& login)
 {
   QHash<QString, Chat*>::iterator	it;
@@ -841,6 +860,8 @@ void	QNetsoul::connectActionsSignals(void)
 
   // From Option widget
   connect(this->_options, SIGNAL(loginPasswordFilled()), SLOT(connectToServer()));
+  connect(this->_options, SIGNAL(resetProxy(const QNetworkProxy&)),
+	  SLOT(setProxy(const QNetworkProxy&)));
 }
 
 void	QNetsoul::connectNetworkSignals(void)

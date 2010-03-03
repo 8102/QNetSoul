@@ -22,29 +22,42 @@
 #include <QByteArray>
 #include <QNetworkAccessManager>
 #include "Url.h"
-#include "VieDeMerde.h"
+#include "Randn.h"
+#include "ChuckNorrisFacts.h"
 
-VieDeMerde::VieDeMerde(void)
+const char*	facts_url =
+  "http://www.chucknorrisfacts.fr/fortunes/fortunes.txt";
+
+ChuckNorrisFacts::ChuckNorrisFacts(void)
 {
   this->_manager = new QNetworkAccessManager(this);
   connect(this->_manager, SIGNAL(finished(QNetworkReply*)),
 	  this, SLOT(replyFinished(QNetworkReply*)));
-  //this->_manager->get(QNetworkRequest(QUrl("http://api.viedemerde.fr/1.2/view/random?key=readonly")));
 }
 
-VieDeMerde::~VieDeMerde(void)
+ChuckNorrisFacts::~ChuckNorrisFacts(void)
 {
 }
 
-void	VieDeMerde::getALife(void)
+void	ChuckNorrisFacts::getFact(void)
 {
-  this->_manager->get(QNetworkRequest(QUrl("http://api.viedemerde.fr/1.2/view/random?key=readonly")));
+  if (0 == this->_facts.size())
+    this->_manager->get(QNetworkRequest(QUrl(facts_url)));
+  else
+    pickAFact();
 }
 
-/*
-  01/03/2010
-  Trouver l'equivalent en Qt... parce que c'est trop lame cette fonction...
-*/
+void	ChuckNorrisFacts::pickAFact(void)
+{
+  const int	size = this->_facts.size();
+
+  if (size)
+    {
+      std::cerr << this->_facts.at(rand_n(size)).toStdString() << std::endl;
+      //emit sendChuckNorrisFactToQNetsoul(this->_facts.at(rand_n(size)));
+    }
+}
+
 static void	replaceHtmlSpecialChars(QString& str)
 {
   str.replace("&amp;", "&");
@@ -52,21 +65,16 @@ static void	replaceHtmlSpecialChars(QString& str)
   str.replace("&quot;", "\"");
   str.replace("&lt;", "<");
   str.replace("&gt;", ">");
+  str.replace("&agrave", "à");
 }
 
-void	VieDeMerde::replyFinished(QNetworkReply* reply)
+void	ChuckNorrisFacts::replyFinished(QNetworkReply* reply)
 {
   QByteArray	array = reply->readAll();
-
-
   QString	buffer(QString::fromUtf8(array));
-  QRegExp	textRegExp("<texte>(.+)</texte>");
 
   replaceHtmlSpecialChars(buffer);
-  if (buffer.contains(textRegExp))
-    {
-      //std::cerr << textRegExp.cap(1).toStdString() << std::endl;
-      emit sendVieDeMerdeToQNetsoul(textRegExp.cap(1));
-    }
+  this->_facts = buffer.split("%\n", QString::SkipEmptyParts);
+  pickAFact();
   reply->deleteLater();
 }

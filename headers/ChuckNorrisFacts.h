@@ -15,33 +15,38 @@
 	along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VIEDEMERDE_H
-#define VIEDEMERDE_H
+#ifndef CHUCK_NORRIS_FACTS_H_
+#define CHUCK_NORRIS_FACTS_H_
 
 #include <QObject>
+#include <QStringList>
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
 
-class	VieDeMerde : public QObject
+class	ChuckNorrisFacts : public QObject
 {
   Q_OBJECT
 
     public:
-  VieDeMerde(void);
-  virtual ~VieDeMerde(void);
+  ChuckNorrisFacts(void);
+  virtual ~ChuckNorrisFacts(void);
 
   void	setProxy(const QNetworkProxy& p) { this->_manager->setProxy(p); }
 
   public slots:
-  void	getALife(void);
+  void	getFact(void);
+
+ private:
+  void	pickAFact(void);
 
  signals:
-  void	sendVieDeMerdeToQNetsoul(const QString& message);
+  void	sendChuckNorrisFactToQNetsoul(const QString& message);
 
   private slots:
   void	replyFinished(QNetworkReply* reply);
 
  private:
+  QStringList			_facts;
   QNetworkAccessManager*	_manager;
 };
 

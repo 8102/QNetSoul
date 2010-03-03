@@ -29,7 +29,9 @@ HEADERS += headers/QNetsoul.h \
     headers/Smileys.h \
     headers/VieDeMerde.h \
     headers/PortraitRequest.h \
-    headers/Status.h
+    headers/Status.h \
+    headers/ChuckNorrisFacts.h \
+    headers/Randn.h
 FORMS += ui/QNetsoul.ui \
     ui/Options.ui \
     ui/AddContact.ui \
@@ -49,7 +51,9 @@ SOURCES += src/main.cpp \
     src/InputTextEdit.cpp \
     src/LocationResolver.cpp \
     src/PortraitResolver.cpp \
-    src/VieDeMerde.cpp
+    src/VieDeMerde.cpp \
+    src/ChuckNorrisFacts.cpp \
+    src/Randn.cpp
 
 # Output
 DESTDIR = .

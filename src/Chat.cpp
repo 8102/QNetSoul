@@ -97,13 +97,17 @@ void	Chat::insertMessage(const QString& login, const QString& msg, const QColor&
   int		scrollBarValue = -1;
   QScrollBar*	scrollBar = this->outputTextBrowser->verticalScrollBar();
 
+  std::cerr << "DEBUG INSERT MESSAGE: " << msg.toStdString() << std::endl;
   if (scrollBar && scrollBar->value() != scrollBar->maximum())
     scrollBarValue = scrollBar->value();
   QString	html("<p>");
   html += QString("<span style=' color:%1;'>%2 %3</span>").arg(color.name()).arg(getFormatedDateTime()).arg(login);
-  html.append(": " + replaceUrls(msg) + "<br /></p>");
+  html.append(": </p>");
   this->outputTextBrowser->moveCursor(QTextCursor::End);
   this->outputTextBrowser->insertHtml(html);
+  // TODO: Interpret lines (url etc)
+  this->outputTextBrowser->insertPlainText(msg);
+  this->outputTextBrowser->insertHtml("<br />");
   insertSmileys();
 
   if (scrollBar)

@@ -116,14 +116,46 @@ void	Options::update(void)
     this->proxyCheckBox->setCheckState(Qt::Unchecked);
 }
 
+bool	Options::isValidProxy(void) const
+{
+  bool	port_ok;
+  this->_proxyPort.toUShort(&port_ok);
+
+  return (!this->_proxy.isEmpty() &&
+	  !this->_proxyLogin.isEmpty() &&
+	  !this->_proxyPassword.isEmpty() &&
+	  port_ok);
+}
+
+const QNetworkProxy	Options::getProxy(void) const
+{
+  bool		port_ok;
+  quint16       port = this->_proxyPort.toUShort(&port_ok);
+
+  QNetworkProxy	proxy(QNetworkProxy::Socks5Proxy,
+		      this->_proxy, port, this->_proxyLogin,
+		      this->_proxyPassword);
+  return proxy;
+}
+
 void	Options::save(void)
 {
+  bool	proxyNeedsToBeReset =
+    (this->_useProxy != (Qt::Checked == this->proxyCheckBox->checkState()));
+
   // Advanced Options
   this->_proxy = this->proxyLineEdit->text();
   this->_proxyPort = this->proxyPortLineEdit->text();
   this->_proxyLogin = this->proxyLoginLineEdit->text();
   this->_proxyPassword = this->proxyPasswordLineEdit->text();
   this->_useProxy = (Qt::Checked == this->proxyCheckBox->checkState());
+  if (proxyNeedsToBeReset)
+    {
+      if (this->_useProxy)
+	emit resetProxy(getProxy());
+      else
+	emit resetProxy();
+    }
 
   // Main Options
   this->_server = this->serverLineEdit->text();
@@ -134,8 +166,6 @@ void	Options::save(void)
   this->_comment = this->commentLineEdit->text();
   this->_savePassword = (Qt::Checked == this->savePasswordCheckBox->checkState());
   if (!this->_login.isEmpty() && !this->_password.isEmpty() && this->_connectOnOk)
-    {
-      emit loginPasswordFilled();
-    }
+    emit loginPasswordFilled();
   this->_connectOnOk = false;
 }

@@ -1,18 +1,18 @@
 /*
-	Copyright 2009 Dally Richard
-	This file is part of QNetSoul.
-	QNetSoul is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+  Copyright 2009 Dally Richard
+  This file is part of QNetSoul.
+  QNetSoul is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-	QNetSoul is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+  QNetSoul is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef PORTRAITRESOLVER_H
@@ -23,32 +23,34 @@
 #include <QHttp>
 #include <QBuffer>
 #include <QObject>
+#include <QNetworkProxy>
 #include "PortraitRequest.h"
 
 class	PortraitResolver : public QObject
 {
-	Q_OBJECT
-	
-public:
-	PortraitResolver(void);
-	~PortraitResolver(void);
-	void	addRequest(const QStringList& logins);
-	void	addRequest(const QString& login, bool fun);
+  Q_OBJECT
 
-	static QString	buildFilename(const QString& login, bool fun);
-	
-public slots:
-	void	finished(int id, bool error);
+    public:
+  PortraitResolver(void);
+  ~PortraitResolver(void);
+  void	addRequest(const QStringList& logins);
+  void	addRequest(const QString& login, bool fun);
 
-signals:
-	void	downloadedPortrait(const QString&);
+  static QString	buildFilename(const QString& login, bool fun);
+  void	setProxy(const QNetworkProxy& p) { this->_http.setProxy(p); }
 
-private:
-	void			setupPortraitDirectory(void);
+  public slots:
+  void	finished(int id, bool error);
 
-	QDir					_dir;
-	QHttp					_http;
-	QList<PortraitRequest*>	_requests;
+ signals:
+  void	downloadedPortrait(const QString&);
+
+ private:
+  void				setupPortraitDirectory(void);
+
+  QDir				_dir;
+  QHttp				_http;
+  QList<PortraitRequest*>	_requests;
 };
 
 #endif // PORTRAITRESOLVER_H

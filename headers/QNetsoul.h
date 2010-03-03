@@ -28,6 +28,7 @@
 #include "ui_QNetsoul.h"
 #include "PortraitResolver.h"
 #include "VieDeMerde.h"
+#include "ChuckNorrisFacts.h"
 
 class	QMenu;
 class	QAction;
@@ -79,8 +80,10 @@ class	QNetsoul : public QMainWindow, public Ui_QNetsoul
   void	notifyTypingStatus(const QString&, bool);
   void	setPortrait(const QString&);
   void	aboutQNetSoul(void);
+  void	setProxy(const QNetworkProxy& proxy = QNetworkProxy());
 
  private:
+  void				configureProxy(void);
   Chat*				getChat(const QString&);
   bool				doesThisContactAlreadyExist(const QString&) const;
   ContactWidget*		getContact(const QString&) const;
@@ -113,6 +116,7 @@ class	QNetsoul : public QMainWindow, public Ui_QNetsoul
   QPoint			_oldPos;
   PortraitResolver		_portraitResolver;
   VieDeMerde			_vdm;
+  ChuckNorrisFacts		_cnf;
 };
 
 #endif // QNETSOUL_H_

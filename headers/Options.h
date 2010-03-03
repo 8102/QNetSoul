@@ -19,6 +19,7 @@
 #define OPTIONS_H
 
 #include <QDialog>
+#include <QNetworkProxy>
 #include "ui_Options.h"
 
 class Options : public QDialog, public Ui_Options
@@ -33,9 +34,13 @@ class Options : public QDialog, public Ui_Options
   void	writeOptionSettings(void);
   void	update(void);
   void	setConnectionOnOk(const bool& value) { this->_connectOnOk = value; }
+  bool	isProxyEnabled(void) const { return this->_useProxy; }
+  bool	isValidProxy(void) const;
+  const QNetworkProxy getProxy(void) const;
 
  signals:
   void	loginPasswordFilled(void);
+  void	resetProxy(const QNetworkProxy& p = QNetworkProxy());
 
   private slots:
   void	save(void);
