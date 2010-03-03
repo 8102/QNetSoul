@@ -46,7 +46,7 @@ void		Options::readOptionSettings(void)
 
   settings.beginGroup("AdvancedOptions");
   this->_useProxy = settings.value("useproxy", bool(false)).toBool();
-  this->_proxy = settings.value("proxy", QString("proxy.epita.net")).toString();
+  this->_proxy = settings.value("proxy", QString("proxy.epitech.net")).toString();
   this->_proxyPort = settings.value("port", QString("3128")).toString();
   this->_proxyLogin = settings.value("login", QString("")).toString();
   this->_proxyPassword = settings.value("password", QString("")).toString();
@@ -132,7 +132,7 @@ const QNetworkProxy	Options::getProxy(void) const
   bool		port_ok;
   quint16       port = this->_proxyPort.toUShort(&port_ok);
 
-  QNetworkProxy	proxy(QNetworkProxy::Socks5Proxy,
+  QNetworkProxy	proxy(QNetworkProxy::HttpProxy,
 		      this->_proxy, port, this->_proxyLogin,
 		      this->_proxyPassword);
   return proxy;

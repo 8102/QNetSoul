@@ -47,8 +47,8 @@ QNetsoul::QNetsoul(QWidget* parent)
   loadContacts("contacts.xml");
   configureProxy();
   this->_portraitResolver.addRequest(getContactLogins());
-  //this->_vdm.getALife();
-  this->_cnf.getFact();
+  this->_vdm.getALife();
+  //this->_cnf.getFact();
 }
 
 QNetsoul::~QNetsoul(void)
