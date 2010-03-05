@@ -17,6 +17,7 @@
 
 #include <iostream>
 #include <QImage>
+#include <QMessageBox>
 #include "Url.h"
 #include "PortraitResolver.h"
 
@@ -73,6 +74,12 @@ void	PortraitResolver::finished(int requestId, bool error)
 	      if (img.save(DIR_NAME + '/' + buildFilename(this->_requests[i]->login, this->_requests[i]->fun)))
 		emit downloadedPortrait(this->_requests[i]->login);
             }
+	  else
+	    {
+	      // DEBUG
+	      QMessageBox::critical(NULL, "QNetsoul PortraitResolver",
+				    this->_http.errorString());
+	    }
 	  delete this->_requests.takeAt(i);
 	  return;
         }

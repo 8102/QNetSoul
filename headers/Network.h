@@ -31,6 +31,7 @@ class	Network : public QObject
 
   QAbstractSocket::SocketState	state(void) const;
   void	connect(const QString& host, quint16);
+  void	reconnect(void);
   void	disconnect(void);
   void	sendMessage(const char* message);
   void	sendMessage(const QByteArray& message);
@@ -44,6 +45,7 @@ class	Network : public QObject
   void	typingStatus(const QString&, bool);
 
   private slots:
+  void	displaySocketError(void);
   void	processPackets(void);
 
  private:
@@ -55,6 +57,8 @@ class	Network : public QObject
   QString		_rbuffer;
   QTcpSocket		_socket;
   int			_handShakingStep;
+  QString		_host;
+  quint16		_port;
 };
 
 #endif // NETWORK_H

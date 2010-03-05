@@ -53,7 +53,6 @@ class	QNetsoul : public QMainWindow, public Ui_QNetsoul
   void	updateMenuBar(const QAbstractSocket::SocketState&);
   void	updateStatusBar(const QAbstractSocket::SocketState&);
   void	updateStatusComboBox(const QAbstractSocket::SocketState&);
-  void	displayError(const QAbstractSocket::SocketError&);
 
   void	showMessageInBalloon(const QString& message);
   void	toggleConnection(void);

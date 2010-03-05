@@ -166,26 +166,6 @@ void	QNetsoul::updateStatusComboBox(const QAbstractSocket::SocketState& state)
     }
 }
 
-void	QNetsoul::displayError(const QAbstractSocket::SocketError& error)
-{
-  switch (error)
-    {
-    case QAbstractSocket::HostNotFoundError:
-      QMessageBox::warning(this, "QNetsoul", tr("The host was not found."));
-      break;
-
-    case QAbstractSocket::ConnectionRefusedError:
-      QMessageBox::warning(this, "QNetsoul", tr("The connection was refused by the peer."));
-      break;
-    case QAbstractSocket::NetworkError:
-      QMessageBox::warning(this, "QNetsoul", tr("Perhaps, the port is wrong...\n"
-						"Please check that you ethernet cable is plugged in."));
-      break;
-    default: QMessageBox::warning(this, "QNetsoul", tr("Error !"));
-      std::cerr << "Error number: " << error << std::endl;
-    }
-}
-
 void	QNetsoul::showMessageInBalloon(const QString& message)
 {
   if (NULL != this->_trayIcon)
@@ -354,12 +334,12 @@ void	QNetsoul::changeStatus(const QString& login, const QString& id, const QStri
 {
   static const Status		status[] =
     {
-      {"login", QObject::tr("logged in")},
-      {"logout", QObject::tr("offline")},
-      {"actif", QObject::tr("online")},
-      {"away", QObject::tr("away")},
-      {"lock", QObject::tr("locked")},
-      {"server", QObject::tr("deamonized")},
+      {"login",		QObject::tr("logged in")},
+      {"logout",	QObject::tr("offline")},
+      {"actif",		QObject::tr("online")},
+      {"away",		QObject::tr("away")},
+      {"lock",		QObject::tr("locked")},
+      {"server",	QObject::tr("deamonized")},
       {NULL, NULL}
     };
   ContactWidget*	contactWidget = getContact(login);
@@ -407,7 +387,7 @@ void	QNetsoul::updateContact(const QStringList& parts)
                                       url_decode(parts.at(12).toStdString().c_str())};
 
       contactWidget->addConnectionPoint(connection);
-      changeStatus(parts.at(5), parts.at(4), parts.at(14)); // PATCH
+      changeStatus(parts.at(5), parts.at(4), connection.state); // PATCH
       if (false == contactWidget->hasGroup())
 	contactWidget->setGroup(parts.at(13));
     }

@@ -15,8 +15,10 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <iostream>
 #include <QSettings>
 #include "Options.h"
+#include "Encryption.h"
 
 Options::Options(QWidget* parent) : QDialog(parent), _connectOnOk(false)
 {
@@ -51,6 +53,9 @@ void		Options::readOptionSettings(void)
   this->_proxyLogin = settings.value("login", QString("")).toString();
   this->_proxyPassword = settings.value("password", QString("")).toString();
   settings.endGroup();
+
+  this->_password = unencrypt(this->_password);
+  this->_proxyPassword = unencrypt(this->_proxyPassword);
 }
 
 void		Options::writeOptionSettings(void)
@@ -65,7 +70,7 @@ void		Options::writeOptionSettings(void)
   settings.setValue("comment", this->_comment);
   if (true == this->_savePassword)
     {
-      settings.setValue("password", this->_password);
+      settings.setValue("password", encrypt(this->_password));
       settings.setValue("savepassword", true);
     }
   else
@@ -79,7 +84,7 @@ void		Options::writeOptionSettings(void)
   settings.setValue("proxy", this->_proxy);
   settings.setValue("port", this->_proxyPort);
   settings.setValue("login", this->_proxyLogin);
-  settings.setValue("password", this->_proxyPassword);
+  settings.setValue("password", encrypt(this->_proxyPassword));
   if (this->_useProxy)
     settings.setValue("useproxy", true);
   else

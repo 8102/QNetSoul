@@ -1,5 +1,6 @@
                              === KNOWN BUGS ===
 
+- Des messages passent à la trappe...
 - Le tri des contacts est défectueux.
 - Lorsqu'un contact se déco puis se reco en "away", il apparait online.
 - La fonction rafraichir ne marche pas...

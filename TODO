@@ -1,7 +1,6 @@
                 === TODO LIST ===
 
-- Sur les erreurs, se reconnecter.
-- Appliquer un algo de cryptage pour ne pas laisser les passwords en clair.
+- Sur les erreurs, se reconnecter. (fait, a verifier)
 - Url cliquables dans les fenêtres de chat.
 - Régler les problèmes de mis à jour de status
 - Régler les problèmes de focus

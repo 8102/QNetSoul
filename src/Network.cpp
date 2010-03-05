@@ -16,6 +16,7 @@
 */
 
 #include <iostream>
+#include <QMessageBox>
 #include "Network.h"
 #include "QNetsoul.h"
 #include "LocationResolver.h"
@@ -35,8 +36,7 @@ Network::Network(QObject* parent) : QObject(parent), _handShakingStep(0)
       QObject::connect(&this->_socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)),
 		       ns, SLOT(updateStatusComboBox(const QAbstractSocket::SocketState&)));
       QObject::connect(&this->_socket, SIGNAL(error(QAbstractSocket::SocketError)),
-		       ns, SLOT(displayError(const QAbstractSocket::SocketError&)));
-
+		       SLOT(displaySocketError()));
     }
   else
     {
@@ -58,13 +58,23 @@ void	Network::connect(const QString& host, quint16 port)
 {
   if (QAbstractSocket::UnconnectedState == this->_socket.state())
     {
+      this->_host = host;
+      this->_port = port;
       this->_socket.connectToHost(host, port);
     }
+}
+
+void	Network::reconnect(void)
+{
+  if (!this->_host.isEmpty() && this->_port != 0)
+    connect(this->_host, this->_port);
 }
 
 void	Network::disconnect(void)
 {
   this->_handShakingStep = 0;
+  this->_port = 0;
+  this->_host.clear();
   this->_socket.disconnectFromHost();
 }
 
@@ -88,6 +98,14 @@ void	Network::resolveLocation(QString& oldLocation) const
     {
       oldLocation = LocationResolver::resolve(this->_socket.localAddress());
     }
+}
+
+// Reconnection feature ! Version 0.03
+void	Network::displaySocketError(void)
+{
+  // DEBUG
+  QMessageBox::critical(NULL, QString("QNetsoul"), this->_socket.errorString());
+  reconnect();
 }
 
 void	Network::processPackets(void)
@@ -130,7 +148,7 @@ void	Network::parseLines(void)
 // A Recoder (refaire en plus propre).
 void	Network::interpretLine(const QString& line)
 {
-  std::cerr << line.toStdString() << std::endl;
+  //std::cerr << line.toStdString() << std::endl;
   QStringList	parts = line.split(' ', QString::SkipEmptyParts);
   const int	size = parts.size();
 
@@ -148,16 +166,26 @@ void	Network::interpretLine(const QString& line)
             {
 	      // Emits login, message
 	      emit message(parts.at(1).section(':', 3, 3).section('@', 0, 0), parts.at(4));
+	      std::cerr << "message(" << parts.at(1).section(':', 3, 3).section('@', 0, 0).toStdString();
+	      std::cerr << ", " << parts.at(4).toStdString() << ");\n";
             }
 	  else if ("state" == parts.at(3) && size >= 5)
             {
 	      // Emits login, id, state
 	      emit status(parts.at(1).section(':', 3, 3).section('@', 0, 0), parts.at(1).section(':', 0, 0), parts.at(4).section(':', 0, 0));
+	      // DEBUG
+	      std::cerr << "status(" << parts.at(1).section(':', 3, 3).section('@', 0, 0).toStdString() << ", ";
+	      std::cerr << parts.at(1).section(':', 0, 0).toStdString() << ", " << parts.at(4).section(':', 0, 0).toStdString();
+	      std::cerr << ");" << std::endl;
             }
 	  else if (("login" == parts.at(3) || "logout" == parts.at(3)) && (size >= 4))
             {
 	      // Emits login, id, state
 	      emit status(parts.at(1).section(':', 3, 3).section('@', 0, 0), parts.at(1).section(':', 0, 0), parts.at(3));
+	      // DEBUG
+	      std::cerr << "status(" << parts.at(1).section(':', 3, 3).section('@', 0, 0).toStdString() << ", ";
+	      std::cerr << parts.at(1).section(':', 0, 0).toStdString() << ", " << parts.at(3).toStdString();
+	      std::cerr << ");\n";
             }
 	  else if ("who" == parts.at(3) && size > 15)
             {
@@ -182,7 +210,7 @@ void	Network::interpretLine(const QString& line)
         }
       else
         {
-	  std::cerr << "zOmg quoi !" << std::endl;
+	  std::cerr << "Commande non parsee:" << std::endl;
 	  std::cerr << line.toStdString() << std::endl;
         }
     }

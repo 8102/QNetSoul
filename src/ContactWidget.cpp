@@ -25,12 +25,12 @@ enum {LOGIN, LOGOUT, ACTIF, AWAY, LOCK, SERVER, TOTAL};
 
 static const State	states[] =
   {
-    {"login", ":/images/log-in", QObject::tr("Login")},
-    {"logout", ":/images/offline", QObject::tr("Offline")},
-    {"actif", ":/images/online", QObject::tr("Online")},
-    {"away", ":/images/away", QObject::tr("Away")},
-    {"lock", ":/images/lock", QObject::tr("Locked")},
-    {"server", ":/images/server", QObject::tr("Server")},
+    {"login",	":/images/log-in",	QObject::tr("Login")},
+    {"logout",	":/images/offline",	QObject::tr("Offline")},
+    {"actif",	":/images/online",	QObject::tr("Online")},
+    {"away",	":/images/away",	QObject::tr("Away")},
+    {"lock",	":/images/lock",	QObject::tr("Locked")},
+    {"server",	":/images/server",	QObject::tr("Server")},
     {NULL, NULL, NULL}
   };
 
@@ -102,14 +102,15 @@ void	ContactWidget::addConnectionPoint(const ConnectionPoint& point)
   const int	size = this->_connections.size();
 
   // DEBUG
-  std::cerr << "CONNECTIONS SIZE: " << size << std::endl;
+  //std::cerr << "CONNECTIONS SIZE: " << size << std::endl;
   for (int i = 0; i < size; ++i)
     {
       if (this->_connections[i].id == point.id)
         {
 	  // DEBUG
-	  std::cerr << "STATE IN ADD CONNECTION POINT: ";
-	  std::cerr << point.state.toStdString() << std::endl;
+	  //std::cerr << "STATE IN ADD CONNECTION POINT: ";
+	  //std::cerr << point.state.toStdString() << std::endl;
+
 	  this->_connections[i] = point;
 	  buildToolTip();
 	  updateState();
@@ -130,7 +131,7 @@ void	ContactWidget::updateConnectionPoint(const QString& id,
     {
       if (this->_connections[i].id != id)
 	continue;
-        
+
       for (int j = 0; (states[j].state); ++j)
 	{
 	  if (states[j].state == state)
@@ -142,7 +143,7 @@ void	ContactWidget::updateConnectionPoint(const QString& id,
 	      else
 		{
 		  // DEBUG
-		  std::cerr << "STATE IN UPDATE: " << state.toStdString() << std::endl;
+		  //std::cerr << "STATE IN UPDATE: " << state.toStdString() << std::endl;
 		  this->_connections[i].state = state;
 		  //this->_connections[i].state = states[j].displayState;
 		}
@@ -150,7 +151,7 @@ void	ContactWidget::updateConnectionPoint(const QString& id,
 	      return;
 	    }
 	}
-      std::cerr << "state non trouve: " << state.toStdString() << std::endl;  
+      std::cerr << "state non trouve: " << state.toStdString() << std::endl;
     }
   std::cerr << "Connections size: " << size << std::endl;
 }
@@ -171,8 +172,8 @@ void	ContactWidget::updateState(void)
 	  if (states[i].state == this->_connections.first().state)
             {
 	      // DEBUG
-	      std::cerr << "CONTACTWIDGET::UPDATE STATE: ";
-	      std::cerr << this->_connections.first().state.toStdString() << std::endl;
+	      //std::cerr << "CONTACTWIDGET::UPDATE STATE: ";
+	      //std::cerr << this->_connections.first().state.toStdString() << std::endl;
 	      this->_state = states[i].displayState;
 	      this->_pixmap = states[i].pixmap;
 	      this->statusLabel->setPixmap(QPixmap(states[i].pixmap));
