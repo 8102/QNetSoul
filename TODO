@@ -10,3 +10,4 @@
 - Activer ou pas une vie de merde au démarrage
 - Améliorer le typing notification (envoyer un stop au bout d'un moment)
 - Gestion des notifications de status
+- Pouvoir parler aux différents ConnectionPoints en sus du broadcast.

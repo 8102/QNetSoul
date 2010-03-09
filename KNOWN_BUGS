@@ -6,3 +6,4 @@
 - La fonction rafraichir ne marche pas... (à vérifier)
 - Des contacts se déconnectent et apparaissent pourtant tjr online... (creuser du côté d'InterpretLine du Network)
 - Le time stamp n'est pas envoyé lors du handshaking. (FIXED)
+- Les bulles d'aide sous Windows ne se scale pas sur la taille de la VDM.
