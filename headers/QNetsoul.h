@@ -68,7 +68,7 @@ class	QNetsoul : public QMainWindow, public Ui_QNetsoul
   void	addContact(const QList<Contact>);
   void	addContact(const QString&, const QString& alias = "");
   void	removeSelectedContact(void);
-  void	refreshContacts(void) const;
+  void	refreshContacts(void);
   void	sendStatus(const int&) const;
   void	changeStatus(const QString&, const QString&, const QString&);
   void	updateContact(const QStringList&);
@@ -80,6 +80,7 @@ class	QNetsoul : public QMainWindow, public Ui_QNetsoul
   void	setPortrait(const QString&);
   void	aboutQNetSoul(void);
   void	setProxy(const QNetworkProxy& proxy = QNetworkProxy());
+  void	applyChatOptions(bool exitOnEscape, bool typingNotification, bool smileys);
 
  private:
   void				configureProxy(void);
@@ -90,7 +91,7 @@ class	QNetsoul : public QMainWindow, public Ui_QNetsoul
   QList<ContactWidget*>		getContactWidgets(void) const;
   void				watchLogContacts(void);
   void				watchLogContact(const QString&);
-  void				refreshContact(const QString&) const;
+  void				refreshContact(const QString&);
   void				resetAllContacts(void);
   void				setupTrayIcon(void);
   void				setupStatusButton(void);
@@ -116,6 +117,9 @@ class	QNetsoul : public QMainWindow, public Ui_QNetsoul
   PortraitResolver		_portraitResolver;
   VieDeMerde			_vdm;
   ChuckNorrisFacts		_cnf;
+  bool				_exitOnEscape;
+  bool				_typingNotification;
+  bool				_smileys;
 };
 
 #endif // QNETSOUL_H_

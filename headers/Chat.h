@@ -28,14 +28,16 @@ class	Chat : public QWidget, public Ui_Chat
   Q_OBJECT
 
     public:
-  Chat(const QString& name);
+  Chat(const QString& name, bool exitOnEscape, bool smileys);
   virtual ~Chat(void);
 
   QString	getFormatedDateTime(void) const;
   void		insertSmileys(void);
-  QString	replaceUrls(const QString&);
+  void		replaceUrls(QString msg);
   void		insertMessage(const QString& login, const QString& message, const QColor& color);
   void		notifyTypingStatus(const QString& login, bool typing);
+  void		setExitOnEscape(bool b) { this->_exitOnEscape = b; }
+  void		setSmileys(bool b) { this->_smileys = b; }
 
  signals:
   void	msgToSend(const QString&, const QString&);
@@ -48,6 +50,10 @@ class	Chat : public QWidget, public Ui_Chat
   private slots:
   void	sendMessage(void);
   void	handleTypingSignal(void);
+
+ private:
+  bool	_exitOnEscape;
+  bool	_smileys;
 };
 
 #endif // CHAT_H

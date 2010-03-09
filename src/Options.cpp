@@ -46,6 +46,12 @@ void		Options::readOptionSettings(void)
   this->_savePassword = settings.value("savepassword", bool(false)).toBool();
   settings.endGroup();
 
+  settings.beginGroup("ChatOptions");
+  this->_exitOnEscape = settings.value("exitonescape", bool(false)).toBool();
+  this->_typingNotification = settings.value("typingnotification", bool(false)).toBool();
+  this->_smileys = settings.value("smileys", bool(false)).toBool();
+  settings.endGroup();
+
   settings.beginGroup("AdvancedOptions");
   this->_useProxy = settings.value("useproxy", bool(false)).toBool();
   this->_proxy = settings.value("proxy", QString("proxy.epitech.net")).toString();
@@ -68,16 +74,17 @@ void		Options::writeOptionSettings(void)
   settings.setValue("login", this->_login);
   settings.setValue("location", this->_location);
   settings.setValue("comment", this->_comment);
-  if (true == this->_savePassword)
-    {
-      settings.setValue("password", encrypt(this->_password));
-      settings.setValue("savepassword", true);
-    }
+  if (this->_savePassword)
+    settings.setValue("password", encrypt(this->_password));
   else
-    {
-      settings.remove("password");
-      settings.setValue("savepassword", false);
-    }
+    settings.remove("password");
+  settings.setValue("savepassword", this->_savePassword);
+  settings.endGroup();
+
+  settings.beginGroup("ChatOptions");
+  settings.setValue("exitonescape", this->_exitOnEscape);
+  settings.setValue("typingnotification", this->_typingNotification);
+  settings.setValue("smileys", this->_smileys);
   settings.endGroup();
 
   settings.beginGroup("AdvancedOptions");
@@ -85,26 +92,39 @@ void		Options::writeOptionSettings(void)
   settings.setValue("port", this->_proxyPort);
   settings.setValue("login", this->_proxyLogin);
   settings.setValue("password", encrypt(this->_proxyPassword));
-  if (this->_useProxy)
-    settings.setValue("useproxy", true);
-  else
-    settings.setValue("useproxy", false);
+  settings.setValue("useproxy", this->_useProxy);
   settings.endGroup();
 }
 
 void	Options::update(void)
 {
+  // Main Tab
   this->serverLineEdit->setText(this->_server);
   this->portLineEdit->setText(this->_port);
   this->loginLineEdit->setText(this->_login);
   this->passwordLineEdit->setText(this->_password);
   this->locationLineEdit->setText(this->_location);
   this->commentLineEdit->setText(this->_comment);
-  if (this->_savePassword == true)
+  if (this->_savePassword)
     this->savePasswordCheckBox->setCheckState(Qt::Checked);
   else
     this->savePasswordCheckBox->setCheckState(Qt::Unchecked);
 
+  // Chat tab
+  if (this->_exitOnEscape)
+    this->chatEscapeCheckBox->setCheckState(Qt::Checked);
+  else
+    this->chatEscapeCheckBox->setCheckState(Qt::Unchecked);
+  if (this->_typingNotification)
+    this->typingStatusCheckBox->setCheckState(Qt::Checked);
+  else
+    this->typingStatusCheckBox->setCheckState(Qt::Unchecked);
+  if (this->_smileys)
+    this->smileysCheckBox->setCheckState(Qt::Checked);
+  else
+    this->smileysCheckBox->setCheckState(Qt::Unchecked);
+
+  // Advanced Tab
   this->proxyLineEdit->setText(this->_proxy);
   this->proxyPortLineEdit->setText(this->_proxyPort);
   this->proxyLoginLineEdit->setText(this->_proxyLogin);
@@ -143,9 +163,20 @@ const QNetworkProxy	Options::getProxy(void) const
   return proxy;
 }
 
+void	Options::applyOptions(void)
+{
+  if (this->_useProxy)
+    emit resetProxy(getProxy());
+  else
+    emit resetProxy();
+
+  emit chatOptionsChanged(this->_exitOnEscape, this->_typingNotification,
+			  this->_smileys);
+}
+
 void	Options::save(void)
 {
-  bool	proxyNeedsToBeReset =
+  const bool	proxyNeedsToBeReset =
     (this->_useProxy != (Qt::Checked == this->proxyCheckBox->checkState()));
 
   // Advanced Options
@@ -161,6 +192,13 @@ void	Options::save(void)
       else
 	emit resetProxy();
     }
+
+  // Chat Options
+  this->_exitOnEscape = this->chatEscapeCheckBox->checkState();
+  this->_typingNotification = this->typingStatusCheckBox->checkState();
+  this->_smileys = this->smileysCheckBox->checkState();
+  emit chatOptionsChanged(this->_exitOnEscape, this->_typingNotification,
+			  this->_smileys);
 
   // Main Options
   this->_server = this->serverLineEdit->text();

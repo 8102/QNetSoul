@@ -37,10 +37,12 @@ class Options : public QDialog, public Ui_Options
   bool	isProxyEnabled(void) const { return this->_useProxy; }
   bool	isValidProxy(void) const;
   const QNetworkProxy getProxy(void) const;
+  void	applyOptions(void);
 
  signals:
   void	loginPasswordFilled(void);
   void	resetProxy(const QNetworkProxy& p = QNetworkProxy());
+  void	chatOptionsChanged(bool, bool, bool);
 
   private slots:
   void	save(void);
@@ -55,6 +57,10 @@ class Options : public QDialog, public Ui_Options
   QString	_password;
   bool		_savePassword;
   bool		_connectOnOk;
+  // Chat tab
+  bool		_exitOnEscape;
+  bool		_typingNotification;
+  bool		_smileys;
   // Advanced Tab
   bool		_useProxy;
   QString	_proxy;

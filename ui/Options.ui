@@ -49,7 +49,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="mainWidget">
     <attribute name="title">
@@ -226,6 +226,49 @@
     <attribute name="title">
      <string>Chat</string>
     </attribute>
+    <widget class="QCheckBox" name="typingStatusCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>341</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Notify contacts when you are typing</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="chatEscapeCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>50</y>
+       <width>341</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Close chat window with escape key</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="smileysCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>80</y>
+       <width>341</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Enable smileys on chat windows</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../Images.qrc">
+       <normaloff>:/images/grin.png</normaloff>:/images/grin.png</iconset>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="advancedWidget">
     <attribute name="title">
@@ -377,7 +420,9 @@
   <tabstop>okPushButton</tabstop>
   <tabstop>cancelPushButton</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../Images.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>okPushButton</sender>

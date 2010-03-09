@@ -24,7 +24,8 @@
 #include "Smileys.h"
 #include "PortraitResolver.h"
 
-Chat::Chat(const QString& name)
+Chat::Chat(const QString& name, bool exitOnEscape, bool smileys)
+  : _exitOnEscape(exitOnEscape), _smileys(smileys)
 {
   setupUi(this);
   setWindowTitle(name);
@@ -84,12 +85,12 @@ void	Chat::insertSmileys(void)
   this->outputTextBrowser->setTextCursor(save);
 }
 
-QString	Chat::replaceUrls(const QString& input)
+// Version 0.04 replaced url + html entities "< >"
+void	Chat::replaceUrls(QString msg)
 {
-  QString	result(input);
-
-  //result.replace(QRegExp("(http://[a-z0-9._/-]+)"), "<a href='\\1'>\\1</a>");
-  return (result);
+  msg = Qt::escape(msg); // magic function <3
+  msg.replace(QRegExp("(http://[a-z0-9._/-]+)"), "<a href='\\1'>\\1</a>");
+  this->outputTextBrowser->insertHtml(msg);
 }
 
 void	Chat::insertMessage(const QString& login, const QString& msg, const QColor& color)
@@ -105,10 +106,10 @@ void	Chat::insertMessage(const QString& login, const QString& msg, const QColor&
   html.append(": </p>");
   this->outputTextBrowser->moveCursor(QTextCursor::End);
   this->outputTextBrowser->insertHtml(html);
-  // TODO: Interpret lines (url etc)
-  this->outputTextBrowser->insertPlainText(msg);
+  replaceUrls(msg);
   this->outputTextBrowser->insertHtml("<br />");
-  insertSmileys();
+  if (this->_smileys)
+    insertSmileys();
 
   if (scrollBar)
     {
@@ -129,7 +130,7 @@ void	Chat::notifyTypingStatus(const QString& login, bool typing)
 
 void	Chat::keyPressEvent(QKeyEvent* event)
 {
-  if (Qt::Key_Escape == event->key())
+  if (Qt::Key_Escape == event->key() && this->_exitOnEscape)
     {
       this->hide();
       event->ignore();
@@ -168,12 +169,6 @@ void	Chat::sendMessage(void)
 
 void	Chat::handleTypingSignal(void)
 {
-  if (this->inputTextEdit->toPlainText().isEmpty())
-    {
-      emit typingSignal(this->loginLabel->text(), true);
-    }
-  else
-    {
-      emit typingSignal(this->loginLabel->text(), false);
-    }
+  emit typingSignal(this->loginLabel->text(),
+		    this->inputTextEdit->toPlainText().isEmpty());
 }

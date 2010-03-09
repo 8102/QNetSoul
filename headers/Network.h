@@ -29,7 +29,8 @@ class	Network : public QObject
   Network(QObject* parent);
   virtual ~Network(void);
 
-  QAbstractSocket::SocketState	state(void) const;
+  QAbstractSocket::SocketState	state(void) const
+    { return this->_socket.state(); };
   void	connect(const QString& host, quint16);
   void	reconnect(void);
   void	disconnect(void);

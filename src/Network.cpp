@@ -49,11 +49,6 @@ Network::~Network(void)
   this->_socket.close();
 }
 
-QAbstractSocket::SocketState	Network::state(void) const
-{
-  return (this->_socket.state());
-}
-
 void	Network::connect(const QString& host, quint16 port)
 {
   if (QAbstractSocket::UnconnectedState == this->_socket.state())
@@ -67,7 +62,10 @@ void	Network::connect(const QString& host, quint16 port)
 void	Network::reconnect(void)
 {
   if (!this->_host.isEmpty() && this->_port != 0)
-    connect(this->_host, this->_port);
+    {
+      this->_handShakingStep = 0; // FIXED v0.04
+      connect(this->_host, this->_port);
+    }
 }
 
 void	Network::disconnect(void)
@@ -113,7 +111,7 @@ void	Network::processPackets(void)
   int			readbytes;
   char			buffer[128];
   QDataStream		in(&this->_socket);
-  in.setVersion(QDataStream::Qt_4_5);
+  //in.setVersion(QDataStream::Qt_4_6); // Not mandatory...
 
   while (this->_socket.bytesAvailable())
     {

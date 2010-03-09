@@ -1,8 +1,8 @@
                              === KNOWN BUGS ===
 
-- Des messages passent à la trappe...
+- Des messages passent à la trappe... (à vérifier)
 - Le tri des contacts est défectueux.
 - Lorsqu'un contact se déco puis se reco en "away", il apparait online.
-- La fonction rafraichir ne marche pas...
+- La fonction rafraichir ne marche pas... (à vérifier)
 - Des contacts se déconnectent et apparaissent pourtant tjr online... (creuser du côté d'InterpretLine du Network)
-- Le time stamp n'est pas envoyé lors du handshaking.
+- Le time stamp n'est pas envoyé lors du handshaking. (FIXED)
