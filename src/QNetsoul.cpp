@@ -589,7 +589,7 @@ void	QNetsoul::aboutQNetSoul(void)
 void	QNetsoul::setProxy(const QNetworkProxy& proxy)
 {
   this->_vdm.setProxy(proxy);
-  this->_portraitResolver.setProxy(proxy);
+  //this->_portraitResolver.setProxy(proxy); // NOTE: proxy attempts downloading pictures.
   this->_cnf.setProxy(proxy);
 }
 

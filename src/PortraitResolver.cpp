@@ -41,7 +41,7 @@ void	PortraitResolver::addRequest(const QStringList& logins)
 
   for (int i = 0; i < size; ++i)
     {
-      addRequest(logins[i], true);
+      //addRequest(logins[i], true);
       addRequest(logins[i], false);
     }
 }
@@ -49,7 +49,18 @@ void	PortraitResolver::addRequest(const QStringList& logins)
 void	PortraitResolver::addRequest(const QString& login, bool fun)
 {
   if (this->_dir.exists(buildFilename(login, fun)))
-    return;
+    {
+      // DEBUG
+      std::cerr << "Portrait already exists." << std::endl;
+      std::cerr << "(" << login.toStdString() << ")\n";
+      return;
+    }
+  else
+    {
+      // DEBUG
+      std::cerr << "Portrait does not exist." << std::endl;
+      std::cerr << "(" << login.toStdString() << ")\n";
+    }
   PortraitRequest*	request = new PortraitRequest;
 
   request->login = login;

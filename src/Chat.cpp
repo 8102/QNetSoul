@@ -154,15 +154,15 @@ void	Chat::sendMessage(void)
 
   if (length > 0)
     {
-      if (length < 300)
+      if (length < 512)
         {
 	  emit msgToSend(this->loginLabel->text(), message);
 	  this->inputTextEdit->clear();
         }
       else
         {
-	  emit msgToSend(this->loginLabel->text(), message.left(150));
-	  this->inputTextEdit->setPlainText(message.right(length - 150));
+	  emit msgToSend(this->loginLabel->text(), message.left(256));
+	  this->inputTextEdit->setPlainText(message.right(length - 256));
         }
     }
 }

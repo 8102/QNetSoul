@@ -18,6 +18,7 @@
 #ifndef PORTRAITRESOLVER_H
 #define PORTRAITRESOLVER_H
 
+#include <iostream>
 #include <QDir>
 #include <QFile>
 #include <QHttp>
