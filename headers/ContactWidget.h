@@ -19,6 +19,7 @@
 #define CONTACTWIDGET_H
 
 #include <QWidget>
+#include <QMouseEvent>
 #include "ConnectionPoint.h"
 #include "ui_ContactWidget.h"
 
@@ -44,6 +45,13 @@ class	ContactWidget : public QWidget, public Ui_ContactWidget
   void		addConnectionPoint(const ConnectionPoint&);
   void		updateConnectionPoint(const QString& id, const QString& state);
   void		buildToolTip(void);
+
+ signals:
+  void		doubleClick(const QString&, const QString&);
+
+ protected:
+  void		mousePressEvent(QMouseEvent* event);
+  void		mouseDoubleClickEvent(QMouseEvent* event);
 
  private:
   QString			_login;

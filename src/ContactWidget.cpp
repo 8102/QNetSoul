@@ -262,6 +262,23 @@ void	ContactWidget::buildToolTip(void)
   this->setToolTip(result);
 }
 
+// Version 0.04c
+// Perhaps useless to reimplement this...
+void	ContactWidget::mousePressEvent(QMouseEvent* event)
+{
+  QWidget::mousePressEvent(event);
+}
+
+// Version 0.04c
+void	ContactWidget::mouseDoubleClickEvent(QMouseEvent* event)
+{
+  if (Qt::LeftButton == event->button())
+    {
+      emit doubleClick(this->_login, "");
+    }
+  QWidget::mouseDoubleClickEvent(event);
+}
+
 QString	ContactWidget::buildConnectionsPointToolTip(void) const
 {
   const int	size = this->_connections.size();

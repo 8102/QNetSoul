@@ -57,7 +57,6 @@ class	QNetsoul : public QMainWindow, public Ui_QNetsoul
   void	showMessageInBalloon(const QString& message);
   void	toggleConnection(void);
   void	saveStateBeforeQuiting(void);
-  void	showConversation(const QModelIndex&);
   void	openAddContactDialog(void);
   void	openOptionsDialog(QLineEdit* newLineFocus = 0);
   void	loadContacts(void);

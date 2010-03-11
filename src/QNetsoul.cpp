@@ -196,15 +196,6 @@ void	QNetsoul::saveStateBeforeQuiting(void)
   qApp->quit();
 }
 
-void	QNetsoul::showConversation(const QModelIndex& index)
-{
-  ContactWidget*	cw = dynamic_cast<ContactWidget*>(this->contactsTreeView->indexWidget(index));
-  if (NULL != cw)
-    {
-      showConversation(cw->aliasLabel->text());
-    }
-}
-
 void	QNetsoul::openAddContactDialog(void)
 {
   if (this->_addContact->isVisible() == false)
@@ -300,6 +291,10 @@ void	QNetsoul::addContact(const QString& login, const QString& alias)
       this->_portraitResolver.addRequest(login, false);
       ContactWidget*	widget = new ContactWidget(this, login, alias);
       QStandardItem*	newItem = new QStandardItem();
+
+      connect(widget, SIGNAL(doubleClick(const QString&, const QString&)),
+	      this, SLOT(showConversation(const QString&, const QString&)));
+
       newItem->setSizeHint(widget->size());
       //this->_standardItemModel->insertRow(this->_standardItemModel->rowCount(), newItem);
       this->_standardItemModel->appendRow(newItem);
@@ -780,7 +775,7 @@ void	QNetsoul::setupTrayIcon(void)
   if (NULL == this->_trayIcon && QSystemTrayIcon::isSystemTrayAvailable())
     {
       this->_trayIcon = new QSystemTrayIcon(this);
-      QMenu*		trayIconMenu = new QMenu(this);
+      QMenu*	trayIconMenu = new QMenu(this);
       QAction*	trayIconActionQuit = new QAction(QIcon(":/images/quit.png"), tr("Quit"), this);
       trayIconMenu->addAction(trayIconActionQuit);
       this->_trayIcon->setContextMenu(trayIconMenu);
@@ -861,8 +856,6 @@ void	QNetsoul::saveContacts(const QString& fileName)
 void	QNetsoul::connectQNetsoulItems(void)
 {
   connect(this->_addContact->addPushButton, SIGNAL(clicked()), SLOT(addContact()));
-  connect(this->contactsTreeView, SIGNAL(activated(const QModelIndex&)),
-	  SLOT(showConversation(const QModelIndex&)));
   connect(&this->_portraitResolver, SIGNAL(downloadedPortrait(const QString&)),
 	  SLOT(setPortrait(const QString&)));
 }
