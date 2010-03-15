@@ -20,12 +20,14 @@
 #include "Options.h"
 #include "Encryption.h"
 
-Options::Options(QWidget* parent) : QDialog(parent), _connectOnOk(false)
+Options::Options(QWidget* parent)
+  : QDialog(parent), _connectOnOk(false), _oldComboBoxValue(-42)
 {
   setupUi(this);
   readOptionSettings();
   update();
   connect(this, SIGNAL(accepted()), SLOT(save()));
+  connect(this->autoReplyComboBox, SIGNAL(currentIndexChanged(int)), SLOT(loadReply(int)));
 }
 
 Options::~Options(void)
@@ -50,6 +52,10 @@ void		Options::readOptionSettings(void)
   this->_exitOnEscape = settings.value("exitonescape", bool(false)).toBool();
   this->_typingNotification = settings.value("typingnotification", bool(false)).toBool();
   this->_smileys = settings.value("smileys", bool(false)).toBool();
+  this->_replyComboBoxValue = settings.value("replycomboboxvalue", int(0)).toInt();
+  this->_replyLocked = settings.value("replylocked", QString("[Locked]")).toString();
+  this->_replyAway = settings.value("replyaway", QString("[Away]")).toString();
+  this->_replyServer = settings.value("replyserver", QString("[Daemonized]")).toString();
   settings.endGroup();
 
   settings.beginGroup("AdvancedOptions");
@@ -85,6 +91,10 @@ void		Options::writeOptionSettings(void)
   settings.setValue("exitonescape", this->_exitOnEscape);
   settings.setValue("typingnotification", this->_typingNotification);
   settings.setValue("smileys", this->_smileys);
+  settings.setValue("replycomboboxvalue", this->_replyComboBoxValue);
+  settings.setValue("replylocked", this->_replyLocked);
+  settings.setValue("replyaway", this->_replyAway);
+  settings.setValue("replyserver", this->_replyServer);
   settings.endGroup();
 
   settings.beginGroup("AdvancedOptions");
@@ -123,6 +133,9 @@ void	Options::update(void)
     this->smileysCheckBox->setCheckState(Qt::Checked);
   else
     this->smileysCheckBox->setCheckState(Qt::Unchecked);
+  // Auto Reply
+  this->autoReplyComboBox->setCurrentIndex(this->_replyComboBoxValue);
+  loadReply(this->_replyComboBoxValue);
 
   // Advanced Tab
   this->proxyLineEdit->setText(this->_proxy);
@@ -174,6 +187,22 @@ void	Options::applyOptions(void)
 			  this->_smileys);
 }
 
+QString	Options::getReply(int index)
+{
+  switch (index)
+    {
+    case 0: return this->_replyLocked;
+    case 1: return this->_replyAway;
+    case 2: return this->_replyServer;
+    default:
+      {
+	std::cerr << "Error: bad index in getReply" << std::endl;
+	std::cerr << "Value: " << index << std::endl;
+      }
+    }
+  return "";
+}
+
 void	Options::save(void)
 {
   const bool	proxyNeedsToBeReset =
@@ -197,6 +226,7 @@ void	Options::save(void)
   this->_exitOnEscape = this->chatEscapeCheckBox->checkState();
   this->_typingNotification = this->typingStatusCheckBox->checkState();
   this->_smileys = this->smileysCheckBox->checkState();
+  saveCurrentReply();
   emit chatOptionsChanged(this->_exitOnEscape, this->_typingNotification,
 			  this->_smileys);
 
@@ -211,4 +241,43 @@ void	Options::save(void)
   if (!this->_login.isEmpty() && !this->_password.isEmpty() && this->_connectOnOk)
     emit loginPasswordFilled();
   this->_connectOnOk = false;
+}
+
+void	Options::loadReply(int index)
+{
+  if (this->_oldComboBoxValue != -42)
+    saveCurrentReply(this->_oldComboBoxValue);
+
+  switch (index)
+    {
+    case 0: this->autoReplyLineEdit->setText(this->_replyLocked); break;
+    case 1: this->autoReplyLineEdit->setText(this->_replyAway); break;
+    case 2: this->autoReplyLineEdit->setText(this->_replyServer); break;
+    default:
+      {
+	std::cerr << "Error: bad index in loadReply" << std::endl;
+	std::cerr << "Value: " << index << std::endl;
+      }
+    }
+  this->_replyComboBoxValue = index;
+  this->_oldComboBoxValue = index;
+}
+
+void	Options::saveCurrentReply(void)
+{
+  saveCurrentReply(this->autoReplyComboBox->currentIndex());
+}
+
+void	Options::saveCurrentReply(int index)
+{
+  switch (index)
+    {
+    case 0: this->_replyLocked = this->autoReplyLineEdit->text(); break;
+    case 1: this->_replyAway = this->autoReplyLineEdit->text(); break;
+    case 2: this->_replyServer = this->autoReplyLineEdit->text(); break;
+    default:
+      {
+	std::cerr << "Error: bad index in saveCurrentReply" << std::endl;
+      }
+    }
 }

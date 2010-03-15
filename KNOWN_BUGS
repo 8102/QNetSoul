@@ -1,9 +1,10 @@
                              === KNOWN BUGS ===
 
+- Les localisations sont foireuses...
 - Des messages passent à la trappe... (à vérifier)
 - Le tri des contacts est défectueux.
 - Lorsqu'un contact se déco puis se reco en "away", il apparait online.
 - La fonction rafraichir ne marche pas... (à vérifier)
 - Des contacts se déconnectent et apparaissent pourtant tjr online... (creuser du côté d'InterpretLine du Network)
 - Le time stamp n'est pas envoyé lors du handshaking. (FIXED)
-- Les bulles d'aide sous Windows ne se scale pas sur la taille de la VDM.
+- Les bulles d'aide sous Windows ne se scale pas sur la taille de la VDM. (et font segfault ? oO)

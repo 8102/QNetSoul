@@ -447,11 +447,20 @@ void	QNetsoul::showConversation(const QString& login, const QString& message)
       //window->raise();
       //QApplication::setActiveWindow(window);
     }
-  if (window && false == message.isEmpty())
+  if (message.isEmpty() == false)
     {
-      if (NULL != this->_trayIcon)
+      const int	index = statusComboBox->currentIndex();
+
+      if (window)
+	window->insertMessage(login, QString(url_decode(message.toStdString().c_str())), QColor(204, 0, 0));
+      if (index > 0)
+	{
+	  const QString	autoReply = this->_options->getReply(index - 1);
+	  if (autoReply.isEmpty() == false)
+	    transmitMsg(login, autoReply);
+	}
+      else if (this->_trayIcon)
 	this->_trayIcon->showMessage(login, tr(" is talking to you."));
-      window->insertMessage(login, QString(url_decode(message.toStdString().c_str())), QColor(204, 0, 0));
     }
 }
 

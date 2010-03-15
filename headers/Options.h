@@ -38,6 +38,7 @@ class Options : public QDialog, public Ui_Options
   bool	isValidProxy(void) const;
   const QNetworkProxy getProxy(void) const;
   void	applyOptions(void);
+  QString getReply(int index);
 
  signals:
   void	loginPasswordFilled(void);
@@ -46,8 +47,12 @@ class Options : public QDialog, public Ui_Options
 
   private slots:
   void	save(void);
+  void	loadReply(int index);
 
  private:
+  void	saveCurrentReply(void);
+  void	saveCurrentReply(int index);
+
   // Main Tab
   QString	_server;
   QString	_port;
@@ -61,6 +66,11 @@ class Options : public QDialog, public Ui_Options
   bool		_exitOnEscape;
   bool		_typingNotification;
   bool		_smileys;
+  int		_oldComboBoxValue;
+  int		_replyComboBoxValue;
+  QString	_replyLocked;
+  QString	_replyAway;
+  QString	_replyServer;
   // Advanced Tab
   bool		_useProxy;
   QString	_proxy;

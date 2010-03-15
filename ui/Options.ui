@@ -269,6 +269,69 @@
        <normaloff>:/images/grin.png</normaloff>:/images/grin.png</iconset>
      </property>
     </widget>
+    <widget class="QComboBox" name="autoReplyComboBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>220</y>
+       <width>131</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Locked</string>
+      </property>
+      <property name="icon">
+       <iconset resource="../Images.qrc">
+        <normaloff>:/images/lock.png</normaloff>:/images/lock.png</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Away</string>
+      </property>
+      <property name="icon">
+       <iconset resource="../Images.qrc">
+        <normaloff>:/images/away.png</normaloff>:/images/away.png</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Server</string>
+      </property>
+      <property name="icon">
+       <iconset resource="../Images.qrc">
+        <normaloff>:/images/server.png</normaloff>:/images/server.png</iconset>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLineEdit" name="autoReplyLineEdit">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>220</y>
+       <width>211</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="maxLength">
+      <number>300</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="autoReplyLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>190</y>
+       <width>341</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Auto reply on this state:</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="advancedWidget">
     <attribute name="title">

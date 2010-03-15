@@ -98,7 +98,6 @@ void	Chat::insertMessage(const QString& login, const QString& msg, const QColor&
   int		scrollBarValue = -1;
   QScrollBar*	scrollBar = this->outputTextBrowser->verticalScrollBar();
 
-  std::cerr << "DEBUG INSERT MESSAGE: " << msg.toStdString() << std::endl;
   if (scrollBar && scrollBar->value() != scrollBar->maximum())
     scrollBarValue = scrollBar->value();
   QString	html("<p>");

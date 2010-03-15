@@ -51,15 +51,15 @@ void	PortraitResolver::addRequest(const QString& login, bool fun)
   if (this->_dir.exists(buildFilename(login, fun)))
     {
       // DEBUG
-      std::cerr << "Portrait already exists." << std::endl;
-      std::cerr << "(" << login.toStdString() << ")\n";
+      //std::cerr << "Portrait already exists." << std::endl;
+      //std::cerr << "(" << login.toStdString() << ")\n";
       return;
     }
   else
     {
       // DEBUG
-      std::cerr << "Portrait does not exist." << std::endl;
-      std::cerr << "(" << login.toStdString() << ")\n";
+      //std::cerr << "Portrait does not exist." << std::endl;
+      //std::cerr << "(" << login.toStdString() << ")\n";
     }
   PortraitRequest*	request = new PortraitRequest;
 
