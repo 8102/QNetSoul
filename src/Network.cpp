@@ -64,6 +64,7 @@ void	Network::reconnect(void)
   if (!this->_host.isEmpty() && this->_port != 0)
     {
       this->_handShakingStep = 0; // FIXED v0.04
+      this->_socket.disconnectFromHost();
       connect(this->_host, this->_port);
     }
 }
@@ -103,6 +104,7 @@ void	Network::displaySocketError(void)
 {
   // DEBUG
   QMessageBox::critical(NULL, QString("QNetsoul"), this->_socket.errorString());
+  std::cerr << this->_socket.state() << std::endl;
   reconnect();
 }
 

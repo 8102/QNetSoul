@@ -511,8 +511,10 @@ void	QNetsoul::processHandShaking(int step, QStringList args)
       {
 	// adding time stamp Version 0.04
 	QByteArray	state;
+	QDateTime	dt = QDateTime::currentDateTime();
+
 	state.append("state actif:");
-	state.append(QString::number(static_cast<int>(time(0))));
+	state.append(QString::number(static_cast<uint>(dt.toTime_t())));
 	state.append("\n");
 	this->_network->sendMessage(state);
 	//this->_network->sendMessage("ping\n");
