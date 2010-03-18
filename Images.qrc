@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/" >
+    <file>images/pastebin.ico</file>
     <file>images/surprised.png</file>
     <file>images/tongue.png</file>
     <file>images/unhappy.png</file>

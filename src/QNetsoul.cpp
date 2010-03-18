@@ -440,12 +440,14 @@ void	QNetsoul::showConversation(const QString& login, const QString& message)
 	  //std::cerr << "CASE 3" << std::endl;
 	  if (userEvent)
 	    {
+	      window->showNormal();
+	      //window->hide();
+	      window->show();
 	      window->activateWindow();
 	      window->raise();
+	      //QApplication::setActiveWindow(window);
 	    }
         }
-      //window->raise();
-      //QApplication::setActiveWindow(window);
     }
   if (message.isEmpty() == false)
     {
@@ -595,6 +597,7 @@ void	QNetsoul::aboutQNetSoul(void)
 void	QNetsoul::setProxy(const QNetworkProxy& proxy)
 {
   this->_vdm.setProxy(proxy);
+  this->_pastebin.setProxy(proxy);
   //this->_portraitResolver.setProxy(proxy); // NOTE: proxy attempts downloading pictures.
   this->_cnf.setProxy(proxy);
 }
@@ -885,6 +888,7 @@ void	QNetsoul::connectActionsSignals(void)
   connect(actionSave_contacts_as, SIGNAL(triggered()), SLOT(saveContactsAs()));
   connect(actionToggle_sort_contacts, SIGNAL(triggered()), SLOT(toggleSortContacts()));
   connect(actionGet_a_life, SIGNAL(triggered()), &this->_vdm, SLOT(getALife()));
+  connect(actionPastebin, SIGNAL(triggered()), &this->_pastebin, SLOT(pastebinIt()));
   // Options
   connect(actionPreferences, SIGNAL(triggered()), SLOT(openOptionsDialog()));
   // Help

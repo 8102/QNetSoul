@@ -23,7 +23,7 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;About QNetSoul&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Version 0.05b&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Version 0.06&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The first Netsoul's client built with the great framework Qt.&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Feel free to send your opinion/comments on this software.&lt;/p&gt;
@@ -39,6 +39,15 @@ p, li { white-space: pre-wrap; }
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
        <widget class="QTreeView" name="contactsTreeView">
+        <property name="dragDropMode">
+         <enum>QAbstractItemView::DragDrop</enum>
+        </property>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectItems</enum>
+        </property>
         <property name="indentation">
          <number>0</number>
         </property>
@@ -144,6 +153,7 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionToggle_sort_contacts"/>
     <addaction name="separator"/>
     <addaction name="actionGet_a_life"/>
+    <addaction name="actionPastebin"/>
    </widget>
    <addaction name="menuQNetsoul"/>
    <addaction name="menuAccount"/>
@@ -311,6 +321,15 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="shortcut">
     <string>F6</string>
+   </property>
+  </action>
+  <action name="actionPastebin">
+   <property name="icon">
+    <iconset resource="../Images.qrc">
+     <normaloff>:/images/pastebin.ico</normaloff>:/images/pastebin.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Pastebin</string>
    </property>
   </action>
  </widget>

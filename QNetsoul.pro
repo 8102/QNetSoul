@@ -32,6 +32,7 @@ HEADERS += headers/QNetsoul.h \
     headers/Status.h \
     headers/ChuckNorrisFacts.h \
     headers/Encryption.h \
+    headers/Pastebin.h \
     headers/Randn.h
 FORMS += ui/QNetsoul.ui \
     ui/Options.ui \
@@ -54,6 +55,7 @@ SOURCES += src/main.cpp \
     src/PortraitResolver.cpp \
     src/VieDeMerde.cpp \
     src/ChuckNorrisFacts.cpp \
+    src/Pastebin.cpp \
     src/Encryption.cpp \
     src/Randn.cpp
 

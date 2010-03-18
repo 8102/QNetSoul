@@ -15,34 +15,29 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VIEDEMERDE_H
-#define VIEDEMERDE_H
+#ifndef PASTE_BIN_H_
+#define PASTE_BIN_H_
 
 #include <QObject>
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
 
-class	VieDeMerde : public QObject
+class	Pastebin : public QObject
 {
   Q_OBJECT
 
-    public:
-  VieDeMerde(void);
-  virtual ~VieDeMerde(void);
+ public:
+  Pastebin(void);
+  ~Pastebin(void);
 
-  void	setProxy(const QNetworkProxy& p) { this->_manager->setProxy(p); }
+  void  setProxy(const QNetworkProxy& p) { this->_manager.setProxy(p); }
 
   public slots:
-  void	getALife(void);
-
- signals:
-  void	sendVieDeMerdeToQNetsoul(const QString& message);
-
-  private slots:
+  void	pastebinIt(void);
   void	replyFinished(QNetworkReply* reply);
 
  private:
-  QNetworkAccessManager*	_manager;
+  QNetworkAccessManager	_manager;
 };
 
-#endif // VIEDEMERDE_H
+#endif

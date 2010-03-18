@@ -156,6 +156,41 @@ void	ContactWidget::updateConnectionPoint(const QString& id,
   std::cerr << "Connections size: " << size << std::endl;
 }
 
+void	ContactWidget::buildToolTip(void)
+{
+  QString	result = "<html><head><meta name='qrichtext' content='1' /><style type='text/css'>";
+  result += "p, li { white-space: pre-wrap; }";
+  result += "</style></head><body style=\"font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;\">";
+  result += "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">";
+  result += "<img src=\"" + this->_pixmap + "\"/>";
+  result += "<span style='font-size:14pt; font-weight:600;'>" + this->_login + "</span></p>";
+  result += buildLine("Status:", this->_state);
+  if (!this->_group.isEmpty())
+    result += buildLine("Group:", this->_group);
+  if (this->_connections.size() > 0)
+    {
+      result += buildLine();
+      result += buildConnectionsPointToolTip();
+    }
+  result += "</body></html>";
+  this->setToolTip(result);
+}
+
+// Version 0.06
+void	ContactWidget::mousePressEvent(QMouseEvent* event)
+{
+  QWidget::mousePressEvent(event);
+}
+
+void	ContactWidget::mouseDoubleClickEvent(QMouseEvent* event)
+{
+  if (Qt::LeftButton == event->button())
+    {
+      emit doubleClick(this->_login, "");
+    }
+  QWidget::mouseDoubleClickEvent(event);
+}
+
 // A recoder c'est trop laid !
 void	ContactWidget::updateState(void)
 {
@@ -240,43 +275,6 @@ void	ContactWidget::updateState(void)
         }
     }
   buildToolTip();
-}
-
-void	ContactWidget::buildToolTip(void)
-{
-  QString	result = "<html><head><meta name='qrichtext' content='1' /><style type='text/css'>";
-  result += "p, li { white-space: pre-wrap; }";
-  result += "</style></head><body style=\"font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;\">";
-  result += "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">";
-  result += "<img src=\"" + this->_pixmap + "\"/>";
-  result += "<span style='font-size:14pt; font-weight:600;'>" + this->_login + "</span></p>";
-  result += buildLine("Status:", this->_state);
-  if (!this->_group.isEmpty())
-    result += buildLine("Group:", this->_group);
-  if (this->_connections.size() > 0)
-    {
-      result += buildLine();
-      result += buildConnectionsPointToolTip();
-    }
-  result += "</body></html>";
-  this->setToolTip(result);
-}
-
-// Version 0.04c
-// Perhaps useless to reimplement this...
-void	ContactWidget::mousePressEvent(QMouseEvent* event)
-{
-  QWidget::mousePressEvent(event);
-}
-
-// Version 0.04c
-void	ContactWidget::mouseDoubleClickEvent(QMouseEvent* event)
-{
-  if (Qt::LeftButton == event->button())
-    {
-      emit doubleClick(this->_login, "");
-    }
-  QWidget::mouseDoubleClickEvent(event);
 }
 
 QString	ContactWidget::buildConnectionsPointToolTip(void) const

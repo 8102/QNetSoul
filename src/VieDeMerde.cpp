@@ -28,8 +28,7 @@ VieDeMerde::VieDeMerde(void)
 {
   this->_manager = new QNetworkAccessManager(this);
   connect(this->_manager, SIGNAL(finished(QNetworkReply*)),
-	  this, SLOT(replyFinished(QNetworkReply*)));
-  //this->_manager->get(QNetworkRequest(QUrl("http://api.viedemerde.fr/1.2/view/random?key=readonly")));
+	  SLOT(replyFinished(QNetworkReply*)));
 }
 
 VieDeMerde::~VieDeMerde(void)

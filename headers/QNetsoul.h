@@ -27,6 +27,7 @@
 #include "AddContact.h"
 #include "ui_QNetsoul.h"
 #include "PortraitResolver.h"
+#include "Pastebin.h"
 #include "VieDeMerde.h"
 #include "ChuckNorrisFacts.h"
 
@@ -115,6 +116,7 @@ class	QNetsoul : public QMainWindow, public Ui_QNetsoul
   QPoint			_oldPos;
   PortraitResolver		_portraitResolver;
   VieDeMerde			_vdm;
+  Pastebin			_pastebin;
   ChuckNorrisFacts		_cnf;
   bool				_exitOnEscape;
   bool				_typingNotification;
