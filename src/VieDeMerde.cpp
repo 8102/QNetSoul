@@ -65,7 +65,7 @@ void	VieDeMerde::replyFinished(QNetworkReply* reply)
   if (buffer.contains(textRegExp))
     {
       //std::cerr << textRegExp.cap(1).toStdString() << std::endl;
-      emit sendVieDeMerdeToQNetsoul(textRegExp.cap(1));
+      emit sendVdmToQNetsoul(textRegExp.cap(1));
     }
   reply->deleteLater();
 }

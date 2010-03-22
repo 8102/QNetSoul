@@ -19,6 +19,7 @@
 #define QNETSOUL_H_
 
 #include <QtGui>
+#include <QTimer>
 #include <QCryptographicHash>
 #include "Chat.h"
 #include "Options.h"
@@ -50,12 +51,13 @@ class	QNetsoul : public QMainWindow, public Ui_QNetsoul
 
   private slots:
   void	connectToServer(void);
+  void	reconnect(void);
   void	disconnect(void);
   void	updateMenuBar(const QAbstractSocket::SocketState&);
   void	updateStatusBar(const QAbstractSocket::SocketState&);
   void	updateStatusComboBox(const QAbstractSocket::SocketState&);
 
-  void	showMessageInBalloon(const QString& message);
+  void	showVdmInBalloon(const QString& message);
   void	toggleConnection(void);
   void	saveStateBeforeQuiting(void);
   void	openAddContactDialog(void);
@@ -81,6 +83,9 @@ class	QNetsoul : public QMainWindow, public Ui_QNetsoul
   void	aboutQNetSoul(void);
   void	setProxy(const QNetworkProxy& proxy = QNetworkProxy());
   void	applyChatOptions(bool exitOnEscape, bool typingNotification, bool smileys);
+  void	startBlinking(void);
+  void	stopBlinking(void);
+  void	systemTrayBlinking(void);
 
  private:
   void				configureProxy(void);
@@ -121,6 +126,7 @@ class	QNetsoul : public QMainWindow, public Ui_QNetsoul
   bool				_exitOnEscape;
   bool				_typingNotification;
   bool				_smileys;
+  QTimer			_blinkingTimer;
 };
 
 #endif // QNETSOUL_H_

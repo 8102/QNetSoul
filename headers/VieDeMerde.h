@@ -36,7 +36,7 @@ class	VieDeMerde : public QObject
   void	getALife(void);
 
  signals:
-  void	sendVieDeMerdeToQNetsoul(const QString& message);
+  void	sendVdmToQNetsoul(const QString& message);
 
   private slots:
   void	replyFinished(QNetworkReply* reply);

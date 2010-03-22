@@ -27,18 +27,19 @@ class	Network : public QObject
 
     public:
   Network(QObject* parent);
-  virtual ~Network(void);
+  virtual ~Network(void) { this->_socket.close(); }
 
   QAbstractSocket::SocketState	state(void) const
     { return this->_socket.state(); };
   void	connect(const QString& host, quint16);
   void	reconnect(void);
   void	disconnect(void);
-  void	sendMessage(const char* message);
-  void	sendMessage(const QByteArray& message);
+  void	sendMessage(const char* message) { this->_socket.write(message); }
+  void	sendMessage(const QByteArray& message) { this->_socket.write(message); }
   void	resolveLocation(QString& oldLocation) const;
 
  signals:
+  void	reconnectionRequest(void);
   void	handShaking(int step, QStringList);
   void	message(const QString& login, const QString& message);
   void	status(const QString& login, const QString& id, const QString& status);
@@ -54,7 +55,6 @@ class	Network : public QObject
   void	interpretLine(const QString& line);
 
  private:
-  static Network*	_instance;
   QString		_rbuffer;
   QTcpSocket		_socket;
   int			_handShakingStep;

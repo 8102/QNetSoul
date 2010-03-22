@@ -33,16 +33,16 @@ class	ContactWidget : public QWidget, public Ui_ContactWidget
   virtual ~ContactWidget(void);
 
   void		reset(void);
-  int		getConnectionsSize(void) const;
+  int		getConnectionsSize(void) const { return this->_connections.size(); }
 
-  QString	getLogin(void) const;
-  void		setLogin(const QString&);
+  QString	getLogin(void) const { return this->_login; }
+  void		setLogin(const QString& login) { this->_login = login; }
 
-  bool		hasGroup(void) const;
-  QString	getGroup(void) const;
-  void		setGroup(const QString&);
+  bool		hasGroup(void) const { return !this->_group.isEmpty(); }
+  QString	getGroup(void) const { return this->_group; }
+  void		setGroup(const QString& group) { this->_group = group; }
 
-  QString	getStatus(void) const;
+  QString	getStatus(void) const { return this->_pixmap; }
   void		addConnectionPoint(const ConnectionPoint&);
   void		updateConnectionPoint(const QString& id, const QString& state);
   void		buildToolTip(void);

@@ -89,7 +89,7 @@ void	Chat::insertSmileys(void)
 void	Chat::replaceUrls(QString msg)
 {
   msg = Qt::escape(msg); // magic function <3
-  msg.replace(QRegExp("(http://[a-z0-9._/-]+)"), "<a href='\\1'>\\1</a>");
+  msg.replace(QRegExp("(http://[a-z0-9._/-?=&]+)"), "<a href='\\1'>\\1</a>");
   this->outputTextBrowser->insertHtml(msg);
 }
 
@@ -124,7 +124,7 @@ void	Chat::notifyTypingStatus(const QString& login, bool typing)
   if (false == typing)
     setWindowTitle(login);
   else
-    setWindowTitle(QString(login + tr(" is currently typing a message...")));
+    setWindowTitle(QString(login + tr(" is typing a message...")));
 }
 
 void	Chat::keyPressEvent(QKeyEvent* event)
@@ -140,8 +140,16 @@ void	Chat::keyPressEvent(QKeyEvent* event)
     }
 }
 
+void	Chat::showEvent(QShowEvent* event)
+{
+  QWidget::showEvent(event);
+  if (!this->_geometry.isNull())
+    setGeometry(this->_geometry);
+}
+
 void	Chat::closeEvent(QCloseEvent* event)
 {
+  this->_geometry = geometry();
   this->hide();
   event->ignore();
 }

@@ -48,6 +48,9 @@
      <height>291</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
    <property name="currentIndex">
     <number>0</number>
    </property>

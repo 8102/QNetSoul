@@ -25,9 +25,10 @@ const quint16	NETSOUL_PORT = 4242;
 
 Network::Network(QObject* parent) : QObject(parent), _handShakingStep(0)
 {
-  QNetsoul*	ns = dynamic_cast<QNetsoul*>(parent);
-  if (ns != NULL)
+  QNetsoul* ns = dynamic_cast<QNetsoul*>(parent);
+  if (ns)
     {
+      QObject::connect(this, SIGNAL(reconnectionRequest()), ns, SLOT(reconnect()));
       QObject::connect(&this->_socket, SIGNAL(readyRead()), SLOT(processPackets()));
       QObject::connect(&this->_socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)),
 		       ns, SLOT(updateMenuBar(const QAbstractSocket::SocketState&)));
@@ -39,14 +40,7 @@ Network::Network(QObject* parent) : QObject(parent), _handShakingStep(0)
 		       SLOT(displaySocketError()));
     }
   else
-    {
-      std::cerr << "You must give a QNetsoul pointer for the Network's builder" << std::endl;
-    }
-}
-
-Network::~Network(void)
-{
-  this->_socket.close();
+    qFatal("Network constructor: parent must be a QNetsoul instance ! exiting...");
 }
 
 void	Network::connect(const QString& host, quint16 port)
@@ -59,32 +53,12 @@ void	Network::connect(const QString& host, quint16 port)
     }
 }
 
-void	Network::reconnect(void)
-{
-  if (!this->_host.isEmpty() && this->_port != 0)
-    {
-      this->_handShakingStep = 0; // FIXED v0.04
-      this->_socket.disconnectFromHost();
-      connect(this->_host, this->_port);
-    }
-}
-
 void	Network::disconnect(void)
 {
   this->_handShakingStep = 0;
   this->_port = 0;
   this->_host.clear();
   this->_socket.disconnectFromHost();
-}
-
-void	Network::sendMessage(const char* message)
-{
-  this->_socket.write(message);
-}
-
-void	Network::sendMessage(const QByteArray& message)
-{
-  this->_socket.write(message);
 }
 
 void	Network::resolveLocation(QString& oldLocation) const
@@ -99,13 +73,18 @@ void	Network::resolveLocation(QString& oldLocation) const
     }
 }
 
-// Reconnection feature ! Version 0.03
+// Reconnection feature upgraded ! Version 0.07
 void	Network::displaySocketError(void)
 {
+  static volatile int	popup_displays = 3;
+
   // DEBUG
-  QMessageBox::critical(NULL, QString("QNetsoul"), this->_socket.errorString());
-  std::cerr << this->_socket.state() << std::endl;
-  reconnect();
+  if (popup_displays-- == 0)
+    QMessageBox::critical(NULL, QString("QNetsoul"), this->_socket.errorString());
+  else
+    std::cerr << this->_socket.errorString().toStdString() << std::endl;
+  std::cerr << "Socket state:" << this->_socket.state() << std::endl;
+  emit reconnectionRequest();
 }
 
 void	Network::processPackets(void)

@@ -51,6 +51,9 @@ QNetsoul::QNetsoul(QWidget* parent)
   this->_portraitResolver.addRequest(getContactLogins());
   this->_vdm.getALife();
   //this->_cnf.getFact();
+  //connect(this->_timer, SIGNAL(timeout()), SLOT(refreshContacts()));
+  //this->contactsTreeView->setAttribute(Qt::WA_ShowWithoutActivating, true);
+  //this->contactsTreeView->setAttribute(Qt::WA_AlwaysShowToolTips, true);
 }
 
 QNetsoul::~QNetsoul(void)
@@ -59,7 +62,7 @@ QNetsoul::~QNetsoul(void)
 
 void	QNetsoul::closeEvent(QCloseEvent* event)
 {
-  static bool	firstTime = true;
+  static volatile bool	firstTime = true;
 
   if (NULL == this->_trayIcon)
     {
@@ -117,6 +120,12 @@ void	QNetsoul::connectToServer(void)
     }
 }
 
+void	QNetsoul::reconnect(void)
+{
+  disconnect();
+  connectToServer();
+}
+
 void	QNetsoul::disconnect(void)
 {
   resetAllContacts();
@@ -168,12 +177,20 @@ void	QNetsoul::updateStatusComboBox(const QAbstractSocket::SocketState& state)
     }
 }
 
-void	QNetsoul::showMessageInBalloon(const QString& message)
+void	QNetsoul::showVdmInBalloon(const QString& message)
 {
   if (NULL != this->_trayIcon)
     {
-      this->_trayIcon->showMessage("Vie de merde", message,
-				   QSystemTrayIcon::NoIcon, 15000);
+      // DEBUG EXCEPTION v0.07
+      try
+	{
+	  this->_trayIcon->showMessage("Vie de merde", message,
+				       QSystemTrayIcon::NoIcon, 15000);
+	}
+      catch(...)
+	{
+	  std::cerr << "Crash detected in showVdmInBalloon..." << std::endl;
+	}
     }
 }
 
@@ -469,6 +486,7 @@ void	QNetsoul::showConversation(const QString& login, const QString& message)
 void	QNetsoul::processHandShaking(int step, QStringList args)
 {
   static QByteArray	sum;
+  // DEBUG
   std::cerr << "Step: " << step << std::endl;
 
   switch (step)
@@ -505,13 +523,13 @@ void	QNetsoul::processHandShaking(int step, QStringList args)
 	message.append(' ');
 	message.append(url_encode(comment.toStdString().c_str()));
 	message.append('\n');
-	std::cout << message.data() << std::endl;
+	// DEBUG
+	std::cerr << message.data() << std::endl;
 	this->_network->sendMessage(message);
 	break;
       }
     case 2:
       {
-	// adding time stamp Version 0.04
 	QByteArray	state;
 	QDateTime	dt = QDateTime::currentDateTime();
 
@@ -523,6 +541,11 @@ void	QNetsoul::processHandShaking(int step, QStringList args)
 	watchLogContacts();
 	refreshContacts();
 	this->statusbar->showMessage(tr("You are now netsouled."), 2000);
+	break;
+      }
+    case -1: // Network error => reset all contacts
+      {
+	resetAllContacts();
 	break;
       }
     default:;
@@ -618,6 +641,29 @@ void	QNetsoul::applyChatOptions
       it.value()->setSmileys(smileys);
     }
 }
+
+void	QNetsoul::startBlinking(void)
+{
+  this->_blinkingTimer.start(1000);
+}
+
+void	QNetsoul::stopBlinking(void)
+{
+  this->_blinkingTimer.stop();
+  this->_trayIcon->setIcon(QIcon(":/images/qnetsoul.png"));
+}
+
+void	QNetsoul::systemTrayBlinking(void)
+{
+  static volatile bool	enabled = true;
+
+  if (enabled)
+    this->_trayIcon->setIcon(QIcon(":/images/unread.png"));
+  else
+    this->_trayIcon->setIcon(QIcon());
+  enabled = !enabled;
+}
+
 
 void	QNetsoul::configureProxy(void)
 {
@@ -869,6 +915,7 @@ void	QNetsoul::saveContacts(const QString& fileName)
 
 void	QNetsoul::connectQNetsoulItems(void)
 {
+  connect(&this->_blinkingTimer, SIGNAL(timeout()), SLOT(systemTrayBlinking()));
   connect(this->_addContact->addPushButton, SIGNAL(clicked()), SLOT(addContact()));
   connect(&this->_portraitResolver, SIGNAL(downloadedPortrait(const QString&)),
 	  SLOT(setPortrait(const QString&)));
@@ -917,8 +964,8 @@ void	QNetsoul::connectNetworkSignals(void)
 	  SLOT(updateContact(const QStringList&)));
   connect(this->_network, SIGNAL(typingStatus(const QString&, bool)),
 	  SLOT(notifyTypingStatus(const QString&, bool)));
-  connect(&this->_vdm, SIGNAL(sendVieDeMerdeToQNetsoul(const QString&)),
-	  SLOT(showMessageInBalloon(const QString&)));
+  connect(&this->_vdm, SIGNAL(sendVdmToQNetsoul(const QString&)),
+	  SLOT(showVdmInBalloon(const QString&)));
 }
 
 Chat*	QNetsoul::createWindowChat(const QString& name)

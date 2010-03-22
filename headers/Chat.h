@@ -45,6 +45,7 @@ class	Chat : public QWidget, public Ui_Chat
 
  protected:
   void	keyPressEvent(QKeyEvent*);
+  void	showEvent(QShowEvent*);
   void	closeEvent(QCloseEvent*);
 
   private slots:
@@ -52,6 +53,7 @@ class	Chat : public QWidget, public Ui_Chat
   void	handleTypingSignal(void);
 
  private:
+  QRect	_geometry;
   bool	_exitOnEscape;
   bool	_smileys;
 };

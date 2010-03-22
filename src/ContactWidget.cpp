@@ -47,6 +47,8 @@ ContactWidget::ContactWidget(QWidget* parent, const QString& login, const QStrin
   if (portraits.exists(PortraitResolver::buildFilename(login, false)))
     this->portraitLabel->setPixmap(QPixmap("./portraits/" + PortraitResolver::buildFilename(login, false)));
   buildToolTip();
+  //setAttribute(Qt::WA_ShowWithoutActivating, true);
+  //setAttribute(Qt::WA_AlwaysShowToolTips, true);
 }
 
 ContactWidget::~ContactWidget(void)
@@ -60,41 +62,6 @@ void	ContactWidget::reset(void)
   this->statusLabel->setPixmap(QPixmap(states[LOGOUT].pixmap));
   this->_connections.clear();
   buildToolTip();
-}
-
-int		ContactWidget::getConnectionsSize(void) const
-{
-  return (this->_connections.size());
-}
-
-QString	ContactWidget::getLogin(void) const
-{
-  return (this->_login);
-}
-
-void	ContactWidget::setLogin(const QString& login)
-{
-  this->_login = login;
-}
-
-bool	ContactWidget::hasGroup(void) const
-{
-  return (!this->_group.isEmpty());
-}
-
-QString	ContactWidget::getGroup(void) const
-{
-  return (this->_group);
-}
-
-void	ContactWidget::setGroup(const QString& group)
-{
-  this->_group = group;
-}
-
-QString	ContactWidget::getStatus(void) const
-{
-  return (this->_pixmap);
 }
 
 void	ContactWidget::addConnectionPoint(const ConnectionPoint& point)
