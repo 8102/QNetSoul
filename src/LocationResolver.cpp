@@ -24,18 +24,13 @@ QString	LocationResolver::resolve(const QString& ip)
   rackLocation(result, ip);
   smLocation(result, ip);
   restLocation(result, ip);
-  return (result);
+  return result;
 }
 
 QString	LocationResolver::resolve(const QHostAddress& hostAddress)
 {
-  QString			result;
   const QString	ip = hostAddress.toString();
-
-  rackLocation(result, ip);
-  smLocation(result, ip);
-  restLocation(result, ip);
-  return (result);
+  return resolve(ip);
 }
 
 void	LocationResolver::rackLocation(QString& result, const QString& ip)
@@ -74,14 +69,16 @@ void	LocationResolver::restLocation(QString& result, const QString& ip)
 {
   Location	locations[] =
     {
+      {"Lab Free",	"10.224.6."},
+      {"esl",		"10.224.5."},
+      {"LabTxt",	"10.224.14."},
+      {"LabEip",	"10.224.8."},
+      {"Lab Astek",	"10.224.1."},
       {"Bocal",		"10.242."},
-      {"Lab Astek",	"10.224.1"},
       {"labtech",	"10.253."},
       {"Wireless",	"10.142."},
-      {"lse",		"10.227.42i."},
-      {"esl",		"10.224.5"},
+      {"lse",		"10.227.42."},
       {"lrde",		"62.139."},
-      {"Lab Free",	"10.224.6"},
       {"GameDevLab",	"10.226.1."},
       {"lab-scia",	"10.226.2."},
       {"lab-srs",	"10.226.3."},
