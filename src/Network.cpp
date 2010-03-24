@@ -76,13 +76,13 @@ void	Network::resolveLocation(QString& oldLocation) const
 // Reconnection feature upgraded ! Version 0.07
 void	Network::displaySocketError(void)
 {
-  static volatile int	popup_displays = 3;
+  //static volatile int	popup_displays = 3;
 
   // DEBUG
-  if (popup_displays-- == 0)
-    QMessageBox::critical(NULL, QString("QNetsoul"), this->_socket.errorString());
-  else
-    std::cerr << this->_socket.errorString().toStdString() << std::endl;
+  //if (popup_displays-- == 0)
+  //QMessageBox::critical(NULL, QString("QNetsoul"), this->_socket.errorString());
+  //else
+  std::cerr << this->_socket.errorString().toStdString() << std::endl;
   std::cerr << "Socket state:" << this->_socket.state() << std::endl;
   emit reconnectionRequest();
 }
