@@ -307,7 +307,7 @@ void	QNetsoul::addContact(const QString& login, const QString& alias)
     {
       this->_portraitResolver.addRequest(login, false);
       ContactWidget*	widget = new ContactWidget(this, login, alias);
-      QStandardItem*	newItem = new QStandardItem();
+      QStandardItem*	newItem = new QStandardItem;
 
       connect(widget, SIGNAL(doubleClick(const QString&, const QString&)),
 	      this, SLOT(showConversation(const QString&, const QString&)));
@@ -380,7 +380,7 @@ void	QNetsoul::changeStatus(const QString& login, const QString& id, const QStri
 	  contactWidget->updateConnectionPoint(id, state);
 
 	  Chat*	chat = getChat(login);
-	  if (NULL != chat)
+	  if (chat)
             {
 	      chat->statusLabel->setPixmap(contactWidget->getStatus());
             }
@@ -393,7 +393,8 @@ void	QNetsoul::updateContact(const QStringList& parts)
 {
   ContactWidget*	contactWidget = getContact(parts.at(5));
 
-  if (NULL != contactWidget)
+  std::cerr << "Update contact " << parts.at(5).toStdString() << std::endl;
+  if (contactWidget)
     {
       ConnectionPoint	connection = {parts.at(4), parts.at(6),
                                       parts.at(14).section(':', 0, 0),
@@ -487,7 +488,7 @@ void	QNetsoul::processHandShaking(int step, QStringList args)
 {
   static QByteArray	sum;
   // DEBUG
-  std::cerr << "Step: " << step << std::endl;
+  //std::cerr << "Step: " << step << std::endl;
 
   switch (step)
     {
@@ -524,7 +525,7 @@ void	QNetsoul::processHandShaking(int step, QStringList args)
 	message.append(url_encode(comment.toStdString().c_str()));
 	message.append('\n');
 	// DEBUG
-	std::cerr << message.data() << std::endl;
+	//std::cerr << message.data() << std::endl;
 	this->_network->sendMessage(message);
 	break;
       }
@@ -680,15 +681,15 @@ Chat*	QNetsoul::getChat(const QString& login)
 
   it = this->_windowsChat.find(login);
   if (this->_windowsChat.end() == it)
-    return (NULL);
-  return (it.value());
+    return NULL;
+  return it.value();
 }
 
 bool	QNetsoul::doesThisContactAlreadyExist(const QString& contact) const
 {
   if (getContact(contact))
-    return (true);
-  return (false);
+    return true;
+  return false;
 }
 
 ContactWidget*	QNetsoul::getContact(const QString& login) const
@@ -698,20 +699,20 @@ ContactWidget*	QNetsoul::getContact(const QString& login) const
   for (int i = 0; i < rows; ++i)
     {
       QStandardItem*	standardItem = this->_standardItemModel->item(i);
-      if (standardItem != NULL)
+      if (standardItem)
         {
 	  QWidget*		widget = this->contactsTreeView->indexWidget(standardItem->index());
 	  ContactWidget*	contactWidget = dynamic_cast<ContactWidget*>(widget);
-	  if (contactWidget != NULL)
+	  if (contactWidget)
             {
 	      if (login == contactWidget->aliasLabel->text())
                 {
-		  return (contactWidget);
+		  return contactWidget;
                 }
             }
         }
     }
-  return (NULL);
+  return NULL;
 }
 
 QStringList		QNetsoul::getContactLogins(void) const
@@ -732,7 +733,7 @@ QStringList		QNetsoul::getContactLogins(void) const
             }
         }
     }
-  return (list);
+  return list;
 }
 
 QList<ContactWidget*>		QNetsoul::getContactWidgets(void) const
@@ -753,7 +754,7 @@ QList<ContactWidget*>		QNetsoul::getContactWidgets(void) const
             }
         }
     }
-  return (list);
+  return list;
 }
 
 void	QNetsoul::watchLogContacts(void)

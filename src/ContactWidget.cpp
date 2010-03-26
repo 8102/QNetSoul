@@ -23,16 +23,19 @@
 
 enum {LOGIN, LOGOUT, ACTIF, AWAY, LOCK, SERVER, TOTAL};
 
-static const State	states[] =
-  {
-    {"login",	":/images/log-in",	QObject::tr("Login")},
-    {"logout",	":/images/offline",	QObject::tr("Offline")},
-    {"actif",	":/images/online",	QObject::tr("Online")},
-    {"away",	":/images/away",	QObject::tr("Away")},
-    {"lock",	":/images/lock",	QObject::tr("Locked")},
-    {"server",	":/images/server",	QObject::tr("Server")},
-    {NULL, NULL, NULL}
-  };
+namespace
+{
+  const State	states[] =
+    {
+      {"connection",	":/images/log-in",	QObject::tr("Login")},
+      {"logout",	":/images/offline",	QObject::tr("Offline")},
+      {"actif",		":/images/online",	QObject::tr("Online")},
+      {"away",		":/images/away",	QObject::tr("Away")},
+      {"lock",		":/images/lock",	QObject::tr("Locked")},
+      {"server",	":/images/server",	QObject::tr("Server")},
+      {NULL, NULL, NULL}
+    };
+}
 
 ContactWidget::ContactWidget(QWidget* parent, const QString& login, const QString& alias)
   : QWidget(parent), _login(login), _state(states[LOGOUT].displayState), _pixmap(states[LOGOUT].pixmap)
@@ -81,7 +84,7 @@ void	ContactWidget::addConnectionPoint(const ConnectionPoint& point)
 	  this->_connections[i] = point;
 	  buildToolTip();
 	  updateState();
-	  std::cerr << "addConnectionPoint Issue FIXME." << std::endl;
+	  //std::cerr << "addConnectionPoint Issue FIXME." << std::endl;
 	  return;
         }
     }
@@ -94,6 +97,7 @@ void	ContactWidget::updateConnectionPoint(const QString& id,
 {
   const int	size = this->_connections.size();
 
+  std::cerr << "updateConnectionPoint" << std::endl;
   for (int i = 0; i < size; ++i)
     {
       if (this->_connections[i].id != id)
