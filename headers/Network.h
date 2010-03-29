@@ -18,6 +18,7 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
+#include <QTimer>
 #include <QTcpSocket>
 #include <QStringList>
 
@@ -25,20 +26,18 @@ class	Network : public QObject
 {
   Q_OBJECT
 
-    public:
+  public:
   Network(QObject* parent);
   virtual ~Network(void) { this->_socket.close(); }
 
-  QAbstractSocket::SocketState	state(void) const
-    { return this->_socket.state(); };
+  QAbstractSocket::SocketState state(void) const { return this->_socket.state(); };
   void	connect(const QString& host, quint16);
-  void	reconnect(void);
   void	disconnect(void);
   void	sendMessage(const char* message) { this->_socket.write(message); }
   void	sendMessage(const QByteArray& message) { this->_socket.write(message); }
   void	resolveLocation(QString& oldLocation) const;
 
- signals:
+signals:
   void	reconnectionRequest(void);
   void	handShaking(int step, QStringList);
   void	message(const QString& login, const QString& message);
@@ -46,20 +45,20 @@ class	Network : public QObject
   void	who(const QStringList&);
   void	typingStatus(const QString&, bool);
 
-  private slots:
+private slots:
   void	displaySocketError(void);
   void	processPackets(void);
 
- private:
+private:
   void	parseLines(void);
   void	interpretLine(const QString& line);
 
- private:
-  QString		_rbuffer;
-  QTcpSocket		_socket;
-  int			_handShakingStep;
-  QString		_host;
-  quint16		_port;
+  QString	_rbuffer;
+  QTcpSocket	_socket;
+  int		_handShakingStep;
+  QString	_host;
+  quint16	_port;
+  QTimer	_reconnectionTimer;
 };
 
 #endif // NETWORK_H

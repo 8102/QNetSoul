@@ -51,6 +51,11 @@ void	Network::connect(const QString& host, quint16 port)
       this->_port = port;
       this->_socket.connectToHost(host, port);
     }
+  else
+    {
+      std::cerr << "[Network::connect] state: " << this->_socket.state();
+      std::cerr << std::endl;
+    }
 }
 
 void	Network::disconnect(void)

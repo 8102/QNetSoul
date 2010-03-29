@@ -54,6 +54,7 @@ QNetsoul::QNetsoul(QWidget* parent)
   //connect(this->_timer, SIGNAL(timeout()), SLOT(refreshContacts()));
   //this->contactsTreeView->setAttribute(Qt::WA_ShowWithoutActivating, true);
   //this->contactsTreeView->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+  QWidget::setAttribute(Qt::WA_AlwaysShowToolTips);
 }
 
 QNetsoul::~QNetsoul(void)

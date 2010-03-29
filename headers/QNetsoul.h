@@ -42,14 +42,14 @@ class	QNetsoul : public QMainWindow, public Ui_QNetsoul
 {
   Q_OBJECT
 
-    public:
+  public:
   QNetsoul(QWidget* parent = 0);
   virtual ~QNetsoul(void);
 
- protected:
+protected:
   void	closeEvent(QCloseEvent*);
 
-  private slots:
+private slots:
   void	connectToServer(void);
   void	reconnect(void);
   void	disconnect(void);
@@ -87,7 +87,7 @@ class	QNetsoul : public QMainWindow, public Ui_QNetsoul
   void	stopBlinking(void);
   void	systemTrayBlinking(void);
 
- private:
+private:
   void				configureProxy(void);
   Chat*				getChat(const QString&);
   bool				doesThisContactAlreadyExist(const QString&) const;
