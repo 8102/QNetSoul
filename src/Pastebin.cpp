@@ -38,19 +38,28 @@ void	Pastebin::pastebinIt(void)
 {
   const QClipboard*	clipboard = QApplication::clipboard();
 
-#ifdef Q_WS_X11
-  const QMimeData*	mimeData = clipboard->mimeData(QClipboard::Selection);
-#else
+  //#ifdef Q_WS_X11
+  //const QMimeData*	mimeData = clipboard->mimeData(QClipboard::Selection);
+  //#else
   const QMimeData*	mimeData = clipboard->mimeData();
-#endif
+  //#endif
+
+  QMessageBox mbox(QMessageBox::Question, "QNetSoul",
+		   tr("Are you sure to past this ?"),
+		   QMessageBox::Ok | QMessageBox::Cancel);
 
   if (mimeData == 0)
     return;
   if (mimeData->hasText())
     {
-      QString	post_content = mimeData->text();
-      post_content.prepend("paste_private=1&paste_code=");
+      QString	post_content(mimeData->text());
 
+      mbox.setDetailedText(post_content);
+      int ret = mbox.exec();
+      if (ret == QMessageBox::Cancel)
+	return;
+
+      post_content.prepend("paste_private=1&paste_code=");
       this->_manager.post(QNetworkRequest(QUrl("http://pastebin.com/api_public.php")),
 			  post_content.toAscii());
     }

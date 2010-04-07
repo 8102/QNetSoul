@@ -21,8 +21,6 @@
 #include "QNetsoul.h"
 #include "LocationResolver.h"
 
-const quint16	NETSOUL_PORT = 4242;
-
 Network::Network(QObject* parent) : QObject(parent), _handShakingStep(0)
 {
   QNetsoul* ns = dynamic_cast<QNetsoul*>(parent);
@@ -30,12 +28,8 @@ Network::Network(QObject* parent) : QObject(parent), _handShakingStep(0)
     {
       QObject::connect(this, SIGNAL(reconnectionRequest()), ns, SLOT(reconnect()));
       QObject::connect(&this->_socket, SIGNAL(readyRead()), SLOT(processPackets()));
-      QObject::connect(&this->_socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)),
-		       ns, SLOT(updateMenuBar(const QAbstractSocket::SocketState&)));
-      QObject::connect(&this->_socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)),
-		       ns, SLOT(updateStatusBar(const QAbstractSocket::SocketState&)));
-      QObject::connect(&this->_socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)),
-		       ns, SLOT(updateStatusComboBox(const QAbstractSocket::SocketState&)));
+      QObject::connect(&this->_socket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),
+		       ns, SLOT(updateWidgets(const QAbstractSocket::SocketState&)));
       QObject::connect(&this->_socket, SIGNAL(error(QAbstractSocket::SocketError)),
 		       SLOT(displaySocketError()));
     }
@@ -81,12 +75,6 @@ void	Network::resolveLocation(QString& oldLocation) const
 // Reconnection feature upgraded ! Version 0.07
 void	Network::displaySocketError(void)
 {
-  //static volatile int	popup_displays = 3;
-
-  // DEBUG
-  //if (popup_displays-- == 0)
-  //QMessageBox::critical(NULL, QString("QNetsoul"), this->_socket.errorString());
-  //else
   std::cerr << this->_socket.errorString().toStdString() << std::endl;
   std::cerr << "Socket state:" << this->_socket.state() << std::endl;
   emit reconnectionRequest();
@@ -129,9 +117,9 @@ void	Network::parseLines(void)
   this->_rbuffer = this->_rbuffer.remove(0, last + 1);
 }
 
-// A Recoder (refaire en plus propre).
 void	Network::interpretLine(const QString& line)
 {
+  // DEBUG
   //std::cerr << line.toStdString() << std::endl;
   QStringList	parts = line.split(' ', QString::SkipEmptyParts);
   const int	size = parts.size();
@@ -188,13 +176,13 @@ void	Network::interpretLine(const QString& line)
         }
       else if (line.startsWith("rep 033 --"))
         {
-	  disconnect();
-	  std::cerr << "fail..." << std::endl;
+	  emit handShaking(-1, QStringList());
+	  std::cerr << "Failure...\n";
 	  std::cerr << "Reason: " << line.toStdString() << std::endl;
         }
       else
         {
-	  std::cerr << "Commande non parsee:" << std::endl;
+	  std::cerr << "Unparsed command:" << std::endl;
 	  std::cerr << line.toStdString() << std::endl;
         }
     }

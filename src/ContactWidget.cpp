@@ -31,6 +31,7 @@ namespace
       {"logout",	":/images/offline",	QObject::tr("Offline")},
       {"actif",		":/images/online",	QObject::tr("Online")},
       {"away",		":/images/away",	QObject::tr("Away")},
+      {"idle",		":/images/away",	QObject::tr("Idle")},
       {"lock",		":/images/lock",	QObject::tr("Locked")},
       {"server",	":/images/server",	QObject::tr("Server")},
       {NULL, NULL, NULL}

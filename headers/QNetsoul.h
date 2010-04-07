@@ -31,12 +31,14 @@
 #include "Pastebin.h"
 #include "VieDeMerde.h"
 #include "ChuckNorrisFacts.h"
+#include "TrayIcon.h"
 
 class	QMenu;
 class	QAction;
 class	QLabel;
 class	QSystemTrayIcon;
 class	ContactWidget;
+class	TrayIcon;
 
 class	QNetsoul : public QMainWindow, public Ui_QNetsoul
 {
@@ -53,12 +55,9 @@ private slots:
   void	connectToServer(void);
   void	reconnect(void);
   void	disconnect(void);
-  void	updateMenuBar(const QAbstractSocket::SocketState&);
-  void	updateStatusBar(const QAbstractSocket::SocketState&);
-  void	updateStatusComboBox(const QAbstractSocket::SocketState&);
+  void	updateWidgets(const QAbstractSocket::SocketState&);
 
   void	showVdmInBalloon(const QString& message);
-  void	toggleConnection(void);
   void	saveStateBeforeQuiting(void);
   void	openAddContactDialog(void);
   void	openOptionsDialog(QLineEdit* newLineFocus = 0);
@@ -83,9 +82,6 @@ private slots:
   void	aboutQNetSoul(void);
   void	setProxy(const QNetworkProxy& proxy = QNetworkProxy());
   void	applyChatOptions(bool exitOnEscape, bool typingNotification, bool smileys);
-  void	startBlinking(void);
-  void	stopBlinking(void);
-  void	systemTrayBlinking(void);
 
 private:
   void				configureProxy(void);
@@ -98,8 +94,6 @@ private:
   void				watchLogContact(const QString&);
   void				refreshContact(const QString&);
   void				resetAllContacts(void);
-  void				setupTrayIcon(void);
-  void				setupStatusButton(void);
   void				readSettings(void);
   void				writeSettings(void);
   void				loadContacts(const QString&);
@@ -110,12 +104,11 @@ private:
   Chat*				createWindowChat(const QString&);
   void				deleteAllWindowChats(void);
 
-  QPushButton*			_statusPushButton;
   Network*			_network;
   Options*			_options;
   AddContact*			_addContact;
   QStandardItemModel*		_standardItemModel;
-  QSystemTrayIcon*		_trayIcon;
+  TrayIcon*			_trayIcon;
   QHash<QString, Chat*>		_windowsChat;
   QString			_timeStamp;
   QPoint			_oldPos;
@@ -126,7 +119,6 @@ private:
   bool				_exitOnEscape;
   bool				_typingNotification;
   bool				_smileys;
-  QTimer			_blinkingTimer;
 };
 
 #endif // QNETSOUL_H_

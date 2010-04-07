@@ -26,17 +26,17 @@ class	Pastebin : public QObject
 {
   Q_OBJECT
 
- public:
+  public:
   Pastebin(void);
   ~Pastebin(void);
 
   void  setProxy(const QNetworkProxy& p) { this->_manager.setProxy(p); }
 
-  public slots:
+public slots:
   void	pastebinIt(void);
   void	replyFinished(QNetworkReply* reply);
 
- private:
+private:
   QNetworkAccessManager	_manager;
 };
 

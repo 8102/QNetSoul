@@ -25,9 +25,6 @@
 #include "ContactsWriter.h"
 #include "ConnectionPoint.h"
 
-const char*	ONLINE = "Online";
-const char*	OFFLINE = "Offline";
-
 QNetsoul::QNetsoul(QWidget* parent)
   :	QMainWindow(parent),
 	_network(new Network(this)),
@@ -38,8 +35,8 @@ QNetsoul::QNetsoul(QWidget* parent)
 	_typingNotification(false)
 {
   setupUi(this);
-  setupTrayIcon();
-  setupStatusButton();
+  if (QSystemTrayIcon::isSystemTrayAvailable())
+    this->_trayIcon = new TrayIcon(this);
   this->contactsTreeView->setModel(this->_standardItemModel);
   connectQNetsoulItems();
   connectActionsSignals();
@@ -78,8 +75,9 @@ void	QNetsoul::closeEvent(QCloseEvent* event)
       if (true == firstTime)
         {
 	  firstTime = false;
-	  this->_trayIcon->showMessage("QNetSoul", tr("QNetSoul is still running."),
-				       QSystemTrayIcon::Information, 5000);
+	  this->_trayIcon->showMessage("QNetSoul",
+				       tr("QNetSoul is still running."),
+				       5000);
         }
       event->ignore();
     }
@@ -87,7 +85,7 @@ void	QNetsoul::closeEvent(QCloseEvent* event)
 
 void	QNetsoul::connectToServer(void)
 {
-  if (tr(ONLINE) == this->_statusPushButton->text())
+  if (QAbstractSocket::ConnectedState == this->_network->state())
     return;
 
   if (!this->_options->loginLineEdit->text().isEmpty())
@@ -134,76 +132,52 @@ void	QNetsoul::disconnect(void)
 
 }
 
-void	QNetsoul::updateMenuBar(const QAbstractSocket::SocketState& state)
+void	QNetsoul::updateWidgets(const QAbstractSocket::SocketState& state)
 {
-  if (QAbstractSocket::ConnectedState == state)
+    if (QAbstractSocket::ConnectedState == state)
     {
+      // MenuBar
       actionConnect->setEnabled(false);
       actionDisconnect->setEnabled(true);
       actionRefresh->setEnabled(true);
+      // StatusBar
+      this->statusbar->showMessage(tr("Connected"));
+      // ComboBox
+      this->statusComboBox->setEnabled(true);
+      // TrayIconMenu
+      if (this->_trayIcon)
+	this->_trayIcon->setEnabledStatusMenu(true);
     }
   else if (QAbstractSocket::UnconnectedState == state)
     {
+      // MenuBar
       actionConnect->setEnabled(true);
       actionDisconnect->setEnabled(false);
       actionRefresh->setEnabled(false);
-    }
-}
-
-void	QNetsoul::updateStatusBar(const QAbstractSocket::SocketState& state)
-{
-  if (QAbstractSocket::ConnectedState == state)
-    {
-      this->_statusPushButton->setText(tr(ONLINE));
-      this->_statusPushButton->setToolTip(tr("Disconnect"));
-    }
-  else if (QAbstractSocket::UnconnectedState == state)
-    {
-      this->_statusPushButton->setText(tr(OFFLINE));
-      this->_statusPushButton->setToolTip(tr("Get NetSouled !"));
-      this->statusbar->showMessage(tr("Disconnected"), 2000);
-    }
-}
-
-void	QNetsoul::updateStatusComboBox(const QAbstractSocket::SocketState& state)
-{
-  if (QAbstractSocket::ConnectedState == state)
-    {
-      this->statusComboBox->setEnabled(true);
-    }
-  else if (QAbstractSocket::UnconnectedState == state)
-    {
+      // StatusBar
+      this->statusbar->showMessage(tr("Disconnected"));
+      // ComboBox
       this->statusComboBox->setEnabled(false);
       this->statusComboBox->setCurrentIndex(0);
+      // TrayIconMenu
+      if (this->_trayIcon)
+	this->_trayIcon->setEnabledStatusMenu(false);
     }
 }
 
 void	QNetsoul::showVdmInBalloon(const QString& message)
 {
-  if (NULL != this->_trayIcon)
+  if (this->_trayIcon)
     {
       // DEBUG EXCEPTION v0.07
       try
 	{
-	  this->_trayIcon->showMessage("Vie de merde", message,
-				       QSystemTrayIcon::NoIcon, 15000);
+	  this->_trayIcon->showMessage("Vie de merde", message, 15000);
 	}
       catch(...)
 	{
 	  std::cerr << "Crash detected in showVdmInBalloon..." << std::endl;
 	}
-    }
-}
-
-void	QNetsoul::toggleConnection(void)
-{
-  if (tr(OFFLINE) == this->_statusPushButton->text())
-    {
-      connectToServer();
-    }
-  else
-    {
-      disconnect();
     }
 }
 
@@ -359,15 +333,15 @@ void	QNetsoul::changeStatus(const QString& login, const QString& id, const QStri
     };
   ContactWidget*	contactWidget = getContact(login);
 
-  if (NULL != contactWidget)
+  if (contactWidget)
     {
-      if (NULL != this->_trayIcon)
+      if (this->_trayIcon)
         {
 	  for (int i = 0; (status[i].state); ++i)
             {
 	      if (state == status[i].state)
                 {
-		  this->_trayIcon->showMessage(login, tr("is now ") + status[i].translation, QSystemTrayIcon::NoIcon);
+		  this->_trayIcon->showMessage(login, tr("is now ") + status[i].translation);
 		  break;
                 }
             }
@@ -542,12 +516,13 @@ void	QNetsoul::processHandShaking(int step, QStringList args)
 	//this->_network->sendMessage("ping\n");
 	watchLogContacts();
 	refreshContacts();
-	this->statusbar->showMessage(tr("You are now netsouled."), 2000);
+	this->statusbar->showMessage(tr("You are now Netsouled."), 2000);
 	break;
       }
-    case -1: // Network error => reset all contacts
+    case -1:
       {
-	resetAllContacts();
+	disconnect();
+	this->statusbar->showMessage(tr("Authentification failed."));
 	break;
       }
     default:;
@@ -623,7 +598,8 @@ void	QNetsoul::setProxy(const QNetworkProxy& proxy)
 {
   this->_vdm.setProxy(proxy);
   this->_pastebin.setProxy(proxy);
-  //this->_portraitResolver.setProxy(proxy); // NOTE: proxy attempts downloading pictures.
+  // NOTE: proxy attempts downloading pictures.
+  //this->_portraitResolver.setProxy(proxy);
   this->_cnf.setProxy(proxy);
 }
 
@@ -643,29 +619,6 @@ void	QNetsoul::applyChatOptions
       it.value()->setSmileys(smileys);
     }
 }
-
-void	QNetsoul::startBlinking(void)
-{
-  this->_blinkingTimer.start(1000);
-}
-
-void	QNetsoul::stopBlinking(void)
-{
-  this->_blinkingTimer.stop();
-  this->_trayIcon->setIcon(QIcon(":/images/qnetsoul.png"));
-}
-
-void	QNetsoul::systemTrayBlinking(void)
-{
-  static volatile bool	enabled = true;
-
-  if (enabled)
-    this->_trayIcon->setIcon(QIcon(":/images/unread.png"));
-  else
-    this->_trayIcon->setIcon(QIcon());
-  enabled = !enabled;
-}
-
 
 void	QNetsoul::configureProxy(void)
 {
@@ -832,32 +785,6 @@ void	QNetsoul::resetAllContacts(void)
     }
 }
 
-void	QNetsoul::setupTrayIcon(void)
-{
-  if (NULL == this->_trayIcon && QSystemTrayIcon::isSystemTrayAvailable())
-    {
-      this->_trayIcon = new QSystemTrayIcon(this);
-      QMenu*	trayIconMenu = new QMenu(this);
-      QAction*	trayIconActionQuit = new QAction(QIcon(":/images/quit.png"), tr("Quit"), this);
-      trayIconMenu->addAction(trayIconActionQuit);
-      this->_trayIcon->setContextMenu(trayIconMenu);
-      connect(trayIconActionQuit, SIGNAL(triggered()), SLOT(saveStateBeforeQuiting()));
-      connect(this->_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-	      SLOT(handleClicksOnTrayIcon(QSystemTrayIcon::ActivationReason)));
-      this->_trayIcon->setIcon(QIcon(":/images/qnetsoul.png"));
-      this->_trayIcon->show();
-    }
-}
-
-void	QNetsoul::setupStatusButton(void)
-{
-  this->_statusPushButton = new QPushButton(tr("Offline"));
-  this->_statusPushButton->setFlat(true);
-  this->_statusPushButton->setToolTip(tr("Get NetSouled !"));
-  this->statusbar->addPermanentWidget(_statusPushButton);
-  connect(this->_statusPushButton, SIGNAL(clicked()), SLOT(toggleConnection()));
-}
-
 void	QNetsoul::readSettings(void)
 {
   QSettings	settings("Epitech", "QNetsoul");
@@ -887,16 +814,17 @@ void	QNetsoul::loadContacts(const QString& fileName)
   QFile file(fileName);
   if (!file.open(QFile::ReadOnly | QFile::Text))
     {
-      this->statusBar()->showMessage(tr("Unable to load Contacts"), 2000);
+      this->statusBar()->showMessage(tr("Unable to load contacts"), 2000);
       return;
     }
 
   QList<Contact>	list;
-  ContactsReader reader;
+  ContactsReader	reader;
 
   list = reader.read(&file);
   addContact(list);
   this->statusBar()->showMessage(tr("Contacts loaded"), 2000);
+  file.close();
 }
 
 void	QNetsoul::saveContacts(const QString& fileName)
@@ -913,11 +841,11 @@ void	QNetsoul::saveContacts(const QString& fileName)
   ContactsWriter writer(getContactWidgets());
   if (writer.writeFile(&file))
     this->statusBar()->showMessage(tr("Contacts saved"), 2000);
+  file.close();
 }
 
 void	QNetsoul::connectQNetsoulItems(void)
 {
-  connect(&this->_blinkingTimer, SIGNAL(timeout()), SLOT(systemTrayBlinking()));
   connect(this->_addContact->addPushButton, SIGNAL(clicked()), SLOT(addContact()));
   connect(&this->_portraitResolver, SIGNAL(downloadedPortrait(const QString&)),
 	  SLOT(setPortrait(const QString&)));
