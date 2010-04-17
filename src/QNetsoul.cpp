@@ -46,12 +46,14 @@ QNetsoul::QNetsoul(QWidget* parent)
   this->_options->applyOptions(); // Version 0.04
   //configureProxy(); // perhaps useless in the future...
   this->_portraitResolver.addRequest(getContactLogins());
-  this->_vdm.getALife();
   //this->_cnf.getFact();
   //connect(this->_timer, SIGNAL(timeout()), SLOT(refreshContacts()));
-  //this->contactsTreeView->setAttribute(Qt::WA_ShowWithoutActivating, true);
   //this->contactsTreeView->setAttribute(Qt::WA_AlwaysShowToolTips, true);
   QWidget::setAttribute(Qt::WA_AlwaysShowToolTips);
+  if (this->_options->autoConnect())
+    connectToServer();
+  if (this->_options->startingVdm())
+    this->_vdm.getALife();
 }
 
 QNetsoul::~QNetsoul(void)
@@ -67,7 +69,6 @@ void	QNetsoul::closeEvent(QCloseEvent* event)
       event->accept();
       return;
     }
-
   if (this->_trayIcon->isVisible())
     {
       this->_oldPos = this->pos();
@@ -174,7 +175,7 @@ void	QNetsoul::showVdmInBalloon(const QString& message)
 	{
 	  this->_trayIcon->showMessage("Vie de merde", message, 15000);
 	}
-      catch(...)
+      catch (...)
 	{
 	  std::cerr << "Crash detected in showVdmInBalloon..." << std::endl;
 	}
@@ -669,7 +670,7 @@ ContactWidget*	QNetsoul::getContact(const QString& login) const
   return NULL;
 }
 
-QStringList		QNetsoul::getContactLogins(void) const
+QStringList	QNetsoul::getContactLogins(void) const
 {
   QStringList	list;
   const int	rows = this->_standardItemModel->rowCount();
@@ -690,7 +691,7 @@ QStringList		QNetsoul::getContactLogins(void) const
   return list;
 }
 
-QList<ContactWidget*>		QNetsoul::getContactWidgets(void) const
+QList<ContactWidget*>	QNetsoul::getContactWidgets(void) const
 {
   QList<ContactWidget*>	list;
   const int		rows = this->_standardItemModel->rowCount();

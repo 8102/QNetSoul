@@ -32,7 +32,9 @@ class Options : public QDialog, public Ui_Options
 
   void	readOptionSettings(void);
   void	writeOptionSettings(void);
-  void	update(void);
+  void	updateOptions(void);
+  bool	startingVdm(void) const { return this->_startingVdm; }
+  bool	autoConnect(void) const { return this->_autoConnect; }
   void	setConnectionOnOk(const bool& value) { this->_connectOnOk = value; }
   bool	isProxyEnabled(void) const { return this->_useProxy; }
   bool	isValidProxy(void) const;
@@ -40,18 +42,27 @@ class Options : public QDialog, public Ui_Options
   void	applyOptions(void);
   QString getReply(int index);
 
- signals:
+signals:
   void	loginPasswordFilled(void);
   void	resetProxy(const QNetworkProxy& p = QNetworkProxy());
   void	chatOptionsChanged(bool, bool, bool);
 
-  private slots:
+private slots:
   void	save(void);
   void	loadReply(int index);
 
- private:
-  void	saveCurrentReply(void);
+private:
+  void	saveCurrentReply(void)
+  {
+    saveCurrentReply(this->autoReplyComboBox->currentIndex());
+  }
   void	saveCurrentReply(int index);
+  void	setCheckState(QCheckBox* checkBox, const bool state)
+  {
+    (state)?
+      checkBox->setCheckState(Qt::Checked) :
+      checkBox->setCheckState(Qt::Unchecked);
+  }
 
   // Main Tab
   QString	_server;
@@ -61,6 +72,7 @@ class Options : public QDialog, public Ui_Options
   QString	_comment;
   QString	_password;
   bool		_savePassword;
+  bool		_autoConnect;
   bool		_connectOnOk;
   // Chat tab
   bool		_exitOnEscape;
@@ -71,6 +83,8 @@ class Options : public QDialog, public Ui_Options
   QString	_replyLocked;
   QString	_replyAway;
   QString	_replyServer;
+  // Fun tab
+  bool		_startingVdm;
   // Advanced Tab
   bool		_useProxy;
   QString	_proxy;

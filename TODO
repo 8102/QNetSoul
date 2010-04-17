@@ -1,13 +1,10 @@
                 === TODO LIST ===
 
-- Sur les erreurs, se reconnecter. (rerecorrigé v0.07)
+- Terminer la liste des contacts bloqués.
+- Sur les erreurs, se reconnecter. (à recoder)
 - Régler les problèmes de focus (corrigé v0.04)
-- Url cliquables dans les fenêtres de chat. (recorrigé à la v0.07)
 - Régler les problèmes de mis à jour de status
-- Plugin PasteBin. (fait à la v0.06)
 - Inclure la possiblite de wizz une personne.
-- Pouvoir activer/désactiver les smileys (fait à la v0.04)
-- Activer ou pas une vie de merde au démarrage
 - Améliorer le typing notification (envoyer un stop au bout d'un moment)
 - Gestion des notifications de status
-- Pouvoir parler aux différents ConnectionPoints en sus du broadcast.
+- Pouvoir parler aux différents ConnectionPoints en sus du broadcast. (asap)

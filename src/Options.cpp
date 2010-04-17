@@ -25,7 +25,7 @@ Options::Options(QWidget* parent)
 {
   setupUi(this);
   readOptionSettings();
-  update();
+  updateOptions();
   connect(this, SIGNAL(accepted()), SLOT(save()));
   connect(this->autoReplyComboBox, SIGNAL(currentIndexChanged(int)), SLOT(loadReply(int)));
 }
@@ -46,6 +46,7 @@ void		Options::readOptionSettings(void)
   this->_comment = settings.value("comment", QString("-=[QNetSoul]=-")).toString();
   this->_password = settings.value("password", QString("")).toString();
   this->_savePassword = settings.value("savepassword", bool(false)).toBool();
+  this->_autoConnect = settings.value("autoconnect", bool(false)).toBool();
   settings.endGroup();
 
   settings.beginGroup("ChatOptions");
@@ -56,6 +57,10 @@ void		Options::readOptionSettings(void)
   this->_replyLocked = settings.value("replylocked", QString("[Locked]")).toString();
   this->_replyAway = settings.value("replyaway", QString("[Away]")).toString();
   this->_replyServer = settings.value("replyserver", QString("[Daemonized]")).toString();
+  settings.endGroup();
+
+  settings.beginGroup("FunOptions");
+  this->_startingVdm = settings.value("startingVdm", bool(false)).toBool();
   settings.endGroup();
 
   settings.beginGroup("AdvancedOptions");
@@ -80,11 +85,11 @@ void		Options::writeOptionSettings(void)
   settings.setValue("login", this->_login);
   settings.setValue("location", this->_location);
   settings.setValue("comment", this->_comment);
-  if (this->_savePassword)
-    settings.setValue("password", encrypt(this->_password));
-  else
+  (this->_savePassword) ?
+    settings.setValue("password", encrypt(this->_password)) :
     settings.remove("password");
   settings.setValue("savepassword", this->_savePassword);
+  settings.setValue("autoconnect", this->_autoConnect);
   settings.endGroup();
 
   settings.beginGroup("ChatOptions");
@@ -97,6 +102,10 @@ void		Options::writeOptionSettings(void)
   settings.setValue("replyserver", this->_replyServer);
   settings.endGroup();
 
+  settings.beginGroup("FunOptions");
+  settings.setValue("startingVdm", this->_startingVdm);
+  settings.endGroup();
+
   settings.beginGroup("AdvancedOptions");
   settings.setValue("proxy", this->_proxy);
   settings.setValue("port", this->_proxyPort);
@@ -106,7 +115,7 @@ void		Options::writeOptionSettings(void)
   settings.endGroup();
 }
 
-void	Options::update(void)
+void	Options::updateOptions(void)
 {
   // Main Tab
   this->serverLineEdit->setText(this->_server);
@@ -115,27 +124,20 @@ void	Options::update(void)
   this->passwordLineEdit->setText(this->_password);
   this->locationLineEdit->setText(this->_location);
   this->commentLineEdit->setText(this->_comment);
-  if (this->_savePassword)
-    this->savePasswordCheckBox->setCheckState(Qt::Checked);
-  else
-    this->savePasswordCheckBox->setCheckState(Qt::Unchecked);
+  setCheckState(this->savePasswordCheckBox, this->_savePassword);
+  setCheckState(this->autoConnectCheckBox, this->_autoConnect);
 
   // Chat tab
-  if (this->_exitOnEscape)
-    this->chatEscapeCheckBox->setCheckState(Qt::Checked);
-  else
-    this->chatEscapeCheckBox->setCheckState(Qt::Unchecked);
-  if (this->_typingNotification)
-    this->typingStatusCheckBox->setCheckState(Qt::Checked);
-  else
-    this->typingStatusCheckBox->setCheckState(Qt::Unchecked);
-  if (this->_smileys)
-    this->smileysCheckBox->setCheckState(Qt::Checked);
-  else
-    this->smileysCheckBox->setCheckState(Qt::Unchecked);
+  setCheckState(this->chatEscapeCheckBox, this->_exitOnEscape);
+  setCheckState(this->typingStatusCheckBox, this->_typingNotification);
+  setCheckState(this->smileysCheckBox, this->_smileys);
+
   // Auto Reply
   this->autoReplyComboBox->setCurrentIndex(this->_replyComboBoxValue);
   loadReply(this->_replyComboBoxValue);
+
+  // Fun tab
+  setCheckState(this->startingVdmCheckBox, this->_startingVdm);
 
   // Advanced Tab
   this->proxyLineEdit->setText(this->_proxy);
@@ -222,6 +224,9 @@ void	Options::save(void)
 	emit resetProxy();
     }
 
+  // Fun Options
+  this->_startingVdm = this->startingVdmCheckBox->checkState();
+
   // Chat Options
   this->_exitOnEscape = this->chatEscapeCheckBox->checkState();
   this->_typingNotification = this->typingStatusCheckBox->checkState();
@@ -238,6 +243,7 @@ void	Options::save(void)
   this->_location = this->locationLineEdit->text();
   this->_comment = this->commentLineEdit->text();
   this->_savePassword = (Qt::Checked == this->savePasswordCheckBox->checkState());
+  this->_autoConnect = (Qt::Checked == this->autoConnectCheckBox->checkState());
   if (!this->_login.isEmpty() && !this->_password.isEmpty() && this->_connectOnOk)
     emit loginPasswordFilled();
   this->_connectOnOk = false;
@@ -255,17 +261,13 @@ void	Options::loadReply(int index)
     case 2: this->autoReplyLineEdit->setText(this->_replyServer); break;
     default:
       {
-	std::cerr << "Error: bad index in loadReply" << std::endl;
+	std::cerr << "[Options::loadReply]\n";
+	std::cerr << "Error: wrong index.\n";
 	std::cerr << "Value: " << index << std::endl;
       }
     }
   this->_replyComboBoxValue = index;
   this->_oldComboBoxValue = index;
-}
-
-void	Options::saveCurrentReply(void)
-{
-  saveCurrentReply(this->autoReplyComboBox->currentIndex());
 }
 
 void	Options::saveCurrentReply(int index)
@@ -277,7 +279,9 @@ void	Options::saveCurrentReply(int index)
     case 2: this->_replyServer = this->autoReplyLineEdit->text(); break;
     default:
       {
-	std::cerr << "Error: bad index in saveCurrentReply" << std::endl;
+	std::cerr << "[Options::saveCurrentReply]\n";
+	std::cerr << "Error: wrong index.\n";
+	std::cerr << "Value: " << index << std::endl;
       }
     }
 }

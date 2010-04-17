@@ -31,27 +31,27 @@ class	PortraitResolver : public QObject
 {
   Q_OBJECT
 
-    public:
+  public:
   PortraitResolver(void);
   ~PortraitResolver(void);
   void	addRequest(const QStringList& logins);
   void	addRequest(const QString& login, bool fun);
 
-  static QString	buildFilename(const QString& login, bool fun);
+  static QString buildFilename(const QString& login, bool fun);
   void	setProxy(const QNetworkProxy& p) { this->_http.setProxy(p); }
 
-  public slots:
+public slots:
   void	finished(int id, bool error);
 
- signals:
+signals:
   void	downloadedPortrait(const QString&);
 
- private:
-  void				setupPortraitDirectory(void);
+private:
+  void	setupPortraitDirectory(void);
 
-  QDir				_dir;
-  QHttp				_http;
-  QList<PortraitRequest*>	_requests;
+  QDir _dir;
+  QHttp _http;
+  QList<PortraitRequest*> _requests;
 };
 
 #endif // PORTRAITRESOLVER_H

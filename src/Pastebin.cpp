@@ -21,6 +21,7 @@
 #include <QClipboard>
 #include <QMessageBox>
 #include <QApplication>
+#include <QNetworkProxy>
 #include <QNetworkRequest>
 #include "Pastebin.h"
 
@@ -59,6 +60,10 @@ void	Pastebin::pastebinIt(void)
       if (ret == QMessageBox::Cancel)
 	return;
 
+      // DEBUG
+      QNetworkProxy	copy = this->_manager.proxy();
+      std::cerr << "Proxy type: " << copy.type() << std::endl;
+
       post_content.prepend("paste_private=1&paste_code=");
       this->_manager.post(QNetworkRequest(QUrl("http://pastebin.com/api_public.php")),
 			  post_content.toAscii());
@@ -71,10 +76,10 @@ void	Pastebin::replyFinished(QNetworkReply* reply)
 
   if (!array.startsWith("ERROR"))
     {
+      std::cerr << "Reply: " << array.data() << std::endl;
       QString	url = QString("<a href='%1'>%1</a>").arg(array.data());
       QMessageBox::information(0, "PasteBin", url);
     }
-  else
-    std::cerr << "Error on pastebin: " << array.data() << std::endl;
+  else std::cerr << "Error on pastebin: " << array.data() << std::endl;
   reply->deleteLater();
 }
