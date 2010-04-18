@@ -60,13 +60,9 @@ void	Pastebin::pastebinIt(void)
       if (ret == QMessageBox::Cancel)
 	return;
 
-      // DEBUG
-      QNetworkProxy	copy = this->_manager.proxy();
-      std::cerr << "Proxy type: " << copy.type() << std::endl;
-
       post_content.prepend("paste_private=1&paste_code=");
       this->_manager.post(QNetworkRequest(QUrl("http://pastebin.com/api_public.php")),
-			  post_content.toAscii());
+			  QUrl::toPercentEncoding(post_content));
     }
 }
 
