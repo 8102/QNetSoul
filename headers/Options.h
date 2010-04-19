@@ -50,6 +50,9 @@ signals:
 private slots:
   void	save(void);
   void	loadReply(int index);
+  void	addBlockedContact(QString login = "");
+  void	deleteBlockedContact(void);
+  void	deleteAllBlockedContacts(void);
 
 private:
   void	saveCurrentReply(void)
@@ -63,6 +66,8 @@ private:
       checkBox->setCheckState(Qt::Checked) :
       checkBox->setCheckState(Qt::Unchecked);
   }
+  void	saveBlockedContacts(void);
+  void	loadBlockedContacts(void);
 
   // Main Tab
   QString	_server;

@@ -16,7 +16,9 @@
 */
 
 #include <iostream>
+#include <QFile>
 #include <QSettings>
+#include <QInputDialog>
 #include "Options.h"
 #include "Encryption.h"
 
@@ -28,6 +30,10 @@ Options::Options(QWidget* parent)
   updateOptions();
   connect(this, SIGNAL(accepted()), SLOT(save()));
   connect(this->autoReplyComboBox, SIGNAL(currentIndexChanged(int)), SLOT(loadReply(int)));
+  connect(this->addButton, SIGNAL(clicked()), SLOT(addBlockedContact()));
+  connect(this->deleteButton, SIGNAL(clicked()), SLOT(deleteBlockedContact()));
+  connect(this->deleteAllButton, SIGNAL(clicked()), SLOT(deleteAllBlockedContacts()));
+  loadBlockedContacts();
 }
 
 Options::~Options(void)
@@ -270,6 +276,43 @@ void	Options::loadReply(int index)
   this->_oldComboBoxValue = index;
 }
 
+void	Options::addBlockedContact(QString login)
+{
+  if (login.isEmpty())
+    login = QInputDialog::getText(this, tr("Block login"), tr("Login to block:"));
+
+  // if login isnt found in the list, add it.
+  if (!this->listWidget->findItems(login, Qt::MatchFixedString).size())
+    {
+      this->listWidget->insertItem(this->listWidget->count(), login);
+      this->deleteButton->setEnabled(true);
+      this->deleteAllButton->setEnabled(true);
+      saveBlockedContacts();
+    }
+}
+
+void	Options::deleteBlockedContact(void)
+{
+  if (this->listWidget->currentItem())
+    {
+      delete this->listWidget->takeItem(this->listWidget->currentRow());
+      if (this->listWidget->count() == 0)
+	{
+	  this->deleteButton->setEnabled(false);
+	  this->deleteAllButton->setEnabled(false);
+	}
+      saveBlockedContacts();
+    }
+}
+
+void	Options::deleteAllBlockedContacts(void)
+{
+  this->listWidget->clear();
+  this->deleteButton->setEnabled(false);
+  this->deleteAllButton->setEnabled(false);
+  saveBlockedContacts();
+}
+
 void	Options::saveCurrentReply(int index)
 {
   switch (index)
@@ -284,4 +327,32 @@ void	Options::saveCurrentReply(int index)
 	std::cerr << "Value: " << index << std::endl;
       }
     }
+}
+
+void	Options::saveBlockedContacts(void)
+{
+  QFile	file("blockedlist.txt");
+
+  if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    return;
+
+  const int	size = this->listWidget->count();
+  QTextStream	out(&file);
+
+  for (int i = 0; i < size; ++i)
+    out << this->listWidget->item(i)->text();
+  file.close();
+}
+
+void	Options::loadBlockedContacts(void)
+{
+  QFile	file("blockedlist.txt");
+
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    return;
+
+  QTextStream in(&file);
+  while (!in.atEnd())
+    addBlockedContact(in.readLine());
+  file.close();
 }
