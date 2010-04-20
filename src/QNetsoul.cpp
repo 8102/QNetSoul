@@ -1,5 +1,5 @@
 /*
-  Copyright 2009 Dally Richard
+  Copyright 2010 Dally Richard
   This file is part of QNetSoul.
   QNetSoul is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -43,16 +43,15 @@ QNetsoul::QNetsoul(QWidget* parent)
   connectNetworkSignals();
   readSettings();
   loadContacts("contacts.xml");
-  this->_options->applyOptions(); // Version 0.04
+  this->_options->applyOptions();
   //configureProxy(); // perhaps useless in the future...
   this->_portraitResolver.addRequest(getContactLogins());
   //this->_cnf.getFact();
   //connect(this->_timer, SIGNAL(timeout()), SLOT(refreshContacts()));
-  //this->contactsTreeView->setAttribute(Qt::WA_AlwaysShowToolTips, true);
   QWidget::setAttribute(Qt::WA_AlwaysShowToolTips);
-  if (this->_options->autoConnect())
+  if (this->_options->mainWidget->autoConnect())
     connectToServer();
-  if (this->_options->startingVdm())
+  if (this->_options->funWidget->startingVdm())
     this->_vdm.getALife();
 }
 
@@ -211,7 +210,7 @@ void	QNetsoul::openOptionsDialog(QLineEdit* newLineFocus)
       if (NULL != newLineFocus)
         {
 	  newLineFocus->setFocus();
-	  this->_options->setConnectionOnOk(true);
+	  this->_options->mainWidget->setConnectionOnOk(true);
         }
       else
         {
@@ -451,7 +450,8 @@ void	QNetsoul::showConversation(const QString& login, const QString& message)
 	window->insertMessage(login, QString(url_decode(message.toStdString().c_str())), QColor(204, 0, 0));
       if (index > 0)
 	{
-	  const QString	autoReply = this->_options->getReply(index - 1);
+	  const QString	autoReply =
+	    this->_options->chatWidget->getReply(index - 1);
 	  if (autoReply.isEmpty() == false)
 	    transmitMsg(login, autoReply);
 	}
@@ -623,9 +623,9 @@ void	QNetsoul::applyChatOptions
 
 void	QNetsoul::configureProxy(void)
 {
-  if (this->_options->isProxyEnabled())
+  if (this->_options->advancedWidget->isProxyEnabled())
     {
-      const QNetworkProxy	proxy = this->_options->getProxy();
+      const QNetworkProxy proxy = this->_options->advancedWidget->getProxy();
       setProxy(proxy);
     }
 }
@@ -876,10 +876,13 @@ void	QNetsoul::connectActionsSignals(void)
   connect(statusComboBox, SIGNAL(currentIndexChanged(int)), SLOT(sendStatus(const int&)));
 
   // From Option widget
-  connect(this->_options, SIGNAL(loginPasswordFilled()), SLOT(connectToServer()));
-  connect(this->_options, SIGNAL(resetProxy(const QNetworkProxy&)),
+  connect(this->_options->mainWidget,
+	  SIGNAL(loginPasswordFilled()), SLOT(connectToServer()));
+  connect(this->_options->advancedWidget,
+	  SIGNAL(resetProxy(const QNetworkProxy&)),
 	  SLOT(setProxy(const QNetworkProxy&)));
-  connect(this->_options, SIGNAL(chatOptionsChanged(bool, bool, bool)),
+  connect(this->_options->chatWidget,
+	  SIGNAL(chatOptionsChanged(bool, bool, bool)),
 	  SLOT(applyChatOptions(bool, bool, bool)));
 }
 

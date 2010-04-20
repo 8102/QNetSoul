@@ -1,5 +1,5 @@
 /*
-  Copyright 2009 Dally Richard
+  Copyright 2010 Dally Richard
   This file is part of QNetSoul.
   QNetSoul is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ void	Pastebin::pastebinIt(void)
 
       post_content.prepend("paste_private=1&paste_code=");
       this->_manager.post(QNetworkRequest(QUrl("http://pastebin.com/api_public.php")),
-			  QUrl::toPercentEncoding(post_content));
+			  post_content.toAscii());
     }
 }
 

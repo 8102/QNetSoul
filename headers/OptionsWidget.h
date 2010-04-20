@@ -15,28 +15,34 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef OPTIONS_WIDGET_H_
+#define OPTIONS_WIDGET_H_
 
-#include <QDir>
-#include <QDialog>
-#include "ui_Options.h"
+#include <QCheckBox>
+#include <QSettings>
 
-class Options : public QDialog, public Ui_Options
+class	Options;
+
+class	OptionsWidget
 {
-  Q_OBJECT
+public:
+  virtual void  setOptions(Options* options) { this->_options = options; }
 
-  public:
-  Options(QWidget* parent);
-  ~Options(void);
+  virtual void	readOptions(QSettings& settings) = 0;
+  virtual void	writeOptions(QSettings& settings) = 0;
+  virtual void	updateOptions(void) = 0;
+  virtual void	saveOptions(void) = 0;
 
-  void	readOptionSettings(void);
-  void	writeOptionSettings(void);
-  void	updateOptions(void);
-  void	applyOptions(void);
+protected:
+  void	setCheckState(QCheckBox* checkBox, const bool state)
+  {
+    (state)?
+      checkBox->setCheckState(Qt::Checked) :
+      checkBox->setCheckState(Qt::Unchecked);
+  }
 
-private slots:
-  void	save(void);
+protected:
+  Options*	_options;
 };
 
-#endif // OPTIONS_H
+#endif

@@ -3,11 +3,14 @@
 #include <algorithm>
 #include "Encryption.h"
 
-static std::string ascii_table =
-  "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+namespace
+{
+  const std::string ascii_table =
+    "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
-static std::string code =
-  "}T,f9D2E;SdHt#lY\\3AI|wZ-/K<_`[?o.e$xha*7cq5pzrj!OJy=UL1]R(ui>^'NVm)BF0:Xg@sPQ+{C8kn4vM~Wb\"G&%6";
+  const std::string code =
+    "}T,f9D2E;SdHt#lY\\3AI|wZ-/K<_`[?o.e$xha*7cq5pzrj!OJy=UL1]R(ui>^'NVm)BF0:Xg@sPQ+{C8kn4vM~Wb\"G&%6";
+}
 
 // tester avec "
 

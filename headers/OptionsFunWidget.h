@@ -15,28 +15,30 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef OPTIONS_FUN_WIDGET_H_
+#define OPTIONS_FUN_WIDGET_H_
 
 #include <QDir>
-#include <QDialog>
-#include "ui_Options.h"
+#include <QWidget>
+#include "OptionsWidget.h"
 
-class Options : public QDialog, public Ui_Options
+class	OptionsFunWidget : public QWidget, public OptionsWidget
 {
   Q_OBJECT
 
-  public:
-  Options(QWidget* parent);
-  ~Options(void);
+public:
+  OptionsFunWidget(QWidget* parent = 0);
+  ~OptionsFunWidget(void);
 
-  void	readOptionSettings(void);
-  void	writeOptionSettings(void);
+  bool	startingVdm(void) const { return this->_startingVdm; }
+
+  void	readOptions(QSettings& settings);
+  void	writeOptions(QSettings& settings);
   void	updateOptions(void);
-  void	applyOptions(void);
+  void	saveOptions(void);
 
-private slots:
-  void	save(void);
+private:
+  bool	_startingVdm;
 };
 
-#endif // OPTIONS_H
+#endif

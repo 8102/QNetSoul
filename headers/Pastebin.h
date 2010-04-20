@@ -1,5 +1,5 @@
 /*
-  Copyright 2009 Dally Richard
+  Copyright 2010 Dally Richard
   This file is part of QNetSoul.
   QNetSoul is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by

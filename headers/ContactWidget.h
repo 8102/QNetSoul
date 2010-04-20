@@ -1,5 +1,5 @@
 /*
-  Copyright 2009 Dally Richard
+  Copyright 2010 Dally Richard
   This file is part of QNetSoul.
   QNetSoul is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@ class	ContactWidget : public QWidget, public Ui_ContactWidget
 {
   Q_OBJECT
 
-    public:
+  public:
   ContactWidget(QWidget* parent, const QString& login, const QString& alias = "");
-  virtual ~ContactWidget(void);
+  ~ContactWidget(void);
 
   void		reset(void);
   int		getConnectionsSize(void) const { return this->_connections.size(); }

@@ -15,43 +15,41 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PORTRAITRESOLVER_H
-#define PORTRAITRESOLVER_H
+#ifndef OPTIONS_ADVANCED_WIDGET_H_
+#define OPTIONS_ADVANCED_WIDGET_H_
 
-#include <iostream>
 #include <QDir>
-#include <QFile>
-#include <QHttp>
-#include <QBuffer>
-#include <QObject>
+#include <QWidget>
 #include <QNetworkProxy>
-#include "PortraitRequest.h"
+#include "OptionsWidget.h"
 
-class	PortraitResolver : public QObject
+class	OptionsAdvancedWidget : public QWidget, public OptionsWidget
 {
   Q_OBJECT
 
-  public:
-  PortraitResolver(void);
-  ~PortraitResolver(void);
-  void	addRequest(const QStringList& logins);
-  void	addRequest(const QString& login, bool fun);
+public:
+  OptionsAdvancedWidget(QWidget* parent = 0);
+  ~OptionsAdvancedWidget(void);
 
-  static QString buildFilename(const QString& login, bool fun);
-  void	setProxy(const QNetworkProxy& p) { this->_http.setProxy(p); }
+  bool	isProxyEnabled(void) const { return this->_useProxy; }
 
-public slots:
-  void	finished(int id, bool error);
+  void	applyOption(void);
+  void	readOptions(QSettings& settings);
+  void	writeOptions(QSettings& settings);
+  void	updateOptions(void);
+  void	saveOptions(void);
+  bool	isValidProxy(void) const;
+  const QNetworkProxy getProxy(void) const;
 
 signals:
-  void	downloadedPortrait(const QString&);
+  void	resetProxy(const QNetworkProxy& p = QNetworkProxy());
 
 private:
-  void	setupPortraitDirectory(void);
-
-  QDir _dir;
-  QHttp _http;
-  QList<PortraitRequest*> _requests;
+  bool		_useProxy;
+  QString	_proxy;
+  QString	_proxyPort;
+  QString	_proxyLogin;
+  QString	_proxyPassword;
 };
 
-#endif // PORTRAITRESOLVER_H
+#endif

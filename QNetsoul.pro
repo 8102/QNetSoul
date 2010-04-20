@@ -1,3 +1,4 @@
+#CONFIG += debug
 QT += network
 TEMPLATE = app
 TARGET = QNetSoul
@@ -34,6 +35,12 @@ HEADERS += headers/QNetsoul.h \
     headers/Encryption.h \
     headers/Pastebin.h \
     headers/TrayIcon.h \
+    headers/OptionsWidget.h \
+    headers/OptionsMainWidget.h \
+    headers/OptionsChatWidget.h \
+    headers/OptionsBlockedWidget.h \
+    headers/OptionsFunWidget.h \
+    headers/OptionsAdvancedWidget.h \
     headers/Randn.h
 FORMS += ui/QNetsoul.ui \
     ui/Options.ui \
@@ -59,6 +66,11 @@ SOURCES += src/main.cpp \
     src/Pastebin.cpp \
     src/Encryption.cpp \
     src/TrayIcon.cpp \
+    src/OptionsMainWidget.cpp \
+    src/OptionsChatWidget.cpp \
+    src/OptionsBlockedWidget.cpp \
+    src/OptionsFunWidget.cpp \
+    src/OptionsAdvancedWidget.cpp \
     src/Randn.cpp
 
 # Output

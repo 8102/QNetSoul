@@ -1,5 +1,5 @@
 /*
-  Copyright 2009 Dally Richard
+  Copyright 2010 Dally Richard
   This file is part of QNetSoul.
   QNetSoul is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,7 +21,10 @@
 #include "Url.h"
 #include "PortraitResolver.h"
 
-const QString	DIR_NAME = "portraits";
+namespace
+{
+  const QString	DirName = "portraits";
+}
 
 PortraitResolver::PortraitResolver(void)
   : _dir(QDir::currentPath()), _http("www.epitech.net")
@@ -82,7 +85,7 @@ void	PortraitResolver::finished(int requestId, bool error)
 	  if (false == error)
             {
 	      QImage	img = QImage::fromData(this->_requests[i]->bytes);
-	      if (img.save(DIR_NAME + '/' + buildFilename(this->_requests[i]->login, this->_requests[i]->fun)))
+	      if (img.save(DirName + '/' + buildFilename(this->_requests[i]->login, this->_requests[i]->fun)))
 		emit downloadedPortrait(this->_requests[i]->login);
             }
 	  else
@@ -99,11 +102,9 @@ void	PortraitResolver::finished(int requestId, bool error)
 
 void	PortraitResolver::setupPortraitDirectory(void)
 {
-  if (!this->_dir.exists(DIR_NAME))
-    {
-      this->_dir.mkdir(DIR_NAME);
-    }
-  this->_dir.cd(DIR_NAME);
+  if (!this->_dir.exists(DirName))
+    this->_dir.mkdir(DirName);
+  this->_dir.cd(DirName);
 }
 
 QString	PortraitResolver::buildFilename(const QString& login, bool fun)

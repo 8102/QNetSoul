@@ -15,28 +15,41 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef OPTIONS_BLOCKED_WIDGET_H_
+#define OPTIONS_BLOCKED_WIDGET_H_
 
 #include <QDir>
-#include <QDialog>
-#include "ui_Options.h"
+#include <QWidget>
+#include "OptionsWidget.h"
 
-class Options : public QDialog, public Ui_Options
+class	OptionsBlockedWidget : public QWidget, public OptionsWidget
 {
   Q_OBJECT
 
-  public:
-  Options(QWidget* parent);
-  ~Options(void);
+public:
+  OptionsBlockedWidget(QWidget* parent = 0);
+  ~OptionsBlockedWidget(void);
 
-  void	readOptionSettings(void);
-  void	writeOptionSettings(void);
+  void	setOptions(Options* options);
+  void	readOptions(QSettings& settings);
+  void	writeOptions(QSettings& settings);
   void	updateOptions(void);
-  void	applyOptions(void);
+  void	saveOptions(void);
 
 private slots:
-  void	save(void);
+  void	addBlockedContact(QString login = "");
+  void	deleteBlockedContact(void);
+  void	deleteAllBlockedContacts(void);
+
+private:
+  void  setupConfigDir(void);
+  void  saveBlockedContacts(void);
+
+public:
+  void  loadBlockedContacts(void);
+
+private:
+  QDir          _configDir;
 };
 
-#endif // OPTIONS_H
+#endif

@@ -1,5 +1,5 @@
 /*
-  Copyright 2009 Dally Richard
+  Copyright 2010 Dally Richard
   This file is part of QNetSoul.
   QNetSoul is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,12 +24,12 @@ class	InputTextEdit : public QTextEdit
 {
   Q_OBJECT
 
-    public:
+  public:
   InputTextEdit(QWidget* parent = 0);
-  virtual ~InputTextEdit(void);
+  ~InputTextEdit(void);
 
  protected:
-  virtual void	keyPressEvent(QKeyEvent* event);
+  void	keyPressEvent(QKeyEvent* event);
 
  signals:
   void	returnPressed(void);

@@ -66,7 +66,7 @@
    <property name="currentIndex">
     <number>0</number>
    </property>
-   <widget class="QWidget" name="mainWidget">
+   <widget class="OptionsMainWidget" name="mainWidget">
     <attribute name="title">
      <string>Main</string>
     </attribute>
@@ -250,7 +250,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="chatWidget">
+   <widget class="OptionsChatWidget" name="chatWidget">
     <attribute name="title">
      <string>Chat</string>
     </attribute>
@@ -361,7 +361,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="blockedWidget">
+   <widget class="OptionsBlockedWidget" name="blockedWidget">
     <attribute name="title">
      <string>Blocked contacts</string>
     </attribute>
@@ -427,7 +427,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="funWidget">
+   <widget class="OptionsFunWidget" name="funWidget">
     <attribute name="title">
      <string>Fun</string>
     </attribute>
@@ -449,7 +449,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="advancedWidget">
+   <widget class="OptionsAdvancedWidget" name="advancedWidget">
     <attribute name="title">
      <string>Advanced</string>
     </attribute>
@@ -582,6 +582,38 @@
    </widget>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>OptionsMainWidget</class>
+   <extends>QWidget</extends>
+   <header>OptionsMainWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>OptionsChatWidget</class>
+   <extends>QWidget</extends>
+   <header>OptionsChatWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>OptionsBlockedWidget</class>
+   <extends>QWidget</extends>
+   <header>OptionsBlockedWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>OptionsFunWidget</class>
+   <extends>QWidget</extends>
+   <header>OptionsFunWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>OptionsAdvancedWidget</class>
+   <extends>QWidget</extends>
+   <header>OptionsAdvancedWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>tabWidget</tabstop>
   <tabstop>serverLineEdit</tabstop>

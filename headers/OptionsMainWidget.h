@@ -15,28 +15,41 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef OPTION_MAIN_WIDGET_H_
+#define OPTION_MAIN_WIDGET_H_
 
-#include <QDir>
-#include <QDialog>
-#include "ui_Options.h"
+#include <QWidget>
+#include "OptionsWidget.h"
 
-class Options : public QDialog, public Ui_Options
+class	OptionsMainWidget : public QWidget, public OptionsWidget
 {
   Q_OBJECT
 
   public:
-  Options(QWidget* parent);
-  ~Options(void);
+  OptionsMainWidget(QWidget* parent = 0);
+  ~OptionsMainWidget(void);
 
-  void	readOptionSettings(void);
-  void	writeOptionSettings(void);
+  bool	autoConnect(void) const { return this->_autoConnect; }
+  void	setConnectionOnOk(const bool& value) { this->_connectOnOk = value; }
+
+  void	readOptions(QSettings& settings);
+  void	writeOptions(QSettings& settings);
   void	updateOptions(void);
-  void	applyOptions(void);
+  void	saveOptions(void);
 
-private slots:
-  void	save(void);
+signals:
+  void	loginPasswordFilled(void);
+
+private:
+  QString	_server;
+  QString	_port;
+  QString	_login;
+  QString	_location;
+  QString	_comment;
+  QString	_password;
+  bool		_savePassword;
+  bool		_autoConnect;
+  bool		_connectOnOk;
 };
 
-#endif // OPTIONS_H
+#endif
