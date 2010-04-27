@@ -172,7 +172,7 @@ void	QNetsoul::showVdmInBalloon(const QString& message)
       // DEBUG EXCEPTION v0.07
       try
 	{
-	  this->_trayIcon->showMessage("Vie de merde", message, 15000);
+	  this->_trayIcon->showMessage("Vie de merde", message, 30000);
 	}
       catch (...)
 	{
