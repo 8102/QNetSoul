@@ -62,11 +62,19 @@ void	OptionsBlockedWidget::saveOptions(void)
 {
 }
 
-void	OptionsBlockedWidget::addBlockedContact(QString login)
+void	OptionsBlockedWidget::addBlockedContact(void)
 {
-  if (login.isEmpty())
-    login = QInputDialog::getText(this, tr("Block login"), tr("Login to block:"));
+  QString login =
+    QInputDialog::getText(this, tr("Block login"), tr("Login to block:"));
 
+  if (login.isEmpty())
+    return;
+
+  addBlockedContact(login);
+}
+
+void	OptionsBlockedWidget::addBlockedContact(const QString& login)
+{
   // if login isnt found in the list, add it.
   if (!this->_options->listWidget->findItems(login, Qt::MatchFixedString).size())
     {

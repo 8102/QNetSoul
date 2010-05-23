@@ -37,7 +37,8 @@ public:
   void	saveOptions(void);
 
 private slots:
-  void	addBlockedContact(QString login = "");
+  void	addBlockedContact(void);
+  void	addBlockedContact(const QString& login);
   void	deleteBlockedContact(void);
   void	deleteAllBlockedContacts(void);
 

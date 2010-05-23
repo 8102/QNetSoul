@@ -64,6 +64,9 @@ p, li { white-space: pre-wrap; }
         <attribute name="headerVisible">
          <bool>false</bool>
         </attribute>
+        <attribute name="headerVisible">
+         <bool>false</bool>
+        </attribute>
        </widget>
       </item>
       <item row="1" column="0">
@@ -119,7 +122,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>411</width>
-     <height>25</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOptions">
