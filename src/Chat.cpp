@@ -88,8 +88,8 @@ void	Chat::insertSmileys(void)
 // Version 0.04 replaced url + html entities "< >"
 void	Chat::replaceUrls(QString msg)
 {
-  msg = Qt::escape(msg); // magic function <3
-  msg.replace(QRegExp("(https?://[a-zA-Z0-9.:_/?=&-]+)"), "<a href='\\1'>\\1</a>");
+  //msg = Qt::escape(msg); // magic function <3
+  msg.replace(QRegExp("(https?://[a-zA-Z0-9.+%:_/?=&-]+)"), "<a href='\\1'>\\1</a>");
   this->outputTextBrowser->insertHtml(msg);
 }
 
