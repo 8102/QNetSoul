@@ -31,6 +31,7 @@
 #include "Pastebin.h"
 #include "VieDeMerde.h"
 #include "ChuckNorrisFacts.h"
+#include "QSlidingPopup.h"
 #include "TrayIcon.h"
 
 class	QMenu;
@@ -119,6 +120,7 @@ private:
   bool				_exitOnEscape;
   bool				_typingNotification;
   bool				_smileys;
+  QSlidingPopup			_popup;
 };
 
 #endif // QNETSOUL_H_

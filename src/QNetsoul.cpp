@@ -32,7 +32,8 @@ QNetsoul::QNetsoul(QWidget* parent)
 	_addContact(new AddContact(this)),
 	_standardItemModel(new QStandardItemModel(this)),
 	_trayIcon(NULL),
-	_typingNotification(false)
+	_typingNotification(false),
+	_popup(300, 200)
 {
   setupUi(this);
   if (QSystemTrayIcon::isSystemTrayAvailable())
@@ -129,7 +130,6 @@ void	QNetsoul::disconnect(void)
 {
   resetAllContacts();
   this->_network->disconnect();
-
 }
 
 void	QNetsoul::updateWidgets(const QAbstractSocket::SocketState& state)
@@ -167,6 +167,9 @@ void	QNetsoul::updateWidgets(const QAbstractSocket::SocketState& state)
 
 void	QNetsoul::showVdmInBalloon(const QString& message)
 {
+  this->_popup.showUp(message, 20000);
+
+  /*
   if (this->_trayIcon)
     {
       // DEBUG EXCEPTION v0.07
@@ -179,6 +182,7 @@ void	QNetsoul::showVdmInBalloon(const QString& message)
 	  std::cerr << "Crash detected in showVdmInBalloon..." << std::endl;
 	}
     }
+  */
 }
 
 void	QNetsoul::saveStateBeforeQuiting(void)
@@ -497,11 +501,11 @@ void	QNetsoul::processHandShaking(int step, QStringList args)
 	message.append(hex);
 	message.append(' ');
 	message.append(url_encode(location.toStdString().c_str()));
+	//message.append(QUrl::toPercentEncoding(location.toLatin1()));
 	message.append(' ');
 	message.append(url_encode(comment.toStdString().c_str()));
+	//message.append(QUrl::toPercentEncoding(comment.toLatin1()));
 	message.append('\n');
-	// DEBUG
-	//std::cerr << message.data() << std::endl;
 	this->_network->sendMessage(message);
 	break;
       }
@@ -538,6 +542,7 @@ void	QNetsoul::transmitMsg(const QString& login, const QString& msg)
     {
       chat->insertMessage(this->_options->loginLineEdit->text(), msg, QColor(32, 74, 135));
     }
+
   QByteArray	result;
   result.append("user_cmd msg_user " + login + " msg ");
   result.append(url_encode(msg.toStdString().c_str()));

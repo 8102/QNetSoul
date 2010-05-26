@@ -41,6 +41,8 @@ HEADERS += headers/QNetsoul.h \
     headers/OptionsBlockedWidget.h \
     headers/OptionsFunWidget.h \
     headers/OptionsAdvancedWidget.h \
+    headers/QPopup.h \
+    headers/QSlidingPopup.h \
     headers/Randn.h
 FORMS += ui/QNetsoul.ui \
     ui/Options.ui \
@@ -71,6 +73,8 @@ SOURCES += src/main.cpp \
     src/OptionsBlockedWidget.cpp \
     src/OptionsFunWidget.cpp \
     src/OptionsAdvancedWidget.cpp \
+    src/QPopup.cpp \
+    src/QSlidingPopup.cpp \
     src/Randn.cpp
 
 # Output
