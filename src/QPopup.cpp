@@ -5,12 +5,13 @@
 namespace
 {
   qreal INITIAL_OPACITY = 0.9;
-  qreal HOVER_OPACITY = 0.05;
+  qreal HOVER_OPACITY = 0.2;
 }
 
 QPopup::QPopup(const int width, const int height)
   : _popupWidth(width), _popupHeight(height),
-    _textColor("#CC6633"), _cache(NULL)
+    _textColor("#CC6633"), _backgroundColor("#171722"),
+    _frameColor("#B1B1CB"), _cache(NULL)
 {
   init();
   this->_hiddingTrigger = new QTimer(this);
@@ -22,18 +23,11 @@ QPopup::~QPopup(void)
 {
 }
 
-void	QPopup::setTextColor(const QColor& color)
-{
-  if (color.isValid())
-    this->_textColor = color;
-  else
-    std::cerr << "[QPopup::setTextColor] color is invalid." << std::endl;
-}
-
 void	QPopup::showUp(const QString& text, const int timeout)
 {
   if (isVisible()) stopAnimation();
 
+  setWindowOpacity(INITIAL_OPACITY);
   this->_text.setText("<font color=" + this->_textColor.name() + '>' +
 		      text + "</font>");
   this->_hiddingTrigger->setInterval(timeout);
@@ -57,9 +51,6 @@ void	QPopup::paintEvent(QPaintEvent* event)
 
       QPainter painter(this->_cache);
 
-      QColor darkBlue(23, 23, 34);
-      QColor lightBlue(177, 177, 203);
-
       // Window's background
       QPolygon background;
 
@@ -72,8 +63,8 @@ void	QPopup::paintEvent(QPaintEvent* event)
 		 << QPoint(          16,      height())
 		 << QPoint(           0, height() -  16);
 
-      painter.setPen  (QPen  (darkBlue));
-      painter.setBrush(QBrush(darkBlue));
+      painter.setPen  (QPen  (this->_backgroundColor));
+      painter.setBrush(QBrush(this->_backgroundColor));
 
       painter.drawPolygon(background);
 
@@ -89,7 +80,7 @@ void	QPopup::paintEvent(QPaintEvent* event)
 	    << QPoint(          20,  height() - 4)
 	    << QPoint(           4, height() -  20);
 
-      painter.setPen(QPen(lightBlue));
+      painter.setPen(QPen(this->_frameColor));
       painter.setBrush(Qt::NoBrush);
 
       painter.drawPolygon(frame);
@@ -150,7 +141,6 @@ void	QPopup::init(void)
 	      this->_popupHeight);
   setLayout(&this->_layout);
 
-  setWindowOpacity(INITIAL_OPACITY);
   setWindowFlags(Qt::Popup);
 //   setWindowFlags(Qt::Popup |
 // 		 Qt::CustomizeWindowHint |

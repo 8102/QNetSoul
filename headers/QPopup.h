@@ -18,8 +18,10 @@ class	QPopup : public QWidget
   QPopup(const int width, const int height);
   ~QPopup(void);
 
-  void	setTextColor(const QColor& color);
   void	showUp(const QString& text, const int timeout = 10000);
+  void	setTextColor(const QColor& c) { this->_textColor = c; }
+  void	setBackgroundColor(const QColor& c) { this->_backgroundColor = c; }
+  void	setFrameColor(const QColor& c) { this->_frameColor = c; }
 
 protected:
   virtual void	paintEvent(QPaintEvent* event);
@@ -42,6 +44,8 @@ protected:
 
   QLabel _text;
   QColor _textColor;
+  QColor _backgroundColor;
+  QColor _frameColor;
   QGridLayout _layout;
   QPixmap* _cache;
   QTimer* _hiddingTrigger;
