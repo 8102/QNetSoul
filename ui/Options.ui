@@ -656,8 +656,8 @@
      <y>332</y>
     </hint>
     <hint type="destinationlabel">
-     <x>71</x>
-     <y>325</y>
+     <x>135</x>
+     <y>335</y>
     </hint>
    </hints>
   </connection>
@@ -672,8 +672,8 @@
      <y>326</y>
     </hint>
     <hint type="destinationlabel">
-     <x>159</x>
-     <y>309</y>
+     <x>227</x>
+     <y>313</y>
     </hint>
    </hints>
   </connection>

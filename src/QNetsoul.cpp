@@ -58,6 +58,7 @@ QNetsoul::QNetsoul(QWidget* parent)
 
 QNetsoul::~QNetsoul(void)
 {
+  delete this->_trayIcon;
 }
 
 void	QNetsoul::closeEvent(QCloseEvent* event)
