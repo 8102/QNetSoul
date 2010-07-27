@@ -141,11 +141,7 @@ void	QPopup::init(void)
 	      this->_popupHeight);
   setLayout(&this->_layout);
 
-  setWindowFlags(Qt::Popup);
-//   setWindowFlags(Qt::Popup |
-// 		 Qt::CustomizeWindowHint |
-// 		 Qt::FramelessWindowHint);
-
   setMouseTracking(true);
+  setWindowFlags(Qt::ToolTip);
   setAttribute(Qt::WA_TranslucentBackground);
 }
