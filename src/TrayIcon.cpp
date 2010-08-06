@@ -59,14 +59,14 @@ void	TrayIcon::changeStatus(void)
 void	TrayIcon::setupTrayIcon(QNetsoul* parent)
 {
   QAction*	action;
-
   QMenu* menu = new QMenu(parent);
 
   // Vdm
-  action = new QAction(QIcon(":/images/tongue.png"), tr("&Vie de merde"), parent);
-  menu->addAction(action);
-  connect(action, SIGNAL(triggered()),
-	  parent->actionGet_a_life, SIGNAL(triggered()));
+  menu->addAction(QIcon(":/images/vdm.png"), "&Vie de merde",
+		  parent->actionVDM, SIGNAL(triggered()));
+  menu->addAction(QIcon(":/images/chucknorris.png"),
+		  tr("&Chuck Norris facts"),
+		  parent->actionCNF, SIGNAL(triggered()));
 
   // Change status action
   this->_statusMenu = new QMenu(tr("&Change status"), parent);
@@ -95,10 +95,8 @@ void	TrayIcon::setupTrayIcon(QNetsoul* parent)
   connect(action, SIGNAL(triggered()), SLOT(changeStatus()));
 
   // Quit action
-  action = new QAction(QIcon(":/images/quit.png"), tr("&Quit"), menu);
-  connect(action, SIGNAL(triggered()),
-	  parent, SLOT(saveStateBeforeQuiting()));
-  menu->addAction(action);
+  menu->addAction(QIcon(":/images/quit.png"), tr("&Quit"),
+		  parent, SLOT(saveStateBeforeQuiting()));
 
   setContextMenu(menu);
   connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),

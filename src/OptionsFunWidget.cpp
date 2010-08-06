@@ -16,12 +16,13 @@
 */
 
 #include <QFile>
+#include <iostream>
 #include <QInputDialog>
 #include "Options.h"
 #include "OptionsFunWidget.h"
 
 OptionsFunWidget::OptionsFunWidget(QWidget* parent)
-  : QWidget(parent), _startingVdm(false)
+  : QWidget(parent), _startWith(tr("Nothing"))
 {
 }
 
@@ -29,26 +30,47 @@ OptionsFunWidget::~OptionsFunWidget(void)
 {
 }
 
-void	OptionsFunWidget::readOptions(QSettings& settings)
+void    OptionsFunWidget::init(void)
+{
+  Q_ASSERT(this->_options->nothingRadioButton);
+  Q_ASSERT(this->_options->vdmRadioButton);
+  Q_ASSERT(this->_options->cnfRadioButton);
+
+  this->_choices << this->_options->nothingRadioButton
+                 << this->_options->vdmRadioButton
+                 << this->_options->cnfRadioButton;
+}
+
+void    OptionsFunWidget::readOptions(QSettings& settings)
 {
   settings.beginGroup("FunOptions");
-  this->_startingVdm = settings.value("startingVdm", bool(false)).toBool();
+  this->_startWith = settings.value("startWith", tr("Nothing")).toString();
   settings.endGroup();
 }
 
-void	OptionsFunWidget::writeOptions(QSettings& settings)
+void    OptionsFunWidget::writeOptions(QSettings& settings)
 {
   settings.beginGroup("FunOptions");
-  settings.setValue("startingVdm", this->_startingVdm);
+  settings.setValue("startWith", this->_startWith);
   settings.endGroup();
 }
 
-void	OptionsFunWidget::updateOptions(void)
+void    OptionsFunWidget::updateOptions(void)
 {
-  setCheckState(this->_options->startingVdmCheckBox, this->_startingVdm);
+  for (int i = 0; i < this->_choices.size(); ++i)
+    {
+      if (this->_startWith == this->_choices.at(i)->text())
+	{
+	  this->_choices.at(i)->setChecked(true);
+	}
+    }
 }
 
-void	OptionsFunWidget::saveOptions(void)
+void    OptionsFunWidget::saveOptions(void)
 {
-  this->_startingVdm = this->_options->startingVdmCheckBox->checkState();
+  for (int i = 0; i < this->_choices.size(); ++i)
+    {
+      if (this->_choices.at(i)->isChecked())
+        this->_startWith = this->_choices.at(i)->text();
+    }
 }

@@ -23,23 +23,36 @@
 #include <QNetworkAccessManager>
 #include "Url.h"
 #include "Randn.h"
+#include "QSlidingPopup.h"
 #include "ChuckNorrisFacts.h"
 
-const char*	facts_url =
-  "http://www.chucknorrisfacts.fr/fortunes/fortunes.txt";
+namespace
+{
+  void     replaceHtmlSpecialChars(QString& str)
+  {
+    str.replace("&amp;", "&");
+    str.replace("&#039;", "'");
+    str.replace("&quot;", "\"");
+    str.replace("&lt;", "<");
+    str.replace("&gt;", ">");
+    str.replace("&agrave", "à");
+  }
+  const char*   facts_url =
+    "http://www.chucknorrisfacts.fr/fortunes/fortunes.txt";
+}
 
-ChuckNorrisFacts::ChuckNorrisFacts(void)
+ChuckNorrisFacts::ChuckNorrisFacts(QSlidingPopup* popup) : _popup(popup)
 {
   this->_manager = new QNetworkAccessManager(this);
   connect(this->_manager, SIGNAL(finished(QNetworkReply*)),
-	  this, SLOT(replyFinished(QNetworkReply*)));
+          this, SLOT(replyFinished(QNetworkReply*)));
 }
 
 ChuckNorrisFacts::~ChuckNorrisFacts(void)
 {
 }
 
-void	ChuckNorrisFacts::getFact(void)
+void    ChuckNorrisFacts::getFact(void)
 {
   if (0 == this->_facts.size())
     this->_manager->get(QNetworkRequest(QUrl(facts_url)));
@@ -47,31 +60,19 @@ void	ChuckNorrisFacts::getFact(void)
     pickAFact();
 }
 
-void	ChuckNorrisFacts::pickAFact(void)
+void    ChuckNorrisFacts::pickAFact(void)
 {
-  const int	size = this->_facts.size();
+  Q_ASSERT(this->_popup);
+  const int size = this->_facts.size();
 
-  if (size)
-    {
-      std::cerr << this->_facts.at(rand_n(size)).toStdString() << std::endl;
-      //emit sendChuckNorrisFactToQNetsoul(this->_facts.at(rand_n(size)));
-    }
+  if (size > 0)
+    this->_popup->showUp(this->_facts.at(rand_n(size)), 15000);
 }
 
-static void	replaceHtmlSpecialChars(QString& str)
+void    ChuckNorrisFacts::replyFinished(QNetworkReply* reply)
 {
-  str.replace("&amp;", "&");
-  str.replace("&#039;", "'");
-  str.replace("&quot;", "\"");
-  str.replace("&lt;", "<");
-  str.replace("&gt;", ">");
-  str.replace("&agrave", "à");
-}
-
-void	ChuckNorrisFacts::replyFinished(QNetworkReply* reply)
-{
-  QByteArray	array = reply->readAll();
-  QString	buffer(QString::fromUtf8(array));
+  QByteArray    array = reply->readAll();
+  QString       buffer(QString::fromUtf8(array));
 
   replaceHtmlSpecialChars(buffer);
   this->_facts = buffer.split("%\n", QString::SkipEmptyParts);

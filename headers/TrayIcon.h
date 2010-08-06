@@ -30,8 +30,8 @@ private:
   void	setupTrayIcon(QNetsoul* parent);
 
 private:
-  QMenu*	_statusMenu;
-  QTimer	_blinkingTimer;
+  QMenu* _statusMenu;
+  QTimer _blinkingTimer;
 
 signals:
   void	moveComboBox(int);

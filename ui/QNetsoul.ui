@@ -23,7 +23,7 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;About QNetSoul&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Version 0.2&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Version: beta 0.3&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The first Netsoul's client built with the great framework Qt.&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Feel free to send your opinion/comments on this software.&lt;/p&gt;
@@ -159,12 +159,18 @@ p, li { white-space: pre-wrap; }
     <addaction name="action_Load_contacts"/>
     <addaction name="actionSave_contacts_as"/>
     <addaction name="actionToggle_sort_contacts"/>
-    <addaction name="separator"/>
-    <addaction name="actionGet_a_life"/>
+   </widget>
+   <widget class="QMenu" name="menuFeaturettes">
+    <property name="title">
+     <string>Fun</string>
+    </property>
+    <addaction name="actionVDM"/>
+    <addaction name="actionCNF"/>
     <addaction name="actionPastebin"/>
    </widget>
    <addaction name="menuQNetsoul"/>
    <addaction name="menuAccount"/>
+   <addaction name="menuFeaturettes"/>
    <addaction name="menuOptions"/>
    <addaction name="menuAbout"/>
   </widget>
@@ -323,13 +329,13 @@ p, li { white-space: pre-wrap; }
     <string>F5</string>
    </property>
   </action>
-  <action name="actionGet_a_life">
+  <action name="actionVDM">
    <property name="icon">
     <iconset resource="../Images.qrc">
-     <normaloff>:/images/tongue.png</normaloff>:/images/tongue.png</iconset>
+     <normaloff>:/images/vdm.png</normaloff>:/images/vdm.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Get a life</string>
+    <string>&amp;Vie de merde</string>
    </property>
    <property name="shortcut">
     <string>F6</string>
@@ -342,6 +348,18 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text">
     <string>&amp;Pastebin</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
+   </property>
+  </action>
+  <action name="actionCNF">
+   <property name="icon">
+    <iconset resource="../Images.qrc">
+     <normaloff>:/images/chucknorris.png</normaloff>:/images/chucknorris.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Chuck Norris facts</string>
    </property>
    <property name="shortcut">
     <string>F7</string>

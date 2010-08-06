@@ -22,14 +22,14 @@
 #include "Options.h"
 #include "Encryption.h"
 
-Options::Options(QWidget* parent)
-  : QDialog(parent)
+Options::Options(QWidget* parent) : QDialog(parent)
 {
   setupUi(this);
   this->mainWidget->setOptions(this);
   this->chatWidget->setOptions(this);
   this->blockedWidget->setOptions(this);
   this->funWidget->setOptions(this);
+  this->funWidget->init();
   this->advancedWidget->setOptions(this);
   readOptionSettings();
   updateOptions();
@@ -41,9 +41,9 @@ Options::~Options(void)
 {
 }
 
-void		Options::readOptionSettings(void)
+void	Options::readOptionSettings(void)
 {
-  QSettings	settings("Epitech", "QNetsoul");
+  QSettings settings("Epitech", "QNetsoul");
 
   this->mainWidget->readOptions(settings);
   this->chatWidget->readOptions(settings);
@@ -52,9 +52,9 @@ void		Options::readOptionSettings(void)
   this->advancedWidget->readOptions(settings);
 }
 
-void		Options::writeOptionSettings(void)
+void	Options::writeOptionSettings(void)
 {
-  QSettings	settings("Epitech", "QNetsoul");
+  QSettings settings("Epitech", "QNetsoul");
 
   this->mainWidget->writeOptions(settings);
   this->chatWidget->writeOptions(settings);
@@ -84,4 +84,5 @@ void	Options::save(void)
   this->funWidget->saveOptions();
   this->chatWidget->saveOptions();
   this->mainWidget->saveOptions();
+  writeOptionSettings();
 }

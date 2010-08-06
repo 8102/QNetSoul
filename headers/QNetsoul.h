@@ -54,11 +54,11 @@ protected:
 
 private slots:
   void	connectToServer(void);
+  void	ping(void);
   void	reconnect(void);
   void	disconnect(void);
   void	updateWidgets(const QAbstractSocket::SocketState&);
 
-  void	showVdmInBalloon(const QString& message);
   void	saveStateBeforeQuiting(void);
   void	openAddContactDialog(void);
   void	openOptionsDialog(QLineEdit* newLineFocus = 0);
@@ -114,13 +114,14 @@ private:
   QString			_timeStamp;
   QPoint			_oldPos;
   PortraitResolver		_portraitResolver;
-  VieDeMerde			_vdm;
   Pastebin			_pastebin;
-  ChuckNorrisFacts		_cnf;
   bool				_exitOnEscape;
   bool				_typingNotification;
   bool				_smileys;
   QSlidingPopup			_popup;
+  VieDeMerde			_vdm;
+  ChuckNorrisFacts		_cnf;
+  QTimer			_ping;
 };
 
 #endif // QNETSOUL_H_

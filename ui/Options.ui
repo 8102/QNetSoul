@@ -25,6 +25,10 @@
   <property name="windowTitle">
    <string>Options</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../Images.qrc">
+    <normaloff>:/images/contact.png</normaloff>:/images/contact.png</iconset>
+  </property>
   <widget class="QPushButton" name="okPushButton">
    <property name="geometry">
     <rect>
@@ -431,21 +435,79 @@
     <attribute name="title">
      <string>Fun</string>
     </attribute>
-    <widget class="QCheckBox" name="startingVdmCheckBox">
+    <widget class="QRadioButton" name="nothingRadioButton">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>50</y>
+       <width>341</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Nothing</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="vdmRadioButton">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>80</y>
+       <width>341</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Vie de merde</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../Images.qrc">
+       <normaloff>:/images/vdm.png</normaloff>:/images/vdm.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="cnfRadioButton">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>120</y>
+       <width>351</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Chuck Norris facts</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../Images.qrc">
+       <normaloff>:/images/chucknorris.png</normaloff>:/images/chucknorris.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QLabel" name="startwithLabel">
      <property name="geometry">
       <rect>
        <x>20</x>
        <y>20</y>
-       <width>221</width>
-       <height>23</height>
+       <width>341</width>
+       <height>17</height>
       </rect>
      </property>
      <property name="text">
-      <string>Vie de merde at starting</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../Images.qrc">
-       <normaloff>:/images/tongue.png</normaloff>:/images/tongue.png</iconset>
+      <string>QNetSoul starts with...</string>
      </property>
     </widget>
    </widget>

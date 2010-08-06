@@ -23,49 +23,51 @@
 #include <QNetworkAccessManager>
 #include "Url.h"
 #include "VieDeMerde.h"
+#include "QSlidingPopup.h"
 
-VieDeMerde::VieDeMerde(void)
+namespace
+{
+  void  replaceHtmlSpecialChars(QString& str)
+  {
+    str.replace("&amp;", "&");
+    str.replace("&#039;", "'");
+    str.replace("&quot;", "\"");
+    str.replace("&lt;", "<");
+    str.replace("&gt;", ">");
+  }
+  const QUrl vdmUrl =
+    QUrl("http://api.viedemerde.fr/1.2/view/random?key=readonly");
+}
+
+VieDeMerde::VieDeMerde(QSlidingPopup* popup) : _popup(popup)
 {
   this->_manager = new QNetworkAccessManager(this);
   connect(this->_manager, SIGNAL(finished(QNetworkReply*)),
-	  SLOT(replyFinished(QNetworkReply*)));
+          SLOT(replyFinished(QNetworkReply*)));
 }
 
 VieDeMerde::~VieDeMerde(void)
 {
 }
 
-void	VieDeMerde::getALife(void)
+void    VieDeMerde::getALife(void)
 {
-  this->_manager->get(QNetworkRequest(QUrl("http://api.viedemerde.fr/1.2/view/random?key=readonly")));
+  this->_manager->get(QNetworkRequest(vdmUrl));
 }
 
-/*
-  01/03/2010
-  Trouver l'equivalent en Qt... parce que c'est trop lame cette fonction...
-*/
-static void	replaceHtmlSpecialChars(QString& str)
+void    VieDeMerde::replyFinished(QNetworkReply* reply)
 {
-  str.replace("&amp;", "&");
-  str.replace("&#039;", "'");
-  str.replace("&quot;", "\"");
-  str.replace("&lt;", "<");
-  str.replace("&gt;", ">");
-}
+  Q_ASSERT(this->_popup);
+  QByteArray    array = reply->readAll();
 
-void	VieDeMerde::replyFinished(QNetworkReply* reply)
-{
-  QByteArray	array = reply->readAll();
-
-
-  QString	buffer(QString::fromUtf8(array));
-  QRegExp	textRegExp("<texte>(.+)</texte>");
+  QString       buffer(QString::fromUtf8(array));
+  QRegExp       textRegExp("<texte>(.+)</texte>");
 
   replaceHtmlSpecialChars(buffer);
   if (buffer.contains(textRegExp))
     {
       //std::cerr << textRegExp.cap(1).toStdString() << std::endl;
-      emit sendVdmToQNetsoul(textRegExp.cap(1));
+      this->_popup->showUp(textRegExp.cap(1), 20000);
     }
   reply->deleteLater();
 }

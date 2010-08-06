@@ -1,7 +1,9 @@
 <RCC>
-  <qresource prefix="/" >
-    <file>images/user.png</file>
-    <file>images/users.png</file>
+  <qresource prefix="/">
+    <file>images/group.png</file>
+    <file>images/contact.png</file>
+    <file>images/vdm.png</file>
+    <file>images/chucknorris.png</file>
     <file>images/search.png</file>
     <file>images/unread.png</file>
     <file>images/about.png</file>

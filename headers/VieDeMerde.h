@@ -22,27 +22,27 @@
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
 
-class	VieDeMerde : public QObject
+class   QSlidingPopup;
+
+class   VieDeMerde : public QObject
 {
   Q_OBJECT
 
     public:
-  VieDeMerde(void);
+  VieDeMerde(QSlidingPopup* popup);
   virtual ~VieDeMerde(void);
 
-  void	setProxy(const QNetworkProxy& p) { this->_manager->setProxy(p); }
+  void  setProxy(const QNetworkProxy& p) { this->_manager->setProxy(p); }
 
   public slots:
-  void	getALife(void);
-
- signals:
-  void	sendVdmToQNetsoul(const QString& message);
+  void  getALife(void);
 
   private slots:
-  void	replyFinished(QNetworkReply* reply);
+  void  replyFinished(QNetworkReply* reply);
 
  private:
-  QNetworkAccessManager*	_manager;
+  QSlidingPopup*         _popup;
+  QNetworkAccessManager* _manager;
 };
 
 #endif // VIEDEMERDE_H

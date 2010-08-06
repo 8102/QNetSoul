@@ -23,31 +23,31 @@
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
 
-class	ChuckNorrisFacts : public QObject
+class   QSlidingPopup;
+
+class   ChuckNorrisFacts : public QObject
 {
   Q_OBJECT
 
-  public:
-  ChuckNorrisFacts(void);
+    public:
+  ChuckNorrisFacts(QSlidingPopup* popup);
   virtual ~ChuckNorrisFacts(void);
 
-  void	setProxy(const QNetworkProxy& p) { this->_manager->setProxy(p); }
+  void  setProxy(const QNetworkProxy& p) { this->_manager->setProxy(p); }
 
-public slots:
-  void	getFact(void);
+  public slots:
+  void  getFact(void);
 
-private:
-  void	pickAFact(void);
+ private:
+  void  pickAFact(void);
 
-signals:
-  void	sendChuckNorrisFactToQNetsoul(const QString& message);
+  private slots:
+  void  replyFinished(QNetworkReply* reply);
 
-private slots:
-  void	replyFinished(QNetworkReply* reply);
-
-private:
-  QStringList			_facts;
-  QNetworkAccessManager*	_manager;
+ private:
+  QSlidingPopup*          _popup;
+  QStringList             _facts;
+  QNetworkAccessManager*  _manager;
 };
 
 #endif // VIEDEMERDE_H

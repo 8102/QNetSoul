@@ -50,7 +50,11 @@ void	Pastebin::pastebinIt(void)
 		   QMessageBox::Ok | QMessageBox::Cancel);
 
   if (mimeData == 0)
-    return;
+    {
+      QMessageBox::information(NULL, "QNetSoul Pastebin",
+			       tr("Clipboard is empty"));
+      return;
+    }
   if (mimeData->hasText())
     {
       QString	post_content(mimeData->text());
@@ -63,6 +67,11 @@ void	Pastebin::pastebinIt(void)
       post_content.prepend("paste_private=1&paste_code=");
       this->_manager.post(QNetworkRequest(QUrl("http://pastebin.com/api_public.php")),
 			  post_content.toAscii());
+    }
+  else
+    {
+      QMessageBox::information(NULL, "QNetSoul Pastebin",
+			       tr("Clipboard has no text"));
     }
 }
 

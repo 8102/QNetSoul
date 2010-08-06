@@ -22,23 +22,27 @@
 #include <QWidget>
 #include "OptionsWidget.h"
 
-class	OptionsFunWidget : public QWidget, public OptionsWidget
+class   QRadioButton;
+
+class   OptionsFunWidget : public QWidget, public OptionsWidget
 {
   Q_OBJECT
 
-public:
+    public:
   OptionsFunWidget(QWidget* parent = 0);
   ~OptionsFunWidget(void);
 
-  bool	startingVdm(void) const { return this->_startingVdm; }
+  const QString getStartingModule(void) const { return this->_startWith; }
 
-  void	readOptions(QSettings& settings);
-  void	writeOptions(QSettings& settings);
-  void	updateOptions(void);
-  void	saveOptions(void);
+  void  init(void);
+  void  readOptions(QSettings& settings);
+  void  writeOptions(QSettings& settings);
+  void  updateOptions(void);
+  void  saveOptions(void);
 
-private:
-  bool	_startingVdm;
+ private:
+  QString              _startWith;
+  QList<QRadioButton*> _choices;
 };
 
 #endif
