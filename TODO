@@ -1,10 +1,12 @@
-                === TODO LIST ===
+=== TODO LIST ===
 
-- Terminer la liste des contacts bloqués.
-- Sur les erreurs, se reconnecter. (à recoder)
-- Régler les problèmes de focus (corrigé v0.04)
-- Régler les problèmes de mis à jour de status
-- Inclure la possiblite de wizz une personne.
-- Améliorer le typing notification (envoyer un stop au bout d'un moment)
+- Sauvegarder les contacts automatiquement
+- Lors de la deco d'un contact, il faut detruire la fenetre associee a l'id du connection point eteint
+- Coder la possibilite d'envoyer un message a des connection points distincts
 - Gestion des notifications de status
-- Pouvoir parler aux différents ConnectionPoints en sus du broadcast. (asap)
+- Augmenter la taille des portraits dans l'arbre
+- Terminer la liste des contacts bloques.
+- Sur les erreurs, se reconnecter. (a recoder)
+- Regler les problemes de focus
+- Ameliorer le typing notification (envoyer un stop au bout d'un moment)
+- Inclure la possiblite de wizz une personne.

@@ -23,7 +23,7 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;About QNetSoul&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Version: beta 0.3&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Version: beta 0.4&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The first Netsoul's client built with the great framework Qt.&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Feel free to send your opinion/comments on this software.&lt;/p&gt;
@@ -39,37 +39,6 @@ p, li { white-space: pre-wrap; }
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QTreeView" name="contactsTreeView">
-        <property name="showDropIndicator" stdset="0">
-         <bool>false</bool>
-        </property>
-        <property name="dragDropMode">
-         <enum>QAbstractItemView::NoDragDrop</enum>
-        </property>
-        <property name="alternatingRowColors">
-         <bool>true</bool>
-        </property>
-        <property name="selectionBehavior">
-         <enum>QAbstractItemView::SelectItems</enum>
-        </property>
-        <property name="indentation">
-         <number>0</number>
-        </property>
-        <property name="sortingEnabled">
-         <bool>true</bool>
-        </property>
-        <property name="animated">
-         <bool>true</bool>
-        </property>
-        <attribute name="headerVisible">
-         <bool>false</bool>
-        </attribute>
-        <attribute name="headerVisible">
-         <bool>false</bool>
-        </attribute>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QComboBox" name="statusComboBox">
         <property name="enabled">
@@ -113,6 +82,21 @@ p, li { white-space: pre-wrap; }
         </item>
        </widget>
       </item>
+      <item row="0" column="0">
+       <widget class="ContactsTree" name="tree">
+        <attribute name="headerVisible">
+         <bool>false</bool>
+        </attribute>
+        <attribute name="headerVisible">
+         <bool>false</bool>
+        </attribute>
+        <column>
+         <property name="text">
+          <string notr="true">1</string>
+         </property>
+        </column>
+       </widget>
+      </item>
      </layout>
     </item>
    </layout>
@@ -150,15 +134,14 @@ p, li { white-space: pre-wrap; }
    </widget>
    <widget class="QMenu" name="menuAccount">
     <property name="title">
-     <string>&amp;Account</string>
+     <string>&amp;Contacts</string>
     </property>
-    <addaction name="actionAdd_a_contact"/>
-    <addaction name="actionRemove_selected_contact"/>
+    <addaction name="actionAddG"/>
+    <addaction name="actionAddC"/>
     <addaction name="actionRefresh"/>
     <addaction name="separator"/>
-    <addaction name="action_Load_contacts"/>
-    <addaction name="actionSave_contacts_as"/>
-    <addaction name="actionToggle_sort_contacts"/>
+    <addaction name="actionLoadContacts"/>
+    <addaction name="actionSaveContacts"/>
    </widget>
    <widget class="QMenu" name="menuFeaturettes">
     <property name="title">
@@ -219,16 +202,16 @@ p, li { white-space: pre-wrap; }
     <string>Ctrl+Q</string>
    </property>
   </action>
-  <action name="actionAdd_a_contact">
+  <action name="actionAddC">
    <property name="icon">
     <iconset resource="../Images.qrc">
      <normaloff>:/images/add.png</normaloff>:/images/add.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Add a contact</string>
+    <string>Add &amp;Contact</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+A</string>
+    <string>Ctrl+B</string>
    </property>
   </action>
   <action name="actionRemove_selected_contact">
@@ -278,7 +261,7 @@ p, li { white-space: pre-wrap; }
     <string>Ctrl+P</string>
    </property>
   </action>
-  <action name="actionSave_contacts_as">
+  <action name="actionSaveContacts">
    <property name="icon">
     <iconset resource="../Images.qrc">
      <normaloff>:/images/save.png</normaloff>:/images/save.png</iconset>
@@ -302,7 +285,7 @@ p, li { white-space: pre-wrap; }
     <string>Ctrl+T</string>
    </property>
   </action>
-  <action name="action_Load_contacts">
+  <action name="actionLoadContacts">
    <property name="icon">
     <iconset resource="../Images.qrc">
      <normaloff>:/images/load.png</normaloff>:/images/load.png</iconset>
@@ -365,7 +348,22 @@ p, li { white-space: pre-wrap; }
     <string>F7</string>
    </property>
   </action>
+  <action name="actionAddG">
+   <property name="text">
+    <string>Add &amp;Group</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ContactsTree</class>
+   <extends>QTreeWidget</extends>
+   <header>ContactsTree.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../Images.qrc"/>
  </resources>

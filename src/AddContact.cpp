@@ -15,22 +15,54 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <QMessageBox>
 #include "AddContact.h"
 
 AddContact::AddContact(QWidget* parent) : QDialog(parent)
 {
   setupUi(this);
-  connect(this->addPushButton, SIGNAL(clicked()), SLOT(setVisibility()));
+  connect(this->addPushButton, SIGNAL(clicked()), SLOT(addContact()));
 }
 
 AddContact::~AddContact(void)
 {
 }
 
-void	AddContact::setVisibility(void)
+void    AddContact::setGroups(const QStringList& groups)
 {
-  if (Qt::Unchecked == this->closingCheckBox->checkState())
+  this->groupComboBox->clear();
+  this->groupComboBox->addItem(tr("None"));
+  for (int i = 0; i < groups.size(); ++i)
+    this->groupComboBox->addItem(groups.at(i));
+}
+
+void	AddContact::reset(void)
+{
+  this->loginLineEdit->clear();
+  this->aliasLineEdit->clear();
+  this->loginLineEdit->setFocus();
+  repaint();
+}
+
+void	AddContact::addContact(void)
+{
+  QStringList properties;
+
+  if (this->loginLineEdit->text() == "")
     {
-      this->hide();
+      QMessageBox::information(this, tr("Add Contact"),
+			       tr("You should fill login field"
+				  "before adding contact :)"));
+      return;
     }
+  properties << this->groupComboBox->currentText()
+	     << this->loginLineEdit->text();
+  if (this->aliasLineEdit->text() == "")
+    properties << this->loginLineEdit->text();
+  else
+    properties << this->aliasLineEdit->text();
+  emit newContact(properties);
+  reset();
+  if (Qt::Unchecked == this->closingCheckBox->checkState())
+    this->hide();
 }

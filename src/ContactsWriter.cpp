@@ -15,43 +15,53 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
 #include "ContactsWriter.h"
 
-ContactsWriter::ContactsWriter(const QList<ContactWidget*> list)
-  : _contactList(list)
+ContactsWriter::ContactsWriter(QTreeWidget* tree) : _tree(tree)
 {
+  setAutoFormatting(true);
 }
 
-ContactsWriter::~ContactsWriter(void)
-{
-}
-
-bool	ContactsWriter::writeFile(QIODevice* device)
+bool    ContactsWriter::writeFile(QIODevice* device)
 {
   setDevice(device);
+
   writeStartDocument();
-  writeDTD("<!DOCTYPE QNetSoul>");
-  writeStartElement("QNetSoul");
+  writeDTD("<!DOCTYPE qns>");
+  writeStartElement("qns");
   writeAttribute("version", "1.0");
-  const int size = this->_contactList.size();
+
+  const int size = this->_tree->topLevelItemCount();
   for (int i = 0; i < size; ++i)
-    writeContact(this->_contactList[i]);
+    writeItem(this->_tree->topLevelItem(i));
+
   writeEndDocument();
   return true;
 }
 
-void	ContactsWriter::writeContact(const ContactWidget* contact)
+void    ContactsWriter::writeItem(QTreeWidgetItem *item)
 {
-  if (contact)
+  const int type = item->data(0, ContactsTree::Type).toInt();
+
+  if (type == ContactsTree::Group)
     {
-      writeStartElement("contact");
-      writeTextElement("login", contact->getLogin());
-      writeTextElement("alias", contact->aliasLabel->text());
+      bool folded = !this->_tree->isItemExpanded(item);
+      writeStartElement("Group");
+      writeAttribute("expanded", folded ? "yes" : "no");
+      writeTextElement("name", item->text(0));
+      for (int i = 0; i < item->childCount(); ++i)
+        writeItem(item->child(i));
       writeEndElement();
     }
-  else
+  else if (type == ContactsTree::Contact)
     {
-      std::cerr << "writeContact failed." << std::endl;
+      bool folded = !this->_tree->isItemExpanded(item);
+      writeStartElement("Contact");
+      writeAttribute("expanded", folded ? "yes" : "no");
+
+      writeTextElement("alias", item->text(0));
+      writeTextElement("login", item->data(0, ContactsTree::Login).toString());
+      writeTextElement("promo", item->data(0, ContactsTree::Promo).toString());
+      writeEndElement();
     }
 }

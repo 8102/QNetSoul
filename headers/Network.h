@@ -40,10 +40,10 @@ class	Network : public QObject
 signals:
   void	reconnectionRequest(void);
   void	handShaking(int step, QStringList);
-  void	message(const QString& login, const QString& message);
-  void	status(const QString& login, const QString& id, const QString& status);
+  void	message(const int id, const QString& login, const QString& msg);
+  void	state(const QStringList&);
   void	who(const QStringList&);
-  void	typingStatus(const QString&, bool);
+  void	typingStatus(const int id, bool typing);
 
 private slots:
   void	displaySocketError(void);

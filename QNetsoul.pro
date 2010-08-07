@@ -1,4 +1,4 @@
-#CONFIG += debug
+CONFIG += debug
 QT += network
 TEMPLATE = app
 TARGET = QNetSoul
@@ -18,19 +18,15 @@ HEADERS += headers/QNetsoul.h \
     headers/Chat.h \
     headers/RessourcesManager.h \
     headers/Url.h \
-    headers/ContactWidget.h \
     headers/State.h \
-    headers/ConnectionPoint.h \
     headers/ContactsWriter.h \
     headers/ContactsReader.h \
-    headers/Contact.h \
     headers/InputTextEdit.h \
     headers/LocationResolver.h \
     headers/PortraitResolver.h \
     headers/Smileys.h \
     headers/VieDeMerde.h \
     headers/PortraitRequest.h \
-    headers/Status.h \
     headers/ChuckNorrisFacts.h \
     headers/Encryption.h \
     headers/Pastebin.h \
@@ -43,12 +39,15 @@ HEADERS += headers/QNetsoul.h \
     headers/OptionsAdvancedWidget.h \
     headers/QPopup.h \
     headers/QSlidingPopup.h \
-    headers/Randn.h
+    headers/Randn.h \
+    headers/ContactsTree.h \
+    headers/ToolTipBuilder.h
+
 FORMS += ui/QNetsoul.ui \
     ui/Options.ui \
     ui/AddContact.ui \
     ui/Chat.ui \
-    ui/ContactWidget.ui
+
 SOURCES += src/main.cpp \
     src/QNetsoul.cpp \
     src/Options.cpp \
@@ -57,7 +56,6 @@ SOURCES += src/main.cpp \
     src/Chat.cpp \
     src/RessourcesManager.cpp \
     src/Url.cpp \
-    src/ContactWidget.cpp \
     src/ContactsWriter.cpp \
     src/ContactsReader.cpp \
     src/InputTextEdit.cpp \
@@ -75,7 +73,9 @@ SOURCES += src/main.cpp \
     src/OptionsAdvancedWidget.cpp \
     src/QPopup.cpp \
     src/QSlidingPopup.cpp \
-    src/Randn.cpp
+    src/Randn.cpp \
+    src/ContactsTree.cpp \
+    src/ToolTipBuilder.cpp
 
 # Output
 DESTDIR = .

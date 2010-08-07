@@ -15,23 +15,28 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CONTACTSREADER_H
-#define CONTACTSREADER_H
+#ifndef CONTACTS_READER_H_
+#define CONTACTS_READER_H_
 
+#include <QIODevice>
 #include <QXmlStreamReader>
-#include "Contact.h"
+#include "ContactsTree.h"
 
-class	ContactsReader : public QXmlStreamReader
+class ContactsReader : public QXmlStreamReader
 {
-public:
-  ContactsReader(void);
-  ~ContactsReader(void);
+ public:
+  ContactsReader(QTreeWidget *tree);
+  bool read(QIODevice *device);
 
-  QList<Contact> read(QIODevice*);
+ private:
+  void readUnknownElement(void);
+  void readQNS(void);
+  void readGroup(QTreeWidgetItem* parent);
+  void readContact(QTreeWidgetItem* parent);
+  inline QTreeWidgetItem* createChildItem(QTreeWidgetItem *item);
 
-private:
-  void	readContacts(QList<Contact>&);
-  void	readContact(Contact&);
+ private:
+  QTreeWidget* _tree;
 };
 
-#endif // CONTACTSREADER_H
+#endif

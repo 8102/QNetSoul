@@ -15,16 +15,24 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CONNECTION_POINT_H
-#define CONNECTION_POINT_H
+#ifndef TOOL_TIP_BUILDER_H_
+#define TOOL_TIP_BUILDER_H_
 
-struct	ConnectionPoint
+class   QTreeWidgetItem;
+
+namespace Group
 {
-  QString	id;
-  QString	ip;
-  QString	state;
-  QString	comment;
-  QString	location;
-};
+  void  buildToolTip(QTreeWidgetItem* item);
+}
 
-#endif // CONNECTION_POINT_H
+namespace Contact
+{
+  void  buildToolTip(QTreeWidgetItem* item);
+}
+
+namespace ConnectionPoint
+{
+  void  buildToolTip(QTreeWidgetItem* item);
+}
+
+#endif

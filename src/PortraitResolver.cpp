@@ -27,9 +27,9 @@ namespace
 }
 
 PortraitResolver::PortraitResolver(void)
-  : _dir(QDir::currentPath()), _http("www.epitech.net")
+  : _dir(getPortraitDir()), _http("www.epitech.net")
 {
-  setupPortraitDirectory();
+  //setupPortraitDirectory();
   connect(&this->_http, SIGNAL(requestFinished(int, bool)), SLOT(finished(int,bool)));
 }
 
@@ -40,13 +40,9 @@ PortraitResolver::~PortraitResolver(void)
 
 void	PortraitResolver::addRequest(const QStringList& logins)
 {
-  const int	size = logins.size();
-
+  const int size = logins.size();
   for (int i = 0; i < size; ++i)
-    {
-      //addRequest(logins[i], true);
-      addRequest(logins[i], false);
-    }
+    addRequest(logins[i], false);
 }
 
 void	PortraitResolver::addRequest(const QString& login, bool fun)
@@ -64,33 +60,68 @@ void	PortraitResolver::addRequest(const QString& login, bool fun)
       //std::cerr << "Portrait does not exist." << std::endl;
       //std::cerr << "(" << login.toStdString() << ")\n";
     }
-  PortraitRequest*	request = new PortraitRequest;
+  PortraitRequest* request = new PortraitRequest;
 
   request->login = login;
   request->fun = fun;
   request->buffer.setBuffer(&request->bytes);
   request->buffer.open(QIODevice::WriteOnly);
-  request->id = this->_http.get(QString("/intra/photo.php?fun=%1&login=%2").arg(fun).arg(login), &request->buffer);
+  request->id = this->_http.get(QString("/intra/photo.php?fun=%1&login=%2")
+				.arg(fun).arg(login), &request->buffer);
   this->_requests.push_back(request);
+}
+
+bool	PortraitResolver::isAvailable(QString& portraitPath,
+				      const QString& login)
+{
+  const QDir portraitDir = getPortraitDir();
+  const QString fileName = buildFilename(login, false);
+  if (portraitDir.exists(fileName))
+    {
+      portraitPath = portraitDir.dirName() + QDir::separator() + fileName;
+      return true;
+    }
+  return false;
+}
+
+QString	PortraitResolver::buildFilename(const QString& login, bool fun)
+{
+  return fun? (login + "1.jpeg") : (login + "0.jpeg");
+}
+
+QDir	PortraitResolver::getPortraitDir(void)
+{
+  QDir portraitPath(QDir::currentPath());
+  if (!portraitPath.exists(DirName))
+    portraitPath.mkdir(DirName);
+  portraitPath.cd(DirName);
+  return portraitPath;
+}
+
+void	PortraitResolver::addRequest(const QString& login)
+{
+  addRequest(login, true);
+  addRequest(login, false);
 }
 
 void	PortraitResolver::finished(int requestId, bool error)
 {
-  const int	size = this->_requests.size();
-
+  const int size = this->_requests.size();
   for (int i = 0; i < size; ++i)
     {
       if (this->_requests[i]->id == requestId)
         {
 	  if (false == error)
             {
-	      QImage	img = QImage::fromData(this->_requests[i]->bytes);
-	      if (img.save(DirName + '/' + buildFilename(this->_requests[i]->login, this->_requests[i]->fun)))
-		emit downloadedPortrait(this->_requests[i]->login);
+	      QImage img = QImage::fromData(this->_requests[i]->bytes);
+	      if (img.save(DirName + QDir::separator() +
+			   buildFilename(this->_requests[i]->login,
+					 this->_requests[i]->fun)))
+		if (this->_requests[i]->fun == false)
+		  emit downloadedPortrait(this->_requests[i]->login);
             }
 	  else
 	    {
-	      // DEBUG
 	      QMessageBox::critical(NULL, "QNetsoul PortraitResolver",
 				    this->_http.errorString());
 	    }
@@ -105,11 +136,4 @@ void	PortraitResolver::setupPortraitDirectory(void)
   if (!this->_dir.exists(DirName))
     this->_dir.mkdir(DirName);
   this->_dir.cd(DirName);
-}
-
-QString	PortraitResolver::buildFilename(const QString& login, bool fun)
-{
-  if (fun)
-    return (login + "1.jpeg");
-  return (login + "0.jpeg");
 }

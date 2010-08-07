@@ -15,23 +15,24 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CONTACTSWRITER_H
-#define CONTACTSWRITER_H
+#ifndef CONTACTS_WRITER_H_
+#define CONTACTS_WRITER_H_
 
+#include <QIODevice>
 #include <QXmlStreamWriter>
-#include "ContactWidget.h"
+#include "ContactsTree.h"
 
-class	ContactsWriter : public QXmlStreamWriter
+class   ContactsWriter : public QXmlStreamWriter
 {
-public:
-  ContactsWriter(const QList<ContactWidget*>);
-  ~ContactsWriter(void);
+ public:
+  ContactsWriter(QTreeWidget* tree);
+  bool  writeFile(QIODevice* device);
 
-  bool	writeFile(QIODevice*);
+ private:
+  void writeItem(QTreeWidgetItem *item);
 
-private:
-  void	writeContact(const ContactWidget*);
-  const QList<ContactWidget*>	_contactList;
+ private:
+  QTreeWidget* _tree;
 };
 
-#endif // CONTACTSWRITER_H
+#endif

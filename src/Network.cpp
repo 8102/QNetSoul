@@ -17,6 +17,7 @@
 
 #include <iostream>
 #include <QMessageBox>
+#include "Url.h"
 #include "Network.h"
 #include "QNetsoul.h"
 #include "LocationResolver.h"
@@ -26,18 +27,23 @@ Network::Network(QObject* parent) : QObject(parent), _handShakingStep(0)
   QNetsoul* ns = dynamic_cast<QNetsoul*>(parent);
   if (ns)
     {
-      QObject::connect(this, SIGNAL(reconnectionRequest()), ns, SLOT(reconnect()));
-      QObject::connect(&this->_socket, SIGNAL(readyRead()), SLOT(processPackets()));
-      QObject::connect(&this->_socket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),
-		       ns, SLOT(updateWidgets(const QAbstractSocket::SocketState&)));
-      QObject::connect(&this->_socket, SIGNAL(error(QAbstractSocket::SocketError)),
-		       SLOT(displaySocketError()));
+      QObject::connect(this, SIGNAL(reconnectionRequest()),
+                       ns, SLOT(reconnect()));
+      QObject::connect(&this->_socket, SIGNAL(readyRead()),
+                       SLOT(processPackets()));
+      QObject::connect(&this->_socket,
+                       SIGNAL(stateChanged(QAbstractSocket::SocketState)),
+                       ns,
+                       SLOT(updateWidgets(QAbstractSocket::SocketState)));
+      QObject::connect(&this->_socket,
+                       SIGNAL(error(QAbstractSocket::SocketError)),
+                       SLOT(displaySocketError()));
     }
   else
-    qFatal("Network constructor: parent must be a QNetsoul instance ! exiting...");
+    qFatal("Network constructor: parent must be a QNetsoul instance !");
 }
 
-void	Network::connect(const QString& host, quint16 port)
+void    Network::connect(const QString& host, quint16 port)
 {
   if (QAbstractSocket::UnconnectedState == this->_socket.state())
     {
@@ -52,7 +58,7 @@ void	Network::connect(const QString& host, quint16 port)
     }
 }
 
-void	Network::disconnect(void)
+void    Network::disconnect(void)
 {
   this->_handShakingStep = 0;
   this->_port = 0;
@@ -60,7 +66,7 @@ void	Network::disconnect(void)
   this->_socket.disconnectFromHost();
 }
 
-void	Network::resolveLocation(QString& oldLocation) const
+void    Network::resolveLocation(QString& oldLocation) const
 {
   if (!oldLocation.isEmpty())
     {
@@ -72,19 +78,19 @@ void	Network::resolveLocation(QString& oldLocation) const
     }
 }
 
-// Reconnection feature upgraded ! Version 0.07
-void	Network::displaySocketError(void)
+void    Network::displaySocketError(void)
 {
-  std::cerr << this->_socket.errorString().toStdString() << std::endl;
-  std::cerr << "Socket state:" << this->_socket.state() << std::endl;
+  // DEBUG
+  //std::cerr << this->_socket.errorString().toStdString() << std::endl;
+  //std::cerr << "Socket state:" << this->_socket.state() << std::endl;
   emit reconnectionRequest();
 }
 
-void	Network::processPackets(void)
+void    Network::processPackets(void)
 {
-  int			readbytes;
-  char			buffer[128];
-  QDataStream		in(&this->_socket);
+  int                   readbytes;
+  char                  buffer[128];
+  QDataStream           in(&this->_socket);
   //in.setVersion(QDataStream::Qt_4_6); // Not mandatory...
 
   while (this->_socket.bytesAvailable())
@@ -92,19 +98,19 @@ void	Network::processPackets(void)
       readbytes = in.readRawData(buffer, sizeof(buffer) - 1);
       if (readbytes > 0)
         {
-	  buffer[readbytes] = '\0';
-	  this->_rbuffer.append(buffer);
+          buffer[readbytes] = '\0';
+          this->_rbuffer.append(buffer);
         }
       else
         {
-	  return;
+          return;
         }
     }
   if (this->_rbuffer.contains('\n'))
     parseLines();
 }
 
-void	Network::parseLines(void)
+void    Network::parseLines(void)
 {
   QStringList cmds = this->_rbuffer.split('\n', QString::SkipEmptyParts);
 
@@ -117,73 +123,113 @@ void	Network::parseLines(void)
   this->_rbuffer = this->_rbuffer.remove(0, last + 1);
 }
 
-void	Network::interpretLine(const QString& line)
+void    Network::interpretLine(const QString& line)
 {
   // DEBUG
-  //std::cerr << line.toStdString() << std::endl;
-  QStringList	parts = line.split(' ', QString::SkipEmptyParts);
-  const int	size = parts.size();
+  std::cerr << line.toStdString() << std::endl;
+  QStringList   parts = line.split(' ', QString::SkipEmptyParts);
+  const int     size = parts.size();
 
   if (size)
     {
-      if ((0 == this->_handShakingStep && "salut" == parts.at(0))			||
-	  (1 == this->_handShakingStep && line.startsWith("rep 002 --"))	||
-	  (2 == this->_handShakingStep && line.startsWith("rep 002 --")))
+      if ((0 == this->_handShakingStep && "salut" == parts.at(0))         ||
+          (1 == this->_handShakingStep && line.startsWith("rep 002 --"))  ||
+          (2 == this->_handShakingStep && line.startsWith("rep 002 --")))
         {
-	  emit handShaking(this->_handShakingStep++, parts);
+          emit handShaking(this->_handShakingStep++, parts);
         }
       else if (line.startsWith("user_cmd") && size >= 4)
         {
-	  if ("msg" == parts.at(3) && size >= 5)
+          if ("msg" == parts.at(3) && size >= 5)
             {
-	      // Emits login, message
-	      emit message(parts.at(1).section(':', 3, 3).section('@', 0, 0), parts.at(4));
-	      std::cerr << "message(" << parts.at(1).section(':', 3, 3).section('@', 0, 0).toStdString();
-	      std::cerr << ", " << parts.at(4).toStdString() << ");\n";
+              // Emits id, login, message
+              bool ok;
+              const int id = parts.at(1).section(':', 0, 0).toInt(&ok);
+              if (ok)
+                emit message(id, parts.at(1).section(':', 3, 3).section('@', 0, 0), parts.at(4));
+              //std::cerr << "message(" << parts.at(1).section(':', 3, 3).section('@', 0, 0).toStdString();
+              //std::cerr << ", " << parts.at(4).toStdString() << ");\n";
             }
-	  else if ("state" == parts.at(3) && size >= 5)
+          else if ("state" == parts.at(3) && size >= 5)
             {
-	      // Emits login, id, state
-	      emit status(parts.at(1).section(':', 3, 3).section('@', 0, 0), parts.at(1).section(':', 0, 0), parts.at(4).section(':', 0, 0));
-	      // DEBUG
-	      std::cerr << "status(" << parts.at(1).section(':', 3, 3).section('@', 0, 0).toStdString() << ", ";
-	      std::cerr << parts.at(1).section(':', 0, 0).toStdString() << ", " << parts.at(4).section(':', 0, 0).toStdString();
-	      std::cerr << ");" << std::endl;
+              //user_cmd 185:user:1/3:dally_r@0.0.0.0:~:Trolltech%20World:epitech_2011 | state lock
+              // properties.at(0): Login
+              // properties.at(1): Id
+              // properties.at(2): Ip
+              // properties.at(3): Promo
+              // properties.at(4): State
+              // properties.at(5): Location
+              // properties.at(6): Comment
+              QStringList properties;
+
+              properties << parts.at(1).section(':', 3, 3).section('@', 0, 0) // login
+                         << parts.at(1).section(':', 0, 0) // id
+                         << parts.at(1).section(':', 3, 3).section('@', -1) // ip
+                         << parts.at(1).section(':', -1) // group
+                         << parts.at(4).section(':', 0, 0) // state
+                         << url_decode(parts.at(1).section(':', -2, -2).toStdString().c_str()) // Location
+                         << ""; // Comment
+              emit state(properties);
+              // DEBUG
+              //std::cerr << "status(" << parts.at(1).section(':', 3, 3).section('@', 0, 0).toStdString() << ", ";
+              //std::cerr << parts.at(1).section(':', 0, 0).toStdString() << ", " << parts.at(4).section(':', 0, 0).toStdString();
+              //std::cerr << ");" << std::endl;
             }
-	  else if (("login" == parts.at(3) || "logout" == parts.at(3)) && (size >= 4))
+          else if (("login" == parts.at(3) || "logout" == parts.at(3)) && (size >= 4))
             {
-	      // Emits login, id, state
-	      emit status(parts.at(1).section(':', 3, 3).section('@', 0, 0), parts.at(1).section(':', 0, 0), parts.at(3));
-	      // DEBUG
-	      std::cerr << "status(" << parts.at(1).section(':', 3, 3).section('@', 0, 0).toStdString() << ", ";
-	      std::cerr << parts.at(1).section(':', 0, 0).toStdString() << ", " << parts.at(3).toStdString();
-	      std::cerr << ");\n";
+              QStringList properties;
+
+              properties << parts.at(1).section(':', 3, 3).section('@', 0, 0) // login
+                         << parts.at(1).section(':', 0, 0) // id
+                         << parts.at(1).section(':', 3, 3).section('@', -1) // ip
+                         << parts.at(1).section(':', -1) // group
+                         << parts.at(3) // state
+                         << url_decode(parts.at(1).section(':', -2, -2).toStdString().c_str()) // Location
+                         << ""; // Comment
+              emit state(properties);
+              // DEBUG
+              // std::cerr << "status(" << parts.at(1).section(':', 3, 3).section('@', 0, 0).toStdString() << ", ";
+              // std::cerr << parts.at(1).section(':', 0, 0).toStdString() << ", " << parts.at(3).toStdString();
+              // std::cerr << ");\n";
             }
-	  else if ("who" == parts.at(3) && size > 15)
+          else if ("who" == parts.at(3) && size >= 15)
             {
-	      // Emits login(5), group(13), state(14), localisation(12), comment(15)
-	      emit who(parts);
+              // user_cmd 199:user:1/3:dally_r@0.0.0.0:~:maison:epitech_2011
+              // | who 329 sundas_c 0.0.0.0 1281146904 1281147024 3 1 ~ maison epitech_2011 actif:1281147031 qnetsoul
+
+              QStringList properties;
+              properties << parts.at(5) // login
+                         << parts.at(4) // id
+                         << parts.at(6) // ip
+                         << parts.at(13) // group
+                         << parts.at(14).section(':', 0, 0) // state
+                         << url_decode(parts.at(12).toStdString().c_str()) // Location
+                         << url_decode(parts.at(15).toStdString().c_str()); // Comment
+              emit who(properties);
             }
-	  else if (("dotnetSoul_UserTyping" == parts.at(3) || "dotnetSoul_UserCancelledTyping" == parts.at(3)) && size >= 4)
+          else if (("dotnetSoul_UserTyping" == parts.at(3) || "dotnetSoul_UserCancelledTyping" == parts.at(3)) && size >= 4)
             {
-	      emit typingStatus(parts.at(1).section(':', 3, 3).section('@', 0, 0),
-				("dotnetSoul_UserTyping" == parts.at(3)));
+              // Emits id, bool
+              bool ok;
+              const int id = parts.at(1).section(':', 0, 0).toInt(&ok);
+              if (ok)
+                emit typingStatus(id, ("dotnetSoul_UserTyping" == parts.at(3)));
             }
         }
       else if (line.startsWith("ping"))
         {
-	  sendMessage("ping\n");
+          sendMessage("ping\n");
         }
       else if (line.startsWith("rep 033 --"))
         {
-	  emit handShaking(-1, QStringList());
-	  std::cerr << "Failure...\n";
-	  std::cerr << "Reason: " << line.toStdString() << std::endl;
+          emit handShaking(-1, QStringList());
+          std::cerr << "Failure...\n";
+          std::cerr << "Reason: " << line.toStdString() << std::endl;
         }
       else
         {
-	  std::cerr << "Unparsed command:" << std::endl;
-	  std::cerr << line.toStdString() << std::endl;
+          std::cerr << "Unparsed command:" << std::endl;
+          std::cerr << line.toStdString() << std::endl;
         }
     }
 }

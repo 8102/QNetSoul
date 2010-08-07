@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>290</width>
-    <height>75</height>
+    <height>150</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>290</width>
-    <height>75</height>
+    <height>150</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>360</width>
-    <height>90</height>
+    <width>290</width>
+    <height>150</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -33,7 +33,7 @@
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>40</y>
+     <y>110</y>
      <width>92</width>
      <height>28</height>
     </rect>
@@ -49,7 +49,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
+     <y>50</y>
      <width>51</width>
      <height>21</height>
     </rect>
@@ -61,9 +61,9 @@
   <widget class="QLineEdit" name="loginLineEdit">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>10</y>
-     <width>221</width>
+     <x>90</x>
+     <y>50</y>
+     <width>191</width>
      <height>21</height>
     </rect>
    </property>
@@ -75,7 +75,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>40</y>
+     <y>110</y>
      <width>181</width>
      <height>31</height>
     </rect>
@@ -84,9 +84,61 @@
     <string>Do not close on adding.</string>
    </property>
   </widget>
+  <widget class="QComboBox" name="groupComboBox">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>10</y>
+     <width>191</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="groupLabel">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>20</y>
+     <width>51</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Group:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="aliasLabel">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>80</y>
+     <width>51</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Alias:</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="aliasLineEdit">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>80</y>
+     <width>191</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="maxLength">
+    <number>20</number>
+   </property>
+  </widget>
  </widget>
  <tabstops>
+  <tabstop>groupComboBox</tabstop>
   <tabstop>loginLineEdit</tabstop>
+  <tabstop>aliasLineEdit</tabstop>
+  <tabstop>closingCheckBox</tabstop>
   <tabstop>addPushButton</tabstop>
  </tabstops>
  <resources>
@@ -100,44 +152,28 @@
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>231</x>
-     <y>30</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>281</x>
-     <y>40</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>loginLineEdit</sender>
-   <signal>returnPressed()</signal>
-   <receiver>loginLineEdit</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>99</x>
-     <y>24</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>64</x>
-     <y>14</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>addPushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>loginLineEdit</receiver>
-   <slot>setFocus()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>246</x>
+     <x>106</x>
      <y>61</y>
     </hint>
     <hint type="destinationlabel">
-     <x>146</x>
-     <y>24</y>
+     <x>218</x>
+     <y>126</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>aliasLineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>addPushButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>148</x>
+     <y>95</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>251</x>
+     <y>124</y>
     </hint>
    </hints>
   </connection>

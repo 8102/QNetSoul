@@ -21,41 +21,48 @@
 #include <QWidget>
 #include "ui_Chat.h"
 
-class	QStatusBar;
+class   QStatusBar;
 
-class	Chat : public QWidget, public Ui_Chat
+class   Chat : public QWidget, public Ui_Chat
 {
   Q_OBJECT
 
     public:
-  Chat(const QString& name, bool exitOnEscape, bool smileys);
+  Chat(const int id, const QString& name, bool exitOnEscape, bool smileys);
   virtual ~Chat(void);
 
-  QString	getFormatedDateTime(void) const;
-  void		insertSmileys(void);
-  void		replaceUrls(QString msg);
-  void		insertMessage(const QString& login, const QString& message, const QColor& color);
-  void		notifyTypingStatus(const QString& login, bool typing);
-  void		setExitOnEscape(bool b) { this->_exitOnEscape = b; }
-  void		setSmileys(bool b) { this->_smileys = b; }
+  int     id(void) const { return this->_id; }
+  QString login(void) const { return this->_login; }
+  void    setExitOnEscape(bool b) { this->_exitOnEscape = b; }
+  void    setSmileys(bool b) { this->_smileys = b; }
+
+  QString getFormatedDateTime(void) const;
+  void    insertSmileys(void);
+  void    replaceUrls(QString msg);
+  void    insertMessage(const QString& l, const QString& m, const QColor&);
+  void    notifyTypingStatus(const bool typing);
+  void	  setPortrait(void); // if existing
 
  signals:
-  void	msgToSend(const QString&, const QString&);
-  void	typingSignal(const QString&, bool);
+  void  msgToSend(const int id, const QString& msg);
+  void  typingSignal(const QString&, bool);
 
  protected:
-  void	keyPressEvent(QKeyEvent*);
-  void	showEvent(QShowEvent*);
-  void	closeEvent(QCloseEvent*);
+  void  keyPressEvent(QKeyEvent*);
+  void  showEvent(QShowEvent*);
+  void  closeEvent(QCloseEvent*);
 
   private slots:
-  void	sendMessage(void);
-  void	handleTypingSignal(void);
+  void  sendMessage(void);
+  void  handleTypingSignal(void);
 
  private:
-  QRect	_geometry;
-  bool	_exitOnEscape;
-  bool	_smileys;
+  int     _id;
+  QString _alias;
+  QString _login;
+  QRect   _geometry;
+  bool    _exitOnEscape;
+  bool    _smileys;
 };
 
 #endif // CHAT_H

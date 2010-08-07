@@ -24,104 +24,93 @@
 #include "Chat.h"
 #include "Options.h"
 #include "Network.h"
-#include "Contact.h"
 #include "AddContact.h"
-#include "ui_QNetsoul.h"
 #include "PortraitResolver.h"
 #include "Pastebin.h"
 #include "VieDeMerde.h"
 #include "ChuckNorrisFacts.h"
 #include "QSlidingPopup.h"
 #include "TrayIcon.h"
+#include "ui_QNetsoul.h"
 
-class	QMenu;
-class	QAction;
-class	QLabel;
-class	QSystemTrayIcon;
-class	ContactWidget;
-class	TrayIcon;
+class   QMenu;
+class   QAction;
+class   QLabel;
+class   QSystemTrayIcon;
+class   ContactWidget;
+class   TrayIcon;
 
-class	QNetsoul : public QMainWindow, public Ui_QNetsoul
+class   QNetsoul : public QMainWindow, public Ui_QNetsoul
 {
   Q_OBJECT
 
-  public:
+    public:
   QNetsoul(QWidget* parent = 0);
   ~QNetsoul(void);
 
-protected:
-  void	closeEvent(QCloseEvent*);
+ protected:
+  void  closeEvent(QCloseEvent*);
 
-private slots:
-  void	connectToServer(void);
-  void	ping(void);
-  void	reconnect(void);
-  void	disconnect(void);
-  void	updateWidgets(const QAbstractSocket::SocketState&);
+  private slots:
+  void  connectToServer(void);
+  void  ping(void);
+  void  reconnect(void);
+  void  disconnect(void);
+  void  updateWidgets(const QAbstractSocket::SocketState&);
 
-  void	saveStateBeforeQuiting(void);
-  void	openAddContactDialog(void);
-  void	openOptionsDialog(QLineEdit* newLineFocus = 0);
-  void	loadContacts(void);
-  void	saveContactsAs(void);
-  void	toggleSortContacts(void);
-  void	handleClicksOnTrayIcon(QSystemTrayIcon::ActivationReason);
-  void	addContact(void);
-  void	addContact(const QList<Contact>);
-  void	addContact(const QString&, const QString& alias = "");
-  void	removeSelectedContact(void);
-  void	refreshContacts(void);
-  void	sendStatus(const int&) const;
-  void	changeStatus(const QString&, const QString&, const QString&);
-  void	updateContact(const QStringList&);
-  void	showConversation(const QString& login, const QString& message = "");
-  void	processHandShaking(int, QStringList);
-  void	transmitMsg(const QString&, const QString&);
-  void	transmitTypingStatus(const QString&, bool);
-  void	notifyTypingStatus(const QString&, bool);
-  void	setPortrait(const QString&);
-  void	aboutQNetSoul(void);
-  void	setProxy(const QNetworkProxy& proxy = QNetworkProxy());
-  void	applyChatOptions(bool exitOnEscape, bool typingNotification, bool smileys);
+  void  saveStateBeforeQuiting(void);
+  void  openOptionsDialog(QLineEdit* newLineFocus = 0);
+  void  handleClicksOnTrayIcon(QSystemTrayIcon::ActivationReason);
+  //void        addContact(void);
+  //void        addContact(const QList<Contact>);
+  //void        addContact(const QString&, const QString& alias = "");
+  //void        removeSelectedContact(void);
+  void  refreshContacts(void);
+  void  sendStatus(const int&) const;
+  void  changeStatus(const QStringList& properties);
+  void  updateContact(const QStringList& properties);
+  void  showConversation(const int, const QString&, const QString& msg = "");
+  void  processHandShaking(int, QStringList);
+  void  transmitMsg(const int id, const QString& msg);
+  void  transmitTypingStatus(const QString&, bool);
+  void  notifyTypingStatus(const int id, const bool typing);
+  void  setPortrait(const QString&);
+  void  aboutQNetSoul(void);
+  void  setProxy(const QNetworkProxy& proxy = QNetworkProxy());
+  void  applyChatOptions(bool exitOnEscape, bool typingNotification, bool smileys);
 
-private:
-  void				configureProxy(void);
-  Chat*				getChat(const QString&);
-  bool				doesThisContactAlreadyExist(const QString&) const;
-  ContactWidget*		getContact(const QString&) const;
-  QStringList			getContactLogins(void) const;
-  QList<ContactWidget*>		getContactWidgets(void) const;
-  void				watchLogContacts(void);
-  void				watchLogContact(const QString&);
-  void				refreshContact(const QString&);
-  void				resetAllContacts(void);
-  void				readSettings(void);
-  void				writeSettings(void);
-  void				loadContacts(const QString&);
-  void				saveContacts(const QString&);
-  void				connectQNetsoulItems(void);
-  void				connectActionsSignals(void);
-  void				connectNetworkSignals(void);
-  Chat*				createWindowChat(const QString&);
-  void				deleteAllWindowChats(void);
+ private:
+  void  configureProxy(void);
+  Chat* getChat(const int id);
+  void  watchLogContacts(void);
+  void  watchLogContact(const QString&);
+  void  refreshContact(const QString&);
+  void  resetAllContacts(void);
+  void  readSettings(void);
+  void  writeSettings(void);
+  void  loadContacts(const QString&);
+  void  saveContacts(const QString&);
+  void  connectQNetsoulItems(void);
+  void  connectActionsSignals(void);
+  void  connectNetworkSignals(void);
+  Chat* createWindowChat(const int, const QString&);
+  void  deleteAllWindowChats(void);
 
-  Network*			_network;
-  Options*			_options;
-  AddContact*			_addContact;
-  QStandardItemModel*		_standardItemModel;
-  TrayIcon*			_trayIcon;
-  QHash<QString, Chat*>		_windowsChat;
-  QString			_timeStamp;
-  QPoint			_oldPos;
-  PortraitResolver		_portraitResolver;
-  Pastebin			_pastebin;
-  bool				_exitOnEscape;
-  bool				_typingNotification;
-  bool				_smileys;
-  QSlidingPopup			_popup;
-  VieDeMerde			_vdm;
-  ChuckNorrisFacts		_cnf;
-  QTimer			_ping;
+  Network*          _network;
+  Options*          _options;
+  TrayIcon*         _trayIcon;
+  QHash<int, Chat*> _windowsChat;
+  QString           _timeStamp;
+  QPoint            _oldPos;
+  PortraitResolver  _portraitResolver;
+  Pastebin          _pastebin;
+  bool              _exitOnEscape;
+  bool              _typingNotification;
+  bool              _smileys;
+  QSlidingPopup     _popup;
+  VieDeMerde        _vdm;
+  ChuckNorrisFacts  _cnf;
+  QTimer            _ping;
 };
 
 #endif // QNETSOUL_H_

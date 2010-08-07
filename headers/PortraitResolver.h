@@ -27,27 +27,34 @@
 #include <QNetworkProxy>
 #include "PortraitRequest.h"
 
-class	PortraitResolver : public QObject
+class   PortraitResolver : public QObject
 {
   Q_OBJECT
 
-  public:
+    public:
   PortraitResolver(void);
   ~PortraitResolver(void);
-  void	addRequest(const QStringList& logins);
-  void	addRequest(const QString& login, bool fun);
 
+  void  setProxy(const QNetworkProxy& p) { this->_http.setProxy(p); }
+
+  void  addRequest(const QStringList& logins);
+  void  addRequest(const QString& login, bool fun);
+
+  static bool isAvailable(QString& path, const QString& login);
   static QString buildFilename(const QString& login, bool fun);
-  void	setProxy(const QNetworkProxy& p) { this->_http.setProxy(p); }
+  static QDir getPortraitDir(void);
 
-public slots:
-  void	finished(int id, bool error);
+  public slots:
+  void	addRequest(const QString& login);
 
-signals:
-  void	downloadedPortrait(const QString&);
+  private slots:
+  void  finished(int id, bool error);
 
-private:
-  void	setupPortraitDirectory(void);
+ signals:
+  void  downloadedPortrait(const QString& login);
+
+ private:
+  void  setupPortraitDirectory(void);
 
   QDir _dir;
   QHttp _http;

@@ -29,8 +29,16 @@ class	AddContact : public QDialog, public Ui_AddContact
   AddContact(QWidget* parent);
   ~AddContact(void);
 
+  void	setGroups(const QStringList& groups);
+
+ signals:
+  void	newContact(const QStringList& properties);
+
+ private:
+  void	reset(void);
+
 private slots:
-  void	setVisibility(void);
+  void	addContact(void);
 };
 
 #endif // ADDCONTACT_H
