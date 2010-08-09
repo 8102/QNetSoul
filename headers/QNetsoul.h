@@ -50,7 +50,7 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
 
   static QString currentVersion(void)
   {
-    return "0.5c";
+    return "0.5d";
   }
   static QString defaultComment(void)
   {
@@ -66,6 +66,7 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
   void  reconnect(void);
   void  disconnect(void);
   void  updateWidgets(const QAbstractSocket::SocketState&);
+  void	checkForUpdates(void);
 
   void  saveStateBeforeQuiting(void);
   void  openOptionsDialog(QLineEdit* newLineFocus = 0);

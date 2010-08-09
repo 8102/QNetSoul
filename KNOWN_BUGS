@@ -1,7 +1,3 @@
                              === KNOWN BUGS ===
 
-- Le focus est incorrect lorsque une fenêtre de chat est minimisée puis aggrandie... :(
-- Le tri des contacts est défectueux.
-- Lorsqu'un contact se déco puis se reco en "away", il apparait online.
-- Des contacts se déconnectent et apparaissent pourtant tjr online... (creuser du côté d'InterpretLine du Network)
-- Les bulles d'aide sous Windows ne se scale pas sur la taille de la VDM. (et font segfault ? oO)
+- Le focus est incorrect lorsque une fenetre de chat est minimisee puis aggrandie... :(

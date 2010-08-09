@@ -196,6 +196,14 @@ void    QNetsoul::updateWidgets(const QAbstractSocket::SocketState& state)
     }
 }
 
+void    QNetsoul::checkForUpdates(void)
+{
+#ifndef QT_NO_DEBUG
+  qDebug() << "[QNetsoul::checkForUpdates]"
+           << "Fill here :)";
+#endif
+}
+
 void    QNetsoul::saveStateBeforeQuiting(void)
 {
   if (this->tree->topLevelItemCount() > 0)
@@ -664,6 +672,8 @@ void    QNetsoul::connectActionsSignals(void)
   // QNetsoul
   connect(actionConnect, SIGNAL(triggered()), SLOT(connectToServer()));
   connect(actionDisconnect, SIGNAL(triggered()), SLOT(disconnect()));
+  connect(actionCheckForUpdates, SIGNAL(triggered()),
+          SLOT(checkForUpdates()));
   connect(actionQuit, SIGNAL(triggered()), SLOT(saveStateBeforeQuiting()));
   // Contacts
   connect(actionAddG, SIGNAL(triggered()), this->tree, SLOT(addGroup()));
