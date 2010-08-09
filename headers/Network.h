@@ -51,7 +51,7 @@ class   Network : public QObject
   void  typingStatus(const int id, bool typing);
 
   private slots:
-  void  displaySocketError(void);
+  void  handleSocketError(void);
   void  processPackets(void);
 
  private:

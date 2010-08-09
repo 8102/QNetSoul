@@ -18,7 +18,9 @@
 #ifndef URL_H
 #define URL_H
 
-const char*	url_encode(const char *in);
-const char*	url_decode(const char *in);
+#include <QString>
+
+QString	url_encode(const char *in);
+QString	url_decode(const char *in);
 
 #endif // URL_H

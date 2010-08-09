@@ -39,7 +39,7 @@ Network::Network(QObject* parent)
                        SLOT(updateWidgets(QAbstractSocket::SocketState)));
       QObject::connect(&this->_socket,
                        SIGNAL(error(QAbstractSocket::SocketError)),
-                       SLOT(displaySocketError()));
+                       SLOT(handleSocketError()));
     }
   else
     qFatal("Network constructor: parent must be a QNetsoul instance !");
@@ -54,11 +54,13 @@ void    Network::connect(const QString& host, quint16 port)
       this->_port = port;
       this->_socket.connectToHost(host, port);
     }
+#ifndef QT_NO_DEBUG
   else
     {
-      std::cerr << "[Network::connect] state: " << this->_socket.state();
-      std::cerr << std::endl;
+      std::cout << "[Network::connect] state: "
+		<< this->_socket.state() << std::endl;
     }
+#endif
 }
 
 void    Network::disconnect(void)
@@ -81,12 +83,12 @@ void    Network::resolveLocation(QString& oldLocation) const
     }
 }
 
-void    Network::displaySocketError(void)
+void    Network::handleSocketError(void)
 {
 #ifndef QT_NO_DEBUG
-  std::cout << "[Network::displaySocketError] "
+  std::cout << "[Network::handleSocketError] "
             << this->_socket.errorString().toStdString() << std::endl
-            << "Socket state:" << this->_socket.state() << std::endl;
+            << "Socket state: " << this->_socket.state() << std::endl;
 #endif
   emit reconnectionRequest();
 }
@@ -131,7 +133,7 @@ void    Network::parseLines(void)
 void    Network::interpretLine(const QString& line)
 {
 #ifndef QT_NO_DEBUG
-  std::cout << line.toStdString() << std::endl;
+  //std::cout << line.toStdString() << std::endl;
 #endif
   Q_ASSERT(this->_options);
   QStringList properties;
@@ -150,7 +152,7 @@ void    Network::interpretLine(const QString& line)
         {
           if ("msg" == parts.at(3) && size >= 5)
             {
-              const char* message = url_decode(parts.at(4).toStdString().c_str());
+              const QString message = url_decode(parts.at(4).toStdString().c_str());
               const QString login = parts.at(1).section(':', 3, 3).section('@', 0, 0);
               if (this->_options->blockedWidget->isBlocked(login))
                 {
@@ -158,10 +160,16 @@ void    Network::interpretLine(const QString& line)
                   std::cout << "[Network::interpretLine] "
                             << "Message blocked from "
                             << login.toStdString()
-                            << ": " << message << std::endl;
+                            << ": " << message.toStdString() << std::endl;
 #endif
                   return;
                 }
+#ifndef QT_NO_DEBUG
+              std::cout << "[Network::interpretLine] "
+                        << "Message received from "
+                        << login.toStdString()
+                        << ": " << message.toStdString() << std::endl;
+#endif
               // user_cmd 566:user:1/3:sundas_c@0.0.0.0:~:maison:epitech_2011 | msg test dst=dally_r
               properties << login // login
                          << parts.at(1).section(':', 0, 0) // id

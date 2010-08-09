@@ -149,6 +149,10 @@ void    QNetsoul::ping(void)
 
 void    QNetsoul::reconnect(void)
 {
+#ifndef QT_NO_DEBUG
+  std::cout << "[QNetsoul::reconnect] "
+            << "Reconnecting..." << std::endl;
+#endif
   disconnect();
   connectToServer();
 }
@@ -343,6 +347,9 @@ void    QNetsoul::showConversation(const QStringList& properties,
 
   Chat* window = getChat(id);
   const bool userEvent = message.isEmpty();
+
+  std::cout << "OMG: " << message.toStdString()
+            << std::endl;
 
   if (NULL == window)
     {

@@ -163,6 +163,12 @@ void    Chat::sendMessage(void)
   const QString message = this->inputTextEdit->toPlainText();
   const int length = message.length();
 
+#ifndef QT_NO_DEBUG
+  std::cout << "[Chat::sendMessage] "
+	    << "Message: " << message.toStdString()
+	    << std::endl;
+#endif
+
   if (length > 0)
     {
       if (length < 512)

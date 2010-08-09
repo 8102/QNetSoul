@@ -15,88 +15,86 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <string>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include "Url.h"
 
-static char    *strip_return(char *str)
+namespace
 {
-  int		cpt[2];
+  char* strip_return(char *str)
+  {
+    int cpt[2];
 
-  for (cpt[0] = cpt[1] = 0; str[cpt[0]]; cpt[0]++, cpt[1]++)
-    {
-      if (str[cpt[0]] == '\\' && str[cpt[0] + 1] && str[cpt[0] + 1] == 'n')
-        {
-	  str[cpt[1]] = '\n';
-	  cpt[0]++;
-        }
-      else
-        {
-	  str[cpt[1]] = str[cpt[0]];
-        }
-    }
-  str[cpt[1]] = 0;
-  return (str);
+    for (cpt[0] = cpt[1] = 0; str[cpt[0]]; cpt[0]++, cpt[1]++)
+      {
+        if (str[cpt[0]] == '\\' && str[cpt[0] + 1] && str[cpt[0] + 1] == 'n')
+          {
+            str[cpt[1]] = '\n';
+            cpt[0]++;
+          }
+        else
+          {
+            str[cpt[1]] = str[cpt[0]];
+          }
+      }
+    str[cpt[1]] = 0;
+    return str;
+  }
+  void    do_url_encode(std::string &out, const char *in)
+  {
+    char  buf[8];
+
+    for (unsigned int i = 0; in[i]; ++i)
+      {
+        if ((in[i] >= 'a' && in[i] <= 'z') ||
+            (in[i] >= 'A' && in[i] <= 'Z') ||
+            (in[i] >= '0' && in[i] <= '9') ||
+            in[i] == '_' || in[i] == '-' || in[i] == '.')
+          {
+            out += (char)in[i];
+          }
+        else
+          {
+            sprintf(buf, "%%%02X", in[i] & 0xFF);
+            out += buf;
+          }
+      }
+  }
 }
 
-void	do_url_encode(std::string &out, const char *in)
+QString     url_encode(const char *in)
 {
-  char	buf[8];
-
-  for (unsigned int i = 0; in[i]; ++i)
-    {
-      if ((in[i] >= 'a' && in[i] <= 'z') ||
-	  (in[i] >= 'A' && in[i] <= 'Z') ||
-	  (in[i] >= '0' && in[i] <= '9') ||
-	  in[i] == '_' || in[i] == '-' || in[i] == '.')
-        {
-	  out += (char)in[i];
-        }
-      else
-        {
-	  sprintf(buf, "%%%02X", in[i] & 0xFF);
-	  out += buf;
-        }
-    }
-}
-
-const char*	url_encode(const char *in)
-{
-  static std::string	out;
-
-  out.clear();
+  std::string out;
   do_url_encode(out, in);
-  return (out.c_str());
+  return QString::fromStdString(out);
 }
 
-const char*	url_decode(const char *in)
+QString     url_decode(const char *in)
 {
-  static std::string	out;
-  char					buf[8];
-  char					nb[5];
-  int					i;
+  std::string   out;
+  char  buf[8];
+  char  nb[5];
+  int   i;
 
-  out.clear();
   memset(nb, 0, 5);
-
   for (i = 0; in[i]; ++i)
     {
       if (in[i] == '%' && in[i + 1] &&
-	  ((in[i + 1] >= '0' && in[i + 1] <= '9') ||
-	   (in[i + 1] >= 'A' && in[i + 1] <= 'F') ||
-	   (in[i + 1] >= 'a' && in[i + 1] <= 'f')))
+          ((in[i + 1] >= '0' && in[i + 1] <= '9') ||
+           (in[i + 1] >= 'A' && in[i + 1] <= 'F') ||
+           (in[i + 1] >= 'a' && in[i + 1] <= 'f')))
         {
-	  sprintf(nb, "0x%.2s", in + i + 1);
-	  memset(buf, 0, 8);
-	  buf[0] = strtol(nb, 0, 16);
-	  out += strip_return(buf);
-	  i += 2;
+          sprintf(nb, "0x%.2s", in + i + 1);
+          memset(buf, 0, 8);
+          buf[0] = strtol(nb, 0, 16);
+          out += strip_return(buf);
+          i += 2;
         }
       else
         {
-	  out += in[i];
+          out += in[i];
         }
     }
-  return (out.c_str());
+  return QString::fromStdString(out);
 }
