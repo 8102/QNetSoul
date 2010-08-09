@@ -20,7 +20,7 @@ namespace
 void	encryption_init(void)
 {
   //random_shuffle(code.begin(), code.end());
-  std::cout << code << std::endl;
+  qDebug() << code;
   //return ;
 }
 */

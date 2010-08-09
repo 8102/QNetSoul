@@ -165,9 +165,8 @@ void    ContactsReader::readContact(QTreeWidgetItem* parent)
 #ifndef QT_NO_DEBUG
       parent->removeChild(contact);
       delete contact;
-      std::cout << "[ContactsReader::readContact] "
-                << "A contact does not have a login"
-                << std::endl;
+      qDebug() << "[ContactsReader::readContact]"
+	       << "A contact does not have a login";
 #endif
       return;
     }

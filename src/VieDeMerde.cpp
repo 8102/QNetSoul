@@ -65,7 +65,7 @@ void    VieDeMerde::replyFinished(QNetworkReply* reply)
   replaceHtmlSpecialChars(buffer);
   if (buffer.contains(textRegExp))
     {
-      //std::cerr << textRegExp.cap(1).toStdString() << std::endl;
+      //qDebug() << textRegExp.cap(1);
       this->_popup->showUp(textRegExp.cap(1), 20000);
     }
   reply->deleteLater();

@@ -57,8 +57,8 @@ void    Network::connect(const QString& host, quint16 port)
 #ifndef QT_NO_DEBUG
   else
     {
-      std::cout << "[Network::connect] state: "
-		<< this->_socket.state() << std::endl;
+      qDebug() << "[Network::connect] state:"
+               << this->_socket.state();
     }
 #endif
 }
@@ -86,9 +86,9 @@ void    Network::resolveLocation(QString& oldLocation) const
 void    Network::handleSocketError(void)
 {
 #ifndef QT_NO_DEBUG
-  std::cout << "[Network::handleSocketError] "
-            << this->_socket.errorString().toStdString() << std::endl
-            << "Socket state: " << this->_socket.state() << std::endl;
+  qDebug() << "[Network::handleSocketError]"
+           << this->_socket.errorString() << '\n'
+           << "Socket state: " << this->_socket.state();
 #endif
   emit reconnectionRequest();
 }
@@ -133,7 +133,7 @@ void    Network::parseLines(void)
 void    Network::interpretLine(const QString& line)
 {
 #ifndef QT_NO_DEBUG
-  //std::cout << line.toStdString() << std::endl;
+  //qDebug() << line;
 #endif
   Q_ASSERT(this->_options);
   QStringList properties;
@@ -157,18 +157,16 @@ void    Network::interpretLine(const QString& line)
               if (this->_options->blockedWidget->isBlocked(login))
                 {
 #ifndef QT_NO_DEBUG
-                  std::cout << "[Network::interpretLine] "
-                            << "Message blocked from "
-                            << login.toStdString()
-                            << ": " << message.toStdString() << std::endl;
+                  qDebug() << "[Network::interpretLine]"
+                           << "Message blocked from"
+                           << login << ":" << message;
 #endif
                   return;
                 }
 #ifndef QT_NO_DEBUG
-              std::cout << "[Network::interpretLine] "
-                        << "Message received from "
-                        << login.toStdString()
-                        << ": " << message.toStdString() << std::endl;
+              qDebug() << "[Network::interpretLine]"
+                       << "Message received from"
+                       << login << ":" << message;
 #endif
               // user_cmd 566:user:1/3:sundas_c@0.0.0.0:~:maison:epitech_2011 | msg test dst=dally_r
               properties << login // login
@@ -198,10 +196,6 @@ void    Network::interpretLine(const QString& line)
                          << url_decode(parts.at(1).section(':', -2, -2).toStdString().c_str()) // Location
                          << ""; // Comment
               emit state(properties);
-              // DEBUG
-              //std::cerr << "status(" << parts.at(1).section(':', 3, 3).section('@', 0, 0).toStdString() << ", ";
-              //std::cerr << parts.at(1).section(':', 0, 0).toStdString() << ", " << parts.at(4).section(':', 0, 0).toStdString();
-              //std::cerr << ");" << std::endl;
             }
           else if (("login" == parts.at(3) || "logout" == parts.at(3)) && (size >= 4))
             {
@@ -246,15 +240,14 @@ void    Network::interpretLine(const QString& line)
         {
           emit handShaking(-1, QStringList());
 #ifndef QT_NO_DEBUG
-          std::cerr << "Failure...\n";
-          std::cerr << "Reason: " << line.toStdString() << std::endl;
+          qDebug() << "Failure...\n"
+		   << "Reason:" << line;
 #endif
         }
       else
         {
 #ifndef QT_NO_DEBUG
-          std::cerr << "Unparsed command:" << std::endl;
-          std::cerr << line.toStdString() << std::endl;
+          qDebug() << "Unparsed command:" << line;
 #endif
         }
     }

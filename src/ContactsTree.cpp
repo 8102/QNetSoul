@@ -108,8 +108,8 @@ bool    ContactsTree::updateConnectionPoint(const QStringList& properties)
   if (properties.size() != 7)
     {
 #ifndef QT_NO_DEBUG
-      std::cout << "[ContactsTree::updateConnectionPoint] "
-        "Properties must contain 7 fields." << std::endl;
+      qDebug() << "[ContactsTree::updateConnectionPoint]"
+        "Properties must contain 7 fields.";
 #endif
       return false;
     }
@@ -125,8 +125,8 @@ bool    ContactsTree::updateConnectionPoint(const QStringList& properties)
         properties.at(0) == root->child(i)->data(0, Login))
       {
 #ifndef QT_NO_DEBUG
-      std::cout << "[ContactsTree::updateConnectionPoint] "
-                << "Contact found, he has no group" << std::endl;
+        qDebug() << "[ContactsTree::updateConnectionPoint]"
+                 << "Contact found, he has no group";
 #endif
         contact = root->child(i);
         break;
@@ -139,8 +139,8 @@ bool    ContactsTree::updateConnectionPoint(const QStringList& properties)
           if (properties.at(0) == group->child(j)->data(0, Login))
             {
 #ifndef QT_NO_DEBUG
-      std::cout << "[ContactsTree::updateConnectionPoint] "
-                << "Contact found, he has a group" << std::endl;
+              qDebug() << "[ContactsTree::updateConnectionPoint]"
+                       << "Contact found, he has a group";
 #endif
               contact = group->child(j);
               break;
@@ -149,8 +149,8 @@ bool    ContactsTree::updateConnectionPoint(const QStringList& properties)
   if (contact == NULL)
     {
 #ifndef QT_NO_DEBUG
-      std::cout << "[ContactsTree::updateConnectionPoint] "
-                << "Contact not found" << std::endl;
+      qDebug() << "[ContactsTree::updateConnectionPoint]"
+               << "Contact not found";
 #endif
       return false;
     }
@@ -179,8 +179,8 @@ bool    ContactsTree::updateConnectionPoint(const QStringList& properties)
         }
 #ifndef QT_NO_DEBUG
       else
-        std::cout << "[ContactsTree::updateConnectionPoint] "
-                  << " Logout but no connection point..." << std::endl;
+        qDebug() << "[ContactsTree::updateConnectionPoint]"
+                 << " Logout but no connection point...";
 #endif
       return false;
     }
@@ -189,9 +189,8 @@ bool    ContactsTree::updateConnectionPoint(const QStringList& properties)
   if (connectionPoint == NULL)
     {
 #ifndef QT_NO_DEBUG
-      std::cout << "[updateConnectionPoint] "
-                << "Creating connection point..."
-                << std::endl;
+      qDebug() << "[updateConnectionPoint]"
+               << "Creating connection point...";
 #endif
       connectionPoint = new QTreeWidgetItem(contact);
     }
@@ -293,9 +292,8 @@ void    ContactsTree::setPortrait(const QString& login,
   if (existingContact(login, &contact) == false)
     {
 #ifndef QT_NO_DEBUG
-      std::cout << "[ContactsTree::setPortrait] "
-                << login.toStdString() << " does not exist."
-                << std::endl;
+      qDebug() << "[ContactsTree::setPortrait]"
+               << login << " does not exist.";
 #endif
       return;
     }
@@ -616,8 +614,7 @@ void    ContactsTree::dropEvent(QDropEvent* event)
       Contact == target->data(0, Type).toInt())
     {
 #ifndef QT_NO_DEBUG
-      std::cout << "Forbidden move: contact -> contact"
-		<< std::endl;
+      qDebug() << "Forbidden move: contact -> contact";
 #endif
       return;
     }
@@ -625,8 +622,7 @@ void    ContactsTree::dropEvent(QDropEvent* event)
   if (target && sourceType == Group)
     {
 #ifndef QT_NO_DEBUG
-      std::cout << "Forbidden move: group -> contact || group"
-		<< std::endl;
+      qDebug() << "Forbidden move: group -> contact || group";
 #endif
       return;
     }
@@ -634,8 +630,7 @@ void    ContactsTree::dropEvent(QDropEvent* event)
   if (sourceType == ConnectionPoint)
     {
 #ifndef QT_NO_DEBUG
-      std::cout << "Forbidden move: connectionPoint -> anything"
-		<< std::endl;
+      qDebug() << "Forbidden move: connectionPoint -> anything";
 #endif
       return;
     }
@@ -700,12 +695,12 @@ void    ContactsTree::mouseDoubleClickEvent(QMouseEvent* event)
     {
       QStringList properties;
       properties << item->data(0, Login).toString()
-		 << item->data(0, Id).toString()
-		 << item->data(0, Ip).toString()
-		 << item->data(0, Promo).toString()
-		 << item->data(0, State).toString()
-		 << item->data(0, Location).toString()
-		 << item->data(0, Comment).toString();
+                 << item->data(0, Id).toString()
+                 << item->data(0, Ip).toString()
+                 << item->data(0, Promo).toString()
+                 << item->data(0, State).toString()
+                 << item->data(0, Location).toString()
+                 << item->data(0, Comment).toString();
       emit openConversation(properties);
     }
   else

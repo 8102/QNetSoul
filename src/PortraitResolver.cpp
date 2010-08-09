@@ -92,10 +92,9 @@ void    PortraitResolver::replyFinished(QNetworkReply* reply)
   if (reply->error() != QNetworkReply::NoError)
     {
 #ifndef QT_NO_DEBUG
-      std::cout << "[PortraitResolver::replyFinished] "
-                << "Reply failed, reason: "
-                << reply->error()
-                << std::endl;
+      qDebug() << "[PortraitResolver::replyFinished]"
+               << "Reply failed, reason: "
+               << reply->error();
 #endif
       reply->deleteLater();
       return;
@@ -113,9 +112,9 @@ void    PortraitResolver::replyFinished(QNetworkReply* reply)
   else
     {
 #ifndef QT_NO_DEBUG
-      std::cout << "[PortraitResolver::replyFinished] "
-                << "QImage saving failed with "
-                << login.toStdString() << std::endl;
+      qDebug() << "[PortraitResolver::replyFinished]"
+               << "QImage saving failed with "
+               << login;
 #endif
     }
   reply->deleteLater();

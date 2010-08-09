@@ -81,10 +81,10 @@ void	Pastebin::replyFinished(QNetworkReply* reply)
 
   if (!array.startsWith("ERROR"))
     {
-      std::cerr << "Reply: " << array.data() << std::endl;
+      qDebug() << "Reply:" << array;
       QString	url = QString("<a href='%1'>%1</a>").arg(array.data());
       QMessageBox::information(0, "PasteBin", url);
     }
-  else std::cerr << "Error on pastebin: " << array.data() << std::endl;
+  else qDebug() << "Error on pastebin:" << array;
   reply->deleteLater();
 }

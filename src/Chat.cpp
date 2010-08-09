@@ -164,9 +164,7 @@ void    Chat::sendMessage(void)
   const int length = message.length();
 
 #ifndef QT_NO_DEBUG
-  std::cout << "[Chat::sendMessage] "
-	    << "Message: " << message.toStdString()
-	    << std::endl;
+  qDebug() << "[Chat::sendMessage] Message:" << message;
 #endif
 
   if (length > 0)

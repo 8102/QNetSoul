@@ -150,8 +150,7 @@ void    QNetsoul::ping(void)
 void    QNetsoul::reconnect(void)
 {
 #ifndef QT_NO_DEBUG
-  std::cout << "[QNetsoul::reconnect] "
-            << "Reconnecting..." << std::endl;
+  qDebug() << "[QNetsoul::reconnect] Reconnecting...";
 #endif
   disconnect();
   connectToServer();
@@ -348,13 +347,10 @@ void    QNetsoul::showConversation(const QStringList& properties,
   Chat* window = getChat(id);
   const bool userEvent = message.isEmpty();
 
-  std::cout << "OMG: " << message.toStdString()
-            << std::endl;
-
   if (NULL == window)
     {
       // DEBUG
-      //std::cerr << "CASE 1" << std::endl;
+      //qDebug() << "CASE 1";
       window = createWindowChat(id, properties.at(0), properties.at(5));
       if (userEvent)
         {
@@ -371,7 +367,7 @@ void    QNetsoul::showConversation(const QStringList& properties,
       if (false == window->isVisible())
         {
           // DEBUG
-          //std::cerr << "CASE 2" << std::endl;
+          //qDebug() << "CASE 2";
           window->outputTextBrowser->clear();
           window->inputTextEdit->clear();
           window->inputTextEdit->setFocus();
@@ -387,7 +383,7 @@ void    QNetsoul::showConversation(const QStringList& properties,
       else
         {
           // DEBUG
-          //std::cerr << "CASE 3" << std::endl;
+          //qDebug() << "CASE 3";
           if (userEvent)
             {
               window->showNormal();
@@ -425,7 +421,7 @@ void    QNetsoul::processHandShaking(int step, QStringList args)
 {
   static QByteArray sum;
   // DEBUG
-  //std::cerr << "Step: " << step << std::endl;
+  //qDebug() << "Step:" << step;
 
   switch (step)
     {
@@ -617,7 +613,6 @@ void    QNetsoul::refreshContacts(void)
         netMsg.append(',');
     }
   netMsg.append("}\n");
-  std::cout << "Request: " << netMsg.data() << std::endl;
   this->_network->sendMessage(netMsg);
 }
 
