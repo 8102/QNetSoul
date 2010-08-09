@@ -1,12 +1,16 @@
 === TODO LIST ===
 
-- Sauvegarder les contacts automatiquement
-- Lors de la deco d'un contact, il faut detruire la fenetre associee a l'id du connection point eteint
-- Coder la possibilite d'envoyer un message a des connection points distincts
-- Gestion des notifications de status
-- Augmenter la taille des portraits dans l'arbre
-- Terminer la liste des contacts bloques.
-- Sur les erreurs, se reconnecter. (a recoder)
+<Urgent>
 - Regler les problemes de focus
+- Sur les erreurs, se reconnecter. (a recoder)
+
+<Moins urgent>
+- Fixer les accents dans les Chuck Norris facts
+- Gestion des mises a jour
+- Gestion de l'historique des conversations
+- Augmenter la taille des portraits dans l'arbre
+- Pouvoir changer le style des popups
+- Possiblite d'envoyer des fichiers
 - Ameliorer le typing notification (envoyer un stop au bout d'un moment)
 - Inclure la possiblite de wizz une personne.
+- Coder un systeme de plugins

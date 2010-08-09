@@ -34,7 +34,6 @@ Options::Options(QWidget* parent) : QDialog(parent)
   readOptionSettings();
   updateOptions();
   connect(this, SIGNAL(accepted()), SLOT(save()));
-  this->blockedWidget->loadBlockedContacts();
 }
 
 Options::~Options(void)
@@ -70,12 +69,6 @@ void	Options::updateOptions(void)
   this->blockedWidget->updateOptions();
   this->funWidget->updateOptions();
   this->advancedWidget->updateOptions();
-}
-
-void	Options::applyOptions(void)
-{
-  this->chatWidget->applyOption();
-  this->advancedWidget->applyOption();
 }
 
 void	Options::save(void)

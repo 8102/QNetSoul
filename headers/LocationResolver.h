@@ -21,22 +21,10 @@
 #include <QString>
 #include <QHostAddress>
 
-class	LocationResolver
+namespace LocationResolver
 {
- public:
-  static QString	resolve(const QString& ip);
-  static QString	resolve(const QHostAddress& hostAddress);
-
- private:
-  static void		rackLocation(QString& result, const QString& ip);
-  static void		smLocation(QString& result, const QString& ip);
-  static void		restLocation(QString& result, const QString& ip);
-};
-
-struct	Location
-{
-  const QString	name;
-  const QString	ip;
-};
+  QString resolve(const QString& ip);
+  QString resolve(const QHostAddress& hostAddress);
+}
 
 #endif // LOCATION_RESOLVER_H

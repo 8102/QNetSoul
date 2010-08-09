@@ -18,6 +18,7 @@
 #include <iostream>
 #include <QSettings>
 #include "Options.h"
+#include "QNetsoul.h"
 #include "Encryption.h"
 #include "OptionsMainWidget.h"
 
@@ -38,7 +39,8 @@ void	OptionsMainWidget::readOptions(QSettings& settings)
   this->_port = settings.value("port", QString("4242")).toString();
   this->_login = settings.value("login", QString("")).toString();
   this->_location = settings.value("location", QString("%L")).toString();
-  this->_comment = settings.value("comment", QString("-=[QNetSoul]=-")).toString();
+  this->_comment =
+    settings.value("comment", QNetsoul::defaultComment()).toString();
   this->_password = settings.value("password", QString("")).toString();
   this->_savePassword = settings.value("savepassword", bool(false)).toBool();
   this->_autoConnect = settings.value("autoconnect", bool(false)).toBool();

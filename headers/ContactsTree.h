@@ -25,6 +25,8 @@
 #include <QContextMenuEvent>
 #include "AddContact.h"
 
+class	Options;
+
 class   ContactsTree : public QTreeWidget
 {
   Q_OBJECT
@@ -36,6 +38,8 @@ class   ContactsTree : public QTreeWidget
 
   ContactsTree(QWidget* parent = NULL);
   ~ContactsTree(void);
+
+  void	setOptions(Options* options) { this->_options = options; }
 
   bool  addGroup(const QString& groupName);
   bool  updateConnectionPoint(const QStringList& properties);
@@ -64,7 +68,7 @@ class   ContactsTree : public QTreeWidget
 
  signals:
   void	downloadPortrait(const QString& login);
-  void  openConversation(const int id, const QString&);
+  void  openConversation(const QStringList&);
 
  protected:
   virtual void  dropEvent(QDropEvent* event);
@@ -83,6 +87,7 @@ class   ContactsTree : public QTreeWidget
   QMenu       _contactMenu;
   QMenu       _connectionPointMenu;
   AddContact  _addContactDialog;
+  Options*    _options;
 };
 
 #endif

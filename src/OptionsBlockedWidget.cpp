@@ -20,15 +20,8 @@
 #include "Options.h"
 #include "OptionsBlockedWidget.h"
 
-namespace
+OptionsBlockedWidget::OptionsBlockedWidget(QWidget* parent) : QWidget(parent)
 {
-  const QString ConfigDirName = "config";
-}
-
-OptionsBlockedWidget::OptionsBlockedWidget(QWidget* parent)
-  : QWidget(parent), _configDir(QDir::currentPath())
-{
-  setupConfigDir();
 }
 
 OptionsBlockedWidget::~OptionsBlockedWidget(void)
@@ -46,12 +39,14 @@ void	OptionsBlockedWidget::setOptions(Options* options)
 	  SIGNAL(clicked()), SLOT(deleteAllBlockedContacts()));
 }
 
-void	OptionsBlockedWidget::readOptions(QSettings& /*settings*/)
+void	OptionsBlockedWidget::readOptions(QSettings& settings)
 {
+  Q_UNUSED(settings);
 }
 
-void	OptionsBlockedWidget::writeOptions(QSettings& /*settings*/)
+void	OptionsBlockedWidget::writeOptions(QSettings& settings)
 {
+  Q_UNUSED(settings);
 }
 
 void	OptionsBlockedWidget::updateOptions(void)
@@ -62,15 +57,22 @@ void	OptionsBlockedWidget::saveOptions(void)
 {
 }
 
-void	OptionsBlockedWidget::addBlockedContact(void)
+QStringList OptionsBlockedWidget::getList(void) const
 {
-  QString login =
-    QInputDialog::getText(this, tr("Block login"), tr("Login to block:"));
+  QStringList list;
+  const int size = this->_options->listWidget->count();
+  for (int i = 0; i < size; ++i)
+    list << this->_options->listWidget->item(i)->text();
+  return list;
+}
 
-  if (login.isEmpty())
-    return;
-
-  addBlockedContact(login);
+bool	OptionsBlockedWidget::isBlocked(const QString& contact) const
+{
+  const int size = this->_options->listWidget->count();
+  for (int i = 0; i < size; ++i)
+    if (contact == this->_options->listWidget->item(i)->text())
+      return true;
+  return false;
 }
 
 void	OptionsBlockedWidget::addBlockedContact(const QString& login)
@@ -81,21 +83,36 @@ void	OptionsBlockedWidget::addBlockedContact(const QString& login)
       this->_options->listWidget->insertItem(this->_options->listWidget->count(), login);
       this->_options->deleteButton->setEnabled(true);
       this->_options->deleteAllButton->setEnabled(true);
-      saveBlockedContacts();
     }
+}
+
+void	OptionsBlockedWidget::addBlockedContact(void)
+{
+  const QString login =
+    QInputDialog::getText(this, tr("Block login"), tr("Login to block:"));
+  if (login.isEmpty())
+    return;
+  addBlockedContact(login);
 }
 
 void	OptionsBlockedWidget::deleteBlockedContact(void)
 {
-  if (this->_options->listWidget->currentItem())
+  int row;
+  const QList<QListWidgetItem*> selected =
+    this->_options->listWidget->selectedItems();
+
+  if (selected.size() > 0)
     {
-      delete this->_options->listWidget->takeItem(this->_options->listWidget->currentRow());
+      for (int i = 0; i < selected.size(); ++i)
+	{
+	  row = this->_options->listWidget->row(selected.at(i));
+	  delete this->_options->listWidget->takeItem(row);
+	}
       if (this->_options->listWidget->count() == 0)
         {
           this->_options->deleteButton->setEnabled(false);
           this->_options->deleteAllButton->setEnabled(false);
         }
-      saveBlockedContacts();
     }
 }
 
@@ -104,40 +121,4 @@ void	OptionsBlockedWidget::deleteAllBlockedContacts(void)
   this->_options->listWidget->clear();
   this->_options->deleteButton->setEnabled(false);
   this->_options->deleteAllButton->setEnabled(false);
-  saveBlockedContacts();
-}
-
-void	OptionsBlockedWidget::setupConfigDir(void)
-{
-  if (!this->_configDir.exists(ConfigDirName))
-    this->_configDir.mkdir(ConfigDirName);
-  this->_configDir.cd(ConfigDirName);
-}
-
-void	OptionsBlockedWidget::saveBlockedContacts(void)
-{
-  QFile file(ConfigDirName + "/blockedlist.txt");
-
-  if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    return;
-
-  const int     size = this->_options->listWidget->count();
-  QTextStream   out(&file);
-
-  for (int i = 0; i < size; ++i)
-    out << this->_options->listWidget->item(i)->text() << '\n';
-  file.close();
-}
-
-void	OptionsBlockedWidget::loadBlockedContacts(void)
-{
-  QFile file(ConfigDirName + "/blockedlist.txt");
-
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    return;
-
-  QTextStream in(&file);
-  while (!in.atEnd())
-    addBlockedContact(in.readLine());
-  file.close();
 }

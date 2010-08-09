@@ -33,7 +33,6 @@ class Options : public QDialog, public Ui_Options
   void	readOptionSettings(void);
   void	writeOptionSettings(void);
   void	updateOptions(void);
-  void	applyOptions(void);
 
 private slots:
   void	save(void);

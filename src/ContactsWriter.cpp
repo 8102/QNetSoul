@@ -15,9 +15,11 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "Options.h"
 #include "ContactsWriter.h"
 
-ContactsWriter::ContactsWriter(QTreeWidget* tree) : _tree(tree)
+ContactsWriter::ContactsWriter(QTreeWidget* tree, Options* options)
+  : _tree(tree), _options(options)
 {
   setAutoFormatting(true);
 }
@@ -34,7 +36,7 @@ bool    ContactsWriter::writeFile(QIODevice* device)
   const int size = this->_tree->topLevelItemCount();
   for (int i = 0; i < size; ++i)
     writeItem(this->_tree->topLevelItem(i));
-
+  writeBlockedContacts(this->_options->blockedWidget->getList());
   writeEndDocument();
   return true;
 }
@@ -42,10 +44,9 @@ bool    ContactsWriter::writeFile(QIODevice* device)
 void    ContactsWriter::writeItem(QTreeWidgetItem *item)
 {
   const int type = item->data(0, ContactsTree::Type).toInt();
-
   if (type == ContactsTree::Group)
     {
-      bool folded = !this->_tree->isItemExpanded(item);
+      const bool folded = !this->_tree->isItemExpanded(item);
       writeStartElement("Group");
       writeAttribute("expanded", folded ? "yes" : "no");
       writeTextElement("name", item->text(0));
@@ -55,13 +56,25 @@ void    ContactsWriter::writeItem(QTreeWidgetItem *item)
     }
   else if (type == ContactsTree::Contact)
     {
-      bool folded = !this->_tree->isItemExpanded(item);
+      const bool folded = !this->_tree->isItemExpanded(item);
       writeStartElement("Contact");
       writeAttribute("expanded", folded ? "yes" : "no");
-
       writeTextElement("alias", item->text(0));
-      writeTextElement("login", item->data(0, ContactsTree::Login).toString());
-      writeTextElement("promo", item->data(0, ContactsTree::Promo).toString());
+      writeTextElement("login",
+                       item->data(0, ContactsTree::Login).toString());
+      writeTextElement("promo",
+                       item->data(0, ContactsTree::Promo).toString());
+      writeEndElement();
+    }
+}
+
+void    ContactsWriter::writeBlockedContacts(const QStringList& blocked)
+{
+  const int size = blocked.size();
+  for (int i = 0; i < size; ++i)
+    {
+      writeStartElement("BlockedContact");
+      writeTextElement("login", blocked.at(i));
       writeEndElement();
     }
 }

@@ -21,41 +21,45 @@
 #include <QWidget>
 #include "OptionsWidget.h"
 
-class	OptionsChatWidget : public QWidget, public OptionsWidget
+class   OptionsChatWidget : public QWidget, public OptionsWidget
 {
   Q_OBJECT
 
-  public:
+    public:
   OptionsChatWidget(QWidget* parent = 0);
   ~OptionsChatWidget(void);
 
-  void	applyOption(void);
-  void	setOptions(Options* options);
-  void	readOptions(QSettings& settings);
-  void	writeOptions(QSettings& settings);
-  void	updateOptions(void);
-  void	saveOptions(void);
-  QString getReply(int index);
+  bool exitOnEscape(void) const { return this->_exitOnEscape; }
+  bool notifyTyping(void) const { return this->_notifyTyping; }
+  bool smileys(void) const { return this->_smileys; }
+  bool notifyMsg(void) const { return this->_notifyMsg; }
+  bool notifyState(void) const { return this->_notifyState; }
 
-public slots:
-  void	loadReply(int index);
+  void    setOptions(Options* options);
+  void    readOptions(QSettings& settings);
+  void    writeOptions(QSettings& settings);
+  void    updateOptions(void);
+  void    saveOptions(void);
+  QString getReply(const int index) const;
 
-signals:
-  void  chatOptionsChanged(bool, bool, bool);
+  public slots:
+  void  loadReply(const int index);
 
-private:
-  void	saveCurrentReply(void);
-  void	saveCurrentReply(int index);
+ private:
+  void  saveCurrentReply(void);
+  void  saveCurrentReply(int index);
 
-private:
-  bool		_exitOnEscape;
-  bool		_typingNotification;
-  bool		_smileys;
-  int		_oldComboBoxValue;
-  int		_replyComboBoxValue;
-  QString	_replyLocked;
-  QString	_replyAway;
-  QString	_replyServer;
+ private:
+  bool    _exitOnEscape;
+  bool    _notifyTyping;
+  bool    _smileys;
+  bool	  _notifyMsg;
+  bool	  _notifyState;
+  int     _oldComboBoxValue;
+  int     _replyComboBoxValue;
+  QString _replyLocked;
+  QString _replyAway;
+  QString _replyServer;
 };
 
 #endif

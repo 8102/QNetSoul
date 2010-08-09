@@ -30,28 +30,21 @@ OptionsAdvancedWidget::~OptionsAdvancedWidget(void)
 {
 }
 
-void	OptionsAdvancedWidget::applyOption(void)
-{
-  if (this->_useProxy)
-    emit resetProxy(getProxy());
-  else
-    emit resetProxy();
-}
-
-void	OptionsAdvancedWidget::readOptions(QSettings& settings)
+void    OptionsAdvancedWidget::readOptions(QSettings& settings)
 {
   settings.beginGroup("AdvancedOptions");
   this->_useProxy = settings.value("useproxy", bool(false)).toBool();
-  this->_proxy = settings.value("proxy", QString("proxy.epitech.net")).toString();
+  this->_proxy = settings.value("proxy",
+                                QString("proxy.epitech.net")).toString();
   this->_proxyPort = settings.value("port", QString("3128")).toString();
-  this->_proxyLogin = settings.value("login", QString("")).toString();
-  this->_proxyPassword = settings.value("password", QString("")).toString();
+  this->_proxyLogin = settings.value("login").toString();
+  this->_proxyPassword = settings.value("password").toString();
   settings.endGroup();
-
   this->_proxyPassword = unencrypt(this->_proxyPassword);
+  setProxy();
 }
 
-void	OptionsAdvancedWidget::writeOptions(QSettings& settings)
+void    OptionsAdvancedWidget::writeOptions(QSettings& settings)
 {
   settings.beginGroup("AdvancedOptions");
   settings.setValue("proxy", this->_proxy);
@@ -62,7 +55,7 @@ void	OptionsAdvancedWidget::writeOptions(QSettings& settings)
   settings.endGroup();
 }
 
-void	OptionsAdvancedWidget::updateOptions(void)
+void    OptionsAdvancedWidget::updateOptions(void)
 {
   // Advanced Tab
   this->_options->proxyLineEdit->setText(this->_proxy);
@@ -81,45 +74,38 @@ void	OptionsAdvancedWidget::updateOptions(void)
     this->_options->proxyCheckBox->setCheckState(Qt::Unchecked);
 }
 
-void	OptionsAdvancedWidget::saveOptions(void)
+void    OptionsAdvancedWidget::saveOptions(void)
 {
-  const bool    proxyNeedsToBeReset =
-    (this->_useProxy !=
-     (Qt::Checked == this->_options->proxyCheckBox->checkState()));
-
   this->_proxy = this->_options->proxyLineEdit->text();
   this->_proxyPort = this->_options->proxyPortLineEdit->text();
   this->_proxyLogin = this->_options->proxyLoginLineEdit->text();
   this->_proxyPassword = this->_options->proxyPasswordLineEdit->text();
   this->_useProxy =
     (Qt::Checked == this->_options->proxyCheckBox->checkState());
-  if (proxyNeedsToBeReset)
-    {
-      if (this->_useProxy)
-	emit resetProxy(getProxy());
-      else
-	emit resetProxy();
-    }
+  setProxy();
 }
 
-bool    OptionsAdvancedWidget::isValidProxy(void) const
+void    OptionsAdvancedWidget::setProxy(void)
+{
+  if (this->_useProxy)
+    {
+      if (validFields() == false) return;
+      QNetworkProxy proxy(QNetworkProxy::HttpProxy,
+                          this->_proxy,
+                          this->_proxyPort.toUShort(),
+                          this->_proxyLogin,
+                          this->_proxyPassword);
+      QNetworkProxy::setApplicationProxy(proxy);
+    }
+  else QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
+}
+
+bool    OptionsAdvancedWidget::validFields(void) const
 {
   bool  port_ok;
   this->_proxyPort.toUShort(&port_ok);
-
   return (!this->_proxy.isEmpty() &&
           !this->_proxyLogin.isEmpty() &&
           !this->_proxyPassword.isEmpty() &&
           port_ok);
-}
-
-const QNetworkProxy	OptionsAdvancedWidget::getProxy(void) const
-{
-  bool          port_ok;
-  quint16       port = this->_proxyPort.toUShort(&port_ok);
-
-  QNetworkProxy proxy(QNetworkProxy::HttpProxy,
-                      this->_proxy, port, this->_proxyLogin,
-                      this->_proxyPassword);
-  return proxy;
 }

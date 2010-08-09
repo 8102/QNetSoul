@@ -51,7 +51,7 @@ void	AddContact::addContact(void)
   if (this->loginLineEdit->text() == "")
     {
       QMessageBox::information(this, tr("Add Contact"),
-			       tr("You should fill login field"
+			       tr("You should fill login field "
 				  "before adding contact :)"));
       return;
     }

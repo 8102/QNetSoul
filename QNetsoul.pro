@@ -16,7 +16,6 @@ HEADERS += headers/QNetsoul.h \
     headers/Options.h \
     headers/AddContact.h \
     headers/Chat.h \
-    headers/RessourcesManager.h \
     headers/Url.h \
     headers/State.h \
     headers/ContactsWriter.h \
@@ -54,7 +53,6 @@ SOURCES += src/main.cpp \
     src/Network.cpp \
     src/AddContact.cpp \
     src/Chat.cpp \
-    src/RessourcesManager.cpp \
     src/Url.cpp \
     src/ContactsWriter.cpp \
     src/ContactsReader.cpp \

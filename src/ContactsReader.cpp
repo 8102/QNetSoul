@@ -16,11 +16,13 @@
 */
 
 #include <iostream>
+#include "Options.h"
 #include "ContactsReader.h"
 #include "ToolTipBuilder.h"
 #include "PortraitResolver.h"
 
-ContactsReader::ContactsReader(QTreeWidget* tree) : _tree(tree)
+ContactsReader::ContactsReader(QTreeWidget* tree, Options* options)
+  : _tree(tree), _options(options)
 {
 }
 
@@ -75,6 +77,8 @@ void    ContactsReader::readQNS(void)
             readGroup(0);
           else if (name() == "Contact")
             readContact(0);
+	  else if (name() == "BlockedContact")
+	    readBlocked();
           else
             readUnknownElement();
         }
@@ -147,10 +151,10 @@ void    ContactsReader::readContact(QTreeWidgetItem* parent)
           if (name() == "alias")
             contact->setText(0, readElementText());
           else if (name() == "login")
-	    {
-	      login = readElementText();
-	      contact->setData(0, ContactsTree::Login, login);
-	    }
+            {
+              login = readElementText();
+              contact->setData(0, ContactsTree::Login, login);
+            }
           else if (name() == "promo")
             contact->setData(0, ContactsTree::Promo, readElementText());
           else readUnknownElement();
@@ -173,6 +177,22 @@ void    ContactsReader::readContact(QTreeWidgetItem* parent)
       contact->setData(0, ContactsTree::IconPath, portraitPath);
     }
   Contact::buildToolTip(contact);
+}
+
+void	ContactsReader::readBlocked(void)
+{
+  while (!atEnd())
+    {
+      readNext();
+      if (isEndElement())
+        break;
+      if (isStartElement())
+	{
+	  if (name() == "login")
+	    this->_options->blockedWidget->addBlockedContact(readElementText());
+          else readUnknownElement();
+	}
+    }
 }
 
 QTreeWidgetItem* ContactsReader::createChildItem(QTreeWidgetItem *item)

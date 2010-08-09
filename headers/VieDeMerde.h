@@ -24,7 +24,7 @@
 
 class   QSlidingPopup;
 
-class   VieDeMerde : public QObject
+class   VieDeMerde : public QNetworkAccessManager
 {
   Q_OBJECT
 
@@ -32,17 +32,14 @@ class   VieDeMerde : public QObject
   VieDeMerde(QSlidingPopup* popup);
   virtual ~VieDeMerde(void);
 
-  void  setProxy(const QNetworkProxy& p) { this->_manager->setProxy(p); }
-
   public slots:
-  void  getALife(void);
+  void  getVdm(void);
 
   private slots:
   void  replyFinished(QNetworkReply* reply);
 
  private:
-  QSlidingPopup*         _popup;
-  QNetworkAccessManager* _manager;
+  QSlidingPopup* _popup;
 };
 
 #endif // VIEDEMERDE_H

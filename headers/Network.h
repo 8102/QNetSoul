@@ -22,43 +22,50 @@
 #include <QTcpSocket>
 #include <QStringList>
 
-class	Network : public QObject
+class	Options;
+
+class   Network : public QObject
 {
   Q_OBJECT
 
-  public:
+    public:
   Network(QObject* parent);
   virtual ~Network(void) { this->_socket.close(); }
 
-  QAbstractSocket::SocketState state(void) const { return this->_socket.state(); };
-  void	connect(const QString& host, quint16);
-  void	disconnect(void);
-  void	sendMessage(const char* message) { this->_socket.write(message); }
-  void	sendMessage(const QByteArray& message) { this->_socket.write(message); }
-  void	resolveLocation(QString& oldLocation) const;
+  void	setOptions(Options* options) { this->_options = options; }
+  QAbstractSocket::SocketState state(void) const
+    { return this->_socket.state(); }
+  void  sendMessage(const char* message) { this->_socket.write(message); }
+  void  sendMessage(const QByteArray& message){this->_socket.write(message);}
 
-signals:
-  void	reconnectionRequest(void);
-  void	handShaking(int step, QStringList);
-  void	message(const int id, const QString& login, const QString& msg);
-  void	state(const QStringList&);
-  void	who(const QStringList&);
-  void	typingStatus(const int id, bool typing);
+  void  connect(const QString& host, quint16);
+  void  disconnect(void);
+  void  resolveLocation(QString& oldLocation) const;
 
-private slots:
-  void	displaySocketError(void);
-  void	processPackets(void);
+ signals:
+  void  reconnectionRequest(void);
+  void  handShaking(int step, QStringList);
+  void  msg(const QStringList&, const QString&);
+  void  state(const QStringList&);
+  void  who(const QStringList&);
+  void  typingStatus(const int id, bool typing);
 
-private:
-  void	parseLines(void);
-  void	interpretLine(const QString& line);
+  private slots:
+  void  displaySocketError(void);
+  void  processPackets(void);
 
-  QString	_rbuffer;
-  QTcpSocket	_socket;
-  int		_handShakingStep;
-  QString	_host;
-  quint16	_port;
-  QTimer	_reconnectionTimer;
+ private:
+  void  parseLines(void);
+  void  interpretLine(const QString& line);
+
+ private:
+  Options*   _options;
+  QString    _rbuffer;
+  QTcpSocket _socket;
+  int        _handShakingStep;
+  QString    _host;
+  quint16    _port;
+  QTimer     _reconnectionTimer;
 };
 
 #endif // NETWORK_H

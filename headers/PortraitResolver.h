@@ -21,13 +21,11 @@
 #include <iostream>
 #include <QDir>
 #include <QFile>
-#include <QHttp>
-#include <QBuffer>
-#include <QObject>
-#include <QNetworkProxy>
-#include "PortraitRequest.h"
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QNetworkAccessManager>
 
-class   PortraitResolver : public QObject
+class   PortraitResolver : public QNetworkAccessManager
 {
   Q_OBJECT
 
@@ -35,30 +33,28 @@ class   PortraitResolver : public QObject
   PortraitResolver(void);
   ~PortraitResolver(void);
 
-  void  setProxy(const QNetworkProxy& p) { this->_http.setProxy(p); }
-
   void  addRequest(const QStringList& logins);
   void  addRequest(const QString& login, bool fun);
 
   static bool isAvailable(QString& path, const QString& login);
-  static QString buildFilename(const QString& login, bool fun);
+  static QString buildFilename(const QString& login, const bool fun);
   static QDir getPortraitDir(void);
 
   public slots:
   void	addRequest(const QString& login);
 
   private slots:
-  void  finished(int id, bool error);
+  void  replyFinished(QNetworkReply* reply);
 
  signals:
   void  downloadedPortrait(const QString& login);
 
  private:
+  enum Attribute { Login = QNetworkRequest::User, Fun };
   void  setupPortraitDirectory(void);
 
+ private:
   QDir _dir;
-  QHttp _http;
-  QList<PortraitRequest*> _requests;
 };
 
 #endif // PORTRAITRESOLVER_H

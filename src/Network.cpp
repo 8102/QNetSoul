@@ -18,11 +18,13 @@
 #include <iostream>
 #include <QMessageBox>
 #include "Url.h"
+#include "Options.h"
 #include "Network.h"
 #include "QNetsoul.h"
 #include "LocationResolver.h"
 
-Network::Network(QObject* parent) : QObject(parent), _handShakingStep(0)
+Network::Network(QObject* parent)
+  : QObject(parent), _options(NULL), _handShakingStep(0)
 {
   QNetsoul* ns = dynamic_cast<QNetsoul*>(parent);
   if (ns)
@@ -41,6 +43,7 @@ Network::Network(QObject* parent) : QObject(parent), _handShakingStep(0)
     }
   else
     qFatal("Network constructor: parent must be a QNetsoul instance !");
+  this->_socket.setProxy(QNetworkProxy::NoProxy);
 }
 
 void    Network::connect(const QString& host, quint16 port)
@@ -80,17 +83,19 @@ void    Network::resolveLocation(QString& oldLocation) const
 
 void    Network::displaySocketError(void)
 {
-  // DEBUG
-  //std::cerr << this->_socket.errorString().toStdString() << std::endl;
-  //std::cerr << "Socket state:" << this->_socket.state() << std::endl;
+#ifndef QT_NO_DEBUG
+  std::cout << "[Network::displaySocketError] "
+            << this->_socket.errorString().toStdString() << std::endl
+            << "Socket state:" << this->_socket.state() << std::endl;
+#endif
   emit reconnectionRequest();
 }
 
 void    Network::processPackets(void)
 {
-  int                   readbytes;
-  char                  buffer[128];
-  QDataStream           in(&this->_socket);
+  int          readbytes;
+  char         buffer[128];
+  QDataStream  in(&this->_socket);
   //in.setVersion(QDataStream::Qt_4_6); // Not mandatory...
 
   while (this->_socket.bytesAvailable())
@@ -125,10 +130,13 @@ void    Network::parseLines(void)
 
 void    Network::interpretLine(const QString& line)
 {
-  // DEBUG
-  std::cerr << line.toStdString() << std::endl;
-  QStringList   parts = line.split(' ', QString::SkipEmptyParts);
-  const int     size = parts.size();
+#ifndef QT_NO_DEBUG
+  std::cout << line.toStdString() << std::endl;
+#endif
+  Q_ASSERT(this->_options);
+  QStringList properties;
+  QStringList parts = line.split(' ', QString::SkipEmptyParts);
+  const int   size = parts.size();
 
   if (size)
     {
@@ -142,13 +150,27 @@ void    Network::interpretLine(const QString& line)
         {
           if ("msg" == parts.at(3) && size >= 5)
             {
-              // Emits id, login, message
-              bool ok;
-              const int id = parts.at(1).section(':', 0, 0).toInt(&ok);
-              if (ok)
-                emit message(id, parts.at(1).section(':', 3, 3).section('@', 0, 0), parts.at(4));
-              //std::cerr << "message(" << parts.at(1).section(':', 3, 3).section('@', 0, 0).toStdString();
-              //std::cerr << ", " << parts.at(4).toStdString() << ");\n";
+              const char* message = url_decode(parts.at(4).toStdString().c_str());
+              const QString login = parts.at(1).section(':', 3, 3).section('@', 0, 0);
+              if (this->_options->blockedWidget->isBlocked(login))
+                {
+#ifndef QT_NO_DEBUG
+                  std::cout << "[Network::interpretLine] "
+                            << "Message blocked from "
+                            << login.toStdString()
+                            << ": " << message << std::endl;
+#endif
+                  return;
+                }
+              // user_cmd 566:user:1/3:sundas_c@0.0.0.0:~:maison:epitech_2011 | msg test dst=dally_r
+              properties << login // login
+                         << parts.at(1).section(':', 0, 0) // id
+                         << parts.at(1).section(':', 3, 3).section('@', -1) // ip
+                         << parts.at(1).section(':', -1) // group
+                         << "actif" // state
+                         << url_decode(parts.at(1).section(':', -2, -2).toStdString().c_str()) // Location
+                         << ""; // Comment
+              emit msg(properties, message);
             }
           else if ("state" == parts.at(3) && size >= 5)
             {
@@ -160,8 +182,6 @@ void    Network::interpretLine(const QString& line)
               // properties.at(4): State
               // properties.at(5): Location
               // properties.at(6): Comment
-              QStringList properties;
-
               properties << parts.at(1).section(':', 3, 3).section('@', 0, 0) // login
                          << parts.at(1).section(':', 0, 0) // id
                          << parts.at(1).section(':', 3, 3).section('@', -1) // ip
@@ -177,8 +197,6 @@ void    Network::interpretLine(const QString& line)
             }
           else if (("login" == parts.at(3) || "logout" == parts.at(3)) && (size >= 4))
             {
-              QStringList properties;
-
               properties << parts.at(1).section(':', 3, 3).section('@', 0, 0) // login
                          << parts.at(1).section(':', 0, 0) // id
                          << parts.at(1).section(':', 3, 3).section('@', -1) // ip
@@ -187,10 +205,6 @@ void    Network::interpretLine(const QString& line)
                          << url_decode(parts.at(1).section(':', -2, -2).toStdString().c_str()) // Location
                          << ""; // Comment
               emit state(properties);
-              // DEBUG
-              // std::cerr << "status(" << parts.at(1).section(':', 3, 3).section('@', 0, 0).toStdString() << ", ";
-              // std::cerr << parts.at(1).section(':', 0, 0).toStdString() << ", " << parts.at(3).toStdString();
-              // std::cerr << ");\n";
             }
           else if ("who" == parts.at(3) && size >= 15)
             {
@@ -223,13 +237,17 @@ void    Network::interpretLine(const QString& line)
       else if (line.startsWith("rep 033 --"))
         {
           emit handShaking(-1, QStringList());
+#ifndef QT_NO_DEBUG
           std::cerr << "Failure...\n";
           std::cerr << "Reason: " << line.toStdString() << std::endl;
+#endif
         }
       else
         {
+#ifndef QT_NO_DEBUG
           std::cerr << "Unparsed command:" << std::endl;
           std::cerr << line.toStdString() << std::endl;
+#endif
         }
     }
 }

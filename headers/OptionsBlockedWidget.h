@@ -22,35 +22,27 @@
 #include <QWidget>
 #include "OptionsWidget.h"
 
-class	OptionsBlockedWidget : public QWidget, public OptionsWidget
+class   OptionsBlockedWidget : public QWidget, public OptionsWidget
 {
   Q_OBJECT
 
-public:
+    public:
   OptionsBlockedWidget(QWidget* parent = 0);
   ~OptionsBlockedWidget(void);
 
-  void	setOptions(Options* options);
-  void	readOptions(QSettings& settings);
-  void	writeOptions(QSettings& settings);
-  void	updateOptions(void);
-  void	saveOptions(void);
+  void        setOptions(Options* options);
+  void        readOptions(QSettings& settings);
+  void        writeOptions(QSettings& settings);
+  void        updateOptions(void);
+  void        saveOptions(void);
+  QStringList getList(void) const;
+  bool        isBlocked(const QString& contact) const;
+  void        addBlockedContact(const QString& login);
 
-private slots:
-  void	addBlockedContact(void);
-  void	addBlockedContact(const QString& login);
-  void	deleteBlockedContact(void);
-  void	deleteAllBlockedContacts(void);
-
-private:
-  void  setupConfigDir(void);
-  void  saveBlockedContacts(void);
-
-public:
-  void  loadBlockedContacts(void);
-
-private:
-  QDir          _configDir;
+  private slots:
+  void  addBlockedContact(void);
+  void  deleteBlockedContact(void);
+  void  deleteAllBlockedContacts(void);
 };
 
 #endif

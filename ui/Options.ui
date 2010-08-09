@@ -25,10 +25,6 @@
   <property name="windowTitle">
    <string>Options</string>
   </property>
-  <property name="windowIcon">
-   <iconset resource="../Images.qrc">
-    <normaloff>:/images/contact.png</normaloff>:/images/contact.png</iconset>
-  </property>
   <widget class="QPushButton" name="okPushButton">
    <property name="geometry">
     <rect>
@@ -258,7 +254,7 @@
     <attribute name="title">
      <string>Chat</string>
     </attribute>
-    <widget class="QCheckBox" name="typingStatusCheckBox">
+    <widget class="QCheckBox" name="notifyTypingCheckBox">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -364,6 +360,32 @@
       <string>Auto reply on this state:</string>
      </property>
     </widget>
+    <widget class="QCheckBox" name="notifyStateCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>140</y>
+       <width>341</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Notify on contacts state change</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="notifyMsgCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>110</y>
+       <width>341</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Notify when you receive a message</string>
+     </property>
+    </widget>
    </widget>
    <widget class="OptionsBlockedWidget" name="blockedWidget">
     <attribute name="title">
@@ -377,6 +399,12 @@
        <width>341</width>
        <height>201</height>
       </rect>
+     </property>
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::ExtendedSelection</enum>
      </property>
      <property name="selectionRectVisible">
       <bool>false</bool>
@@ -693,7 +721,7 @@
   <tabstop>proxyPasswordLineEdit</tabstop>
   <tabstop>okPushButton</tabstop>
   <tabstop>cancelPushButton</tabstop>
-  <tabstop>typingStatusCheckBox</tabstop>
+  <tabstop>notifyTypingCheckBox</tabstop>
   <tabstop>chatEscapeCheckBox</tabstop>
   <tabstop>smileysCheckBox</tabstop>
   <tabstop>autoReplyComboBox</tabstop>

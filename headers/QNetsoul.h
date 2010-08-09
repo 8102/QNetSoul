@@ -48,6 +48,15 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
   QNetsoul(QWidget* parent = 0);
   ~QNetsoul(void);
 
+  static QString currentVersion(void)
+  {
+    return "0.5";
+  }
+  static QString defaultComment(void)
+  {
+    return QString("-=[QNetSoul v%1]=-").arg(currentVersion());
+  }
+
  protected:
   void  closeEvent(QCloseEvent*);
 
@@ -61,26 +70,19 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
   void  saveStateBeforeQuiting(void);
   void  openOptionsDialog(QLineEdit* newLineFocus = 0);
   void  handleClicksOnTrayIcon(QSystemTrayIcon::ActivationReason);
-  //void        addContact(void);
-  //void        addContact(const QList<Contact>);
-  //void        addContact(const QString&, const QString& alias = "");
-  //void        removeSelectedContact(void);
   void  refreshContacts(void);
   void  sendStatus(const int&) const;
   void  changeStatus(const QStringList& properties);
   void  updateContact(const QStringList& properties);
-  void  showConversation(const int, const QString&, const QString& msg = "");
+  void  showConversation(const QStringList&, const QString& msg = "");
   void  processHandShaking(int, QStringList);
   void  transmitMsg(const int id, const QString& msg);
   void  transmitTypingStatus(const QString&, bool);
   void  notifyTypingStatus(const int id, const bool typing);
   void  setPortrait(const QString&);
   void  aboutQNetSoul(void);
-  void  setProxy(const QNetworkProxy& proxy = QNetworkProxy());
-  void  applyChatOptions(bool exitOnEscape, bool typingNotification, bool smileys);
 
  private:
-  void  configureProxy(void);
   Chat* getChat(const int id);
   void  watchLogContacts(void);
   void  watchLogContact(const QString&);
@@ -88,12 +90,10 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
   void  resetAllContacts(void);
   void  readSettings(void);
   void  writeSettings(void);
-  void  loadContacts(const QString&);
-  void  saveContacts(const QString&);
   void  connectQNetsoulItems(void);
   void  connectActionsSignals(void);
   void  connectNetworkSignals(void);
-  Chat* createWindowChat(const int, const QString&);
+  Chat* createWindowChat(const int, const QString&, const QString&);
   void  deleteAllWindowChats(void);
 
   Network*          _network;
@@ -104,9 +104,6 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
   QPoint            _oldPos;
   PortraitResolver  _portraitResolver;
   Pastebin          _pastebin;
-  bool              _exitOnEscape;
-  bool              _typingNotification;
-  bool              _smileys;
   QSlidingPopup     _popup;
   VieDeMerde        _vdm;
   ChuckNorrisFacts  _cnf;

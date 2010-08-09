@@ -22,7 +22,8 @@
 
 OptionsChatWidget::OptionsChatWidget(QWidget* parent)
   : QWidget(parent), _exitOnEscape(false),
-    _typingNotification(false), _smileys(false),
+    _notifyTyping(false), _smileys(false),
+    _notifyMsg(false), _notifyState(false),
     _oldComboBoxValue(-42), _replyComboBoxValue(0)
 {
 }
@@ -31,39 +32,36 @@ OptionsChatWidget::~OptionsChatWidget(void)
 {
 }
 
-void	OptionsChatWidget::applyOption(void)
-{
-  emit chatOptionsChanged(this->_exitOnEscape,
-			  this->_typingNotification,
-			  this->_smileys);
-}
-
-void	OptionsChatWidget::setOptions(Options* options)
+void    OptionsChatWidget::setOptions(Options* options)
 {
   OptionsWidget::setOptions(options);
   connect(this->_options->autoReplyComboBox,
-	  SIGNAL(currentIndexChanged(int)), SLOT(loadReply(int)));
+          SIGNAL(currentIndexChanged(int)), SLOT(loadReply(int)));
 }
 
-void	OptionsChatWidget::readOptions(QSettings& settings)
+void    OptionsChatWidget::readOptions(QSettings& settings)
 {
   settings.beginGroup("ChatOptions");
   this->_exitOnEscape = settings.value("exitonescape", bool(false)).toBool();
-  this->_typingNotification = settings.value("typingnotification", bool(false)).toBool();
+  this->_notifyTyping = settings.value("notifytyping", bool(false)).toBool();
   this->_smileys = settings.value("smileys", bool(false)).toBool();
+  this->_notifyMsg = settings.value("notifymsg", bool(false)).toBool();
+  this->_notifyState = settings.value("notifystate", bool(false)).toBool();
   this->_replyComboBoxValue = settings.value("replycomboboxvalue", int(0)).toInt();
-  this->_replyLocked = settings.value("replylocked", QString("[Locked]")).toString();
-  this->_replyAway = settings.value("replyaway", QString("[Away]")).toString();
-  this->_replyServer = settings.value("replyserver", QString("[Daemonized]")).toString();
+  this->_replyLocked = settings.value("replylocked").toString();
+  this->_replyAway = settings.value("replyaway").toString();
+  this->_replyServer = settings.value("replyserver").toString();
   settings.endGroup();
 }
 
-void	OptionsChatWidget::writeOptions(QSettings& settings)
+void    OptionsChatWidget::writeOptions(QSettings& settings)
 {
   settings.beginGroup("ChatOptions");
   settings.setValue("exitonescape", this->_exitOnEscape);
-  settings.setValue("typingnotification", this->_typingNotification);
+  settings.setValue("notifytyping", this->_notifyTyping);
   settings.setValue("smileys", this->_smileys);
+  settings.setValue("notifymsg", this->_notifyMsg);
+  settings.setValue("notifystate", this->_notifyState);
   settings.setValue("replycomboboxvalue", this->_replyComboBoxValue);
   settings.setValue("replylocked", this->_replyLocked);
   settings.setValue("replyaway", this->_replyAway);
@@ -71,26 +69,28 @@ void	OptionsChatWidget::writeOptions(QSettings& settings)
   settings.endGroup();
 }
 
-void	OptionsChatWidget::updateOptions(void)
+void    OptionsChatWidget::updateOptions(void)
 {
   setCheckState(this->_options->chatEscapeCheckBox, this->_exitOnEscape);
-  setCheckState(this->_options->typingStatusCheckBox, this->_typingNotification);
+  setCheckState(this->_options->notifyTypingCheckBox, this->_notifyTyping);
   setCheckState(this->_options->smileysCheckBox, this->_smileys);
+  setCheckState(this->_options->notifyMsgCheckBox, this->_notifyMsg);
+  setCheckState(this->_options->notifyStateCheckBox, this->_notifyState);
   this->_options->autoReplyComboBox->setCurrentIndex(this->_replyComboBoxValue);
   loadReply(this->_replyComboBoxValue);
 }
 
-void	OptionsChatWidget::saveOptions(void)
+void    OptionsChatWidget::saveOptions(void)
 {
   this->_exitOnEscape = this->_options->chatEscapeCheckBox->checkState();
-  this->_typingNotification = this->_options->typingStatusCheckBox->checkState();
+  this->_notifyTyping = this->_options->notifyTypingCheckBox->checkState();
   this->_smileys = this->_options->smileysCheckBox->checkState();
+  this->_notifyMsg = this->_options->notifyMsgCheckBox->checkState();
+  this->_notifyState = this->_options->notifyStateCheckBox->checkState();
   saveCurrentReply();
-  emit chatOptionsChanged(this->_exitOnEscape, this->_typingNotification,
-			  this->_smileys);
 }
 
-QString	OptionsChatWidget::getReply(int index)
+QString OptionsChatWidget::getReply(const int index) const
 {
   switch (index)
     {
@@ -98,20 +98,16 @@ QString	OptionsChatWidget::getReply(int index)
     case 1: return this->_replyAway;
     case 2: return this->_replyServer;
     default:
-      {
-	std::cerr << "Error: bad index in getReply" << std::endl;
-	std::cerr << "Value: " << index << std::endl;
-      }
+      qFatal("[OptionsChatWidget::getReply] Error: bad index (%d).", index);
     }
   return "";
 }
 
 
-void	OptionsChatWidget::loadReply(int index)
+void    OptionsChatWidget::loadReply(const int index)
 {
   if (this->_oldComboBoxValue != -42)
     saveCurrentReply(this->_oldComboBoxValue);
-
   switch (index)
     {
     case 0:
@@ -124,22 +120,18 @@ void	OptionsChatWidget::loadReply(int index)
       this->_options->autoReplyLineEdit->setText(this->_replyServer);
       break;
     default:
-      {
-	std::cerr << "[Options::loadReply]\n";
-	std::cerr << "Error: wrong index.\n";
-	std::cerr << "Value: " << index << std::endl;
-      }
+      qFatal("[OptionsChatWidget::loadReply] Error: bad index (%d).", index);
     }
   this->_replyComboBoxValue = index;
   this->_oldComboBoxValue = index;
 }
 
-void	OptionsChatWidget::saveCurrentReply(void)
+void    OptionsChatWidget::saveCurrentReply(void)
 {
   saveCurrentReply(this->_options->autoReplyComboBox->currentIndex());
 }
 
-void	OptionsChatWidget::saveCurrentReply(int index)
+void    OptionsChatWidget::saveCurrentReply(int index)
 {
   switch (index)
     {
@@ -153,10 +145,7 @@ void	OptionsChatWidget::saveCurrentReply(int index)
       this->_replyServer = this->_options->autoReplyLineEdit->text();
       break;
     default:
-      {
-	std::cerr << "[Options::saveCurrentReply]\n";
-	std::cerr << "Error: wrong index.\n";
-	std::cerr << "Value: " << index << std::endl;
-      }
+      qFatal("[OptionsChatWidget::saveCurrentReply] "
+	     "Error: bad index (%d).", index);
     }
 }

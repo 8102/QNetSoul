@@ -24,15 +24,13 @@
 #include "Smileys.h"
 #include "PortraitResolver.h"
 
-Chat::Chat(const int id, const QString& login,
-           bool exitOnEscape, bool smileys)
-  : _id(id), _alias(login), _login(login),
-    _exitOnEscape(exitOnEscape), _smileys(smileys)
+Chat::Chat(const int id, const QString& login, const QString& loc)
+  : _id(id), _alias(login), _login(login), _location(loc), _options(NULL)
 {
   setupUi(this);
   setPortrait();
   setWindowTitle(login);
-  this->loginLabel->setText(login);
+  this->loginLabel->setText(login + "@" + loc);
   connect(this->inputTextEdit, SIGNAL(returnPressed()), SLOT(sendMessage()));
   connect(this->inputTextEdit, SIGNAL(textChanged()), SLOT(handleTypingSignal()));
 }
@@ -61,7 +59,7 @@ void    Chat::insertSmileys(void)
       {":(", ":/images/unhappy.png"},
       {NULL, NULL}
     };
-  bool              thereIsSmiley;
+  bool thereIsSmiley;
   const QTextCursor save = this->outputTextBrowser->textCursor();
 
   this->outputTextBrowser->moveCursor(QTextCursor::StartOfBlock);
@@ -88,21 +86,25 @@ void    Chat::replaceUrls(QString msg)
   this->outputTextBrowser->insertHtml(msg);
 }
 
-void    Chat::insertMessage(const QString& login, const QString& msg, const QColor& color)
+void    Chat::insertMessage(const QString& login,
+                            const QString& msg,
+                            const QColor& color)
 {
+  Q_ASSERT(this->_options);
+
   int           scrollBarValue = -1;
   QScrollBar*   scrollBar = this->outputTextBrowser->verticalScrollBar();
 
   if (scrollBar && scrollBar->value() != scrollBar->maximum())
     scrollBarValue = scrollBar->value();
-  QString       html("<p>");
+  QString html("<p>");
   html += QString("<span style=' color:%1;'>%2 %3</span>").arg(color.name()).arg(getFormatedDateTime()).arg(login);
   html.append(": </p>");
   this->outputTextBrowser->moveCursor(QTextCursor::End);
   this->outputTextBrowser->insertHtml(html);
   replaceUrls(msg);
   this->outputTextBrowser->insertHtml("<br />");
-  if (this->_smileys)
+  if (this->_options->chatWidget->smileys())
     insertSmileys();
   if (scrollBar)
     {
@@ -133,14 +135,12 @@ void    Chat::setPortrait(void)
 
 void    Chat::keyPressEvent(QKeyEvent* event)
 {
-  if (Qt::Key_Escape == event->key() && this->_exitOnEscape)
+  Q_ASSERT(this->_options);
+  if (Qt::Key_Escape == event->key() &&
+      this->_options->chatWidget->exitOnEscape())
     {
       this->hide();
       event->ignore();
-    }
-  else
-    {
-      QWidget::keyPressEvent(event);
     }
 }
 
@@ -161,7 +161,7 @@ void    Chat::closeEvent(QCloseEvent* event)
 void    Chat::sendMessage(void)
 {
   const QString message = this->inputTextEdit->toPlainText();
-  const int     length = message.length();
+  const int length = message.length();
 
   if (length > 0)
     {
@@ -180,6 +180,8 @@ void    Chat::sendMessage(void)
 
 void    Chat::handleTypingSignal(void)
 {
-  emit typingSignal(this->_login,
-                    this->inputTextEdit->toPlainText().isEmpty());
+  Q_ASSERT(this->_options);
+  if (this->_options->chatWidget->notifyTyping())
+    emit typingSignal(this->_login,
+                      this->inputTextEdit->toPlainText().isEmpty());
 }

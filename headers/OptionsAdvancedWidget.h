@@ -31,25 +31,21 @@ public:
   OptionsAdvancedWidget(QWidget* parent = 0);
   ~OptionsAdvancedWidget(void);
 
-  bool	isProxyEnabled(void) const { return this->_useProxy; }
+  //bool	isProxyEnabled(void) const { return this->_useProxy; }
 
-  void	applyOption(void);
   void	readOptions(QSettings& settings);
   void	writeOptions(QSettings& settings);
   void	updateOptions(void);
   void	saveOptions(void);
-  bool	isValidProxy(void) const;
-  const QNetworkProxy getProxy(void) const;
-
-signals:
-  void	resetProxy(const QNetworkProxy& p = QNetworkProxy());
+  void	setProxy(void);
+  bool  validFields(void) const;
 
 private:
-  bool		_useProxy;
-  QString	_proxy;
-  QString	_proxyPort;
-  QString	_proxyLogin;
-  QString	_proxyPassword;
+  bool	  _useProxy;
+  QString _proxy;
+  QString _proxyPort;
+  QString _proxyLogin;
+  QString _proxyPassword;
 };
 
 #endif

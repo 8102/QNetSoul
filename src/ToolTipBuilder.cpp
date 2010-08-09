@@ -19,6 +19,7 @@
 #include <QTreeWidgetItem>
 #include "ContactsTree.h"
 #include "ToolTipBuilder.h"
+#include "LocationResolver.h"
 
 namespace Group
 {
@@ -93,12 +94,13 @@ namespace ConnectionPoint
     tt = QString("<b>" + QObject::tr("Id") + "</b>: %1<br />"
                  "<b>" + QObject::tr("State") + "</b>: %2<br />"
                  "<b>" + QObject::tr("Ip") + "</b>: %3<br />"
-                 "<b>" + QObject::tr("Location") + "</b>: %4<br />"
-                 "<b>" + QObject::tr("Comment") + "</b>: %5")
+                 "<b>" + QObject::tr("Location") + "</b>: %4 (%5)<br />"
+                 "<b>" + QObject::tr("Comment") + "</b>: %6")
       .arg(item->data(0, ContactsTree::Id).toString())
       .arg(item->data(0, ContactsTree::State).toString())
       .arg(item->data(0, ContactsTree::Ip).toString())
       .arg(item->data(0, ContactsTree::Location).toString())
+      .arg(LocationResolver::resolve(item->data(0, ContactsTree::Ip).toString()))
       .arg(item->data(0, ContactsTree::Comment).toString());
     item->setToolTip(0, tt);
   }

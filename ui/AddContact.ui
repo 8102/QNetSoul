@@ -32,9 +32,9 @@
   <widget class="QPushButton" name="addPushButton">
    <property name="geometry">
     <rect>
-     <x>190</x>
+     <x>201</x>
      <y>110</y>
-     <width>92</width>
+     <width>81</width>
      <height>28</height>
     </rect>
    </property>
@@ -75,13 +75,13 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>110</y>
+     <y>115</y>
      <width>181</width>
-     <height>31</height>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>Do not close on adding.</string>
+    <string>Do not close on adding</string>
    </property>
   </widget>
   <widget class="QComboBox" name="groupComboBox">

@@ -22,17 +22,21 @@
 #include <QXmlStreamWriter>
 #include "ContactsTree.h"
 
+class	Options;
+
 class   ContactsWriter : public QXmlStreamWriter
 {
  public:
-  ContactsWriter(QTreeWidget* tree);
+  ContactsWriter(QTreeWidget* tree, Options* options);
   bool  writeFile(QIODevice* device);
 
  private:
-  void writeItem(QTreeWidgetItem *item);
+  void writeItem(QTreeWidgetItem* item);
+  void writeBlockedContacts(const QStringList& blocked);
 
  private:
   QTreeWidget* _tree;
+  Options*     _options;
 };
 
 #endif

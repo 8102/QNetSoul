@@ -18,61 +18,44 @@
 #include <iostream>
 #include <QImage>
 #include <QMessageBox>
+#include <QNetworkProxy>
 #include "Url.h"
 #include "PortraitResolver.h"
 
 namespace
 {
-  const QString	DirName = "portraits";
+  const QString DirName = "portraits";
 }
 
 PortraitResolver::PortraitResolver(void)
-  : _dir(getPortraitDir()), _http("www.epitech.net")
+  : _dir(getPortraitDir())
 {
-  //setupPortraitDirectory();
-  connect(&this->_http, SIGNAL(requestFinished(int, bool)), SLOT(finished(int,bool)));
+  setProxy(QNetworkProxy::NoProxy);
+  connect(this, SIGNAL(finished(QNetworkReply*)),
+          this, SLOT(replyFinished(QNetworkReply*)));
 }
 
 PortraitResolver::~PortraitResolver(void)
 {
-  this->_requests.clear();
 }
 
-void	PortraitResolver::addRequest(const QStringList& logins)
+void    PortraitResolver::addRequest(const QStringList& logins)
 {
   const int size = logins.size();
   for (int i = 0; i < size; ++i)
     addRequest(logins[i], false);
 }
 
-void	PortraitResolver::addRequest(const QString& login, bool fun)
+void    PortraitResolver::addRequest(const QString& login, bool fun)
 {
-  if (this->_dir.exists(buildFilename(login, fun)))
-    {
-      // DEBUG
-      //std::cerr << "Portrait already exists." << std::endl;
-      //std::cerr << "(" << login.toStdString() << ")\n";
-      return;
-    }
-  else
-    {
-      // DEBUG
-      //std::cerr << "Portrait does not exist." << std::endl;
-      //std::cerr << "(" << login.toStdString() << ")\n";
-    }
-  PortraitRequest* request = new PortraitRequest;
-
-  request->login = login;
-  request->fun = fun;
-  request->buffer.setBuffer(&request->bytes);
-  request->buffer.open(QIODevice::WriteOnly);
-  request->id = this->_http.get(QString("/intra/photo.php?fun=%1&login=%2")
-				.arg(fun).arg(login), &request->buffer);
-  this->_requests.push_back(request);
+  if (this->_dir.exists(buildFilename(login, fun))) return;
+  QUrl url(QString("http://www.epitech.net/intra/photo.php?fun=%1&login=%2")
+           .arg(fun).arg(login));
+  get(QNetworkRequest(url));
 }
 
-bool	PortraitResolver::isAvailable(QString& portraitPath,
-				      const QString& login)
+bool    PortraitResolver::isAvailable(QString& portraitPath,
+                                      const QString& login)
 {
   const QDir portraitDir = getPortraitDir();
   const QString fileName = buildFilename(login, false);
@@ -84,12 +67,12 @@ bool	PortraitResolver::isAvailable(QString& portraitPath,
   return false;
 }
 
-QString	PortraitResolver::buildFilename(const QString& login, bool fun)
+QString PortraitResolver::buildFilename(const QString& login, bool fun)
 {
   return fun? (login + "1.jpeg") : (login + "0.jpeg");
 }
 
-QDir	PortraitResolver::getPortraitDir(void)
+QDir    PortraitResolver::getPortraitDir(void)
 {
   QDir portraitPath(QDir::currentPath());
   if (!portraitPath.exists(DirName))
@@ -98,40 +81,47 @@ QDir	PortraitResolver::getPortraitDir(void)
   return portraitPath;
 }
 
-void	PortraitResolver::addRequest(const QString& login)
+void    PortraitResolver::addRequest(const QString& login)
 {
   addRequest(login, true);
   addRequest(login, false);
 }
 
-void	PortraitResolver::finished(int requestId, bool error)
+void    PortraitResolver::replyFinished(QNetworkReply* reply)
 {
-  const int size = this->_requests.size();
-  for (int i = 0; i < size; ++i)
+  if (reply->error() != QNetworkReply::NoError)
     {
-      if (this->_requests[i]->id == requestId)
-        {
-	  if (false == error)
-            {
-	      QImage img = QImage::fromData(this->_requests[i]->bytes);
-	      if (img.save(DirName + QDir::separator() +
-			   buildFilename(this->_requests[i]->login,
-					 this->_requests[i]->fun)))
-		if (this->_requests[i]->fun == false)
-		  emit downloadedPortrait(this->_requests[i]->login);
-            }
-	  else
-	    {
-	      QMessageBox::critical(NULL, "QNetsoul PortraitResolver",
-				    this->_http.errorString());
-	    }
-	  delete this->_requests.takeAt(i);
-	  return;
-        }
+#ifndef QT_NO_DEBUG
+      std::cout << "[PortraitResolver::replyFinished] "
+                << "Reply failed, reason: "
+                << reply->error()
+                << std::endl;
+#endif
+      reply->deleteLater();
+      return;
     }
+  const bool fun = reply->url().toString()
+    .section('=', 1, 1).section('&', 0, 0).contains("1");
+  const QString login = reply->url().toString().section('=', -1);
+
+  QImage img = QImage::fromData(reply->readAll());
+  if (img.save(DirName + QDir::separator() + buildFilename(login, fun)))
+    {
+      if (fun == false)
+        emit downloadedPortrait(login);
+    }
+  else
+    {
+#ifndef QT_NO_DEBUG
+      std::cout << "[PortraitResolver::replyFinished] "
+                << "QImage saving failed with "
+                << login.toStdString() << std::endl;
+#endif
+    }
+  reply->deleteLater();
 }
 
-void	PortraitResolver::setupPortraitDirectory(void)
+void    PortraitResolver::setupPortraitDirectory(void)
 {
   if (!this->_dir.exists(DirName))
     this->_dir.mkdir(DirName);

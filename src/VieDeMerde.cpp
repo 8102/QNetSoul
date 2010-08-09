@@ -41,27 +41,26 @@ namespace
 
 VieDeMerde::VieDeMerde(QSlidingPopup* popup) : _popup(popup)
 {
-  this->_manager = new QNetworkAccessManager(this);
-  connect(this->_manager, SIGNAL(finished(QNetworkReply*)),
-          SLOT(replyFinished(QNetworkReply*)));
+  connect(this, SIGNAL(finished(QNetworkReply*)),
+	  SLOT(replyFinished(QNetworkReply*)));
 }
 
 VieDeMerde::~VieDeMerde(void)
 {
 }
 
-void    VieDeMerde::getALife(void)
+void    VieDeMerde::getVdm(void)
 {
-  this->_manager->get(QNetworkRequest(vdmUrl));
+  get(QNetworkRequest(vdmUrl));
 }
 
 void    VieDeMerde::replyFinished(QNetworkReply* reply)
 {
   Q_ASSERT(this->_popup);
-  QByteArray    array = reply->readAll();
+  QByteArray array = reply->readAll();
 
-  QString       buffer(QString::fromUtf8(array));
-  QRegExp       textRegExp("<texte>(.+)</texte>");
+  QString buffer(QString::fromUtf8(array));
+  QRegExp textRegExp("<texte>(.+)</texte>");
 
   replaceHtmlSpecialChars(buffer);
   if (buffer.contains(textRegExp))
