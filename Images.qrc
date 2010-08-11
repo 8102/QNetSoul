@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>images/update.png</file>
     <file>images/group.png</file>
     <file>images/contact.png</file>
     <file>images/vdm.png</file>
@@ -8,8 +9,8 @@
     <file>images/unread.png</file>
     <file>images/about.png</file>
     <file>images/refresh.png</file>
-    <file>images/pastebin.ico</file>
     <file>images/surprised.png</file>
+    <file>images/pastebin.png</file>
     <file>images/tongue.png</file>
     <file>images/unhappy.png</file>
     <file>images/waii.png</file>

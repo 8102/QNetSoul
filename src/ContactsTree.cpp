@@ -456,6 +456,7 @@ bool    ContactsTree::addContact(const QStringList& properties)
   if (group != root)
     Group::buildToolTip(group);
 
+  // TODO: send request "who" on login (properties.at(1))
   return true;
 }
 
@@ -528,6 +529,7 @@ void    ContactsTree::removeCurrentItem(void)
       if (type == Contact && parent != invisibleRootItem())
         Group::buildToolTip(parent);
     }
+  // TODO: if its a contact, disable associated windows Chat
 }
 
 // Slot used by group + contact contextMenu

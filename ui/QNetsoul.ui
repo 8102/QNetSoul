@@ -209,7 +209,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionAddC">
    <property name="icon">
     <iconset resource="../Images.qrc">
-     <normaloff>:/images/add.png</normaloff>:/images/add.png</iconset>
+     <normaloff>:/images/contact.png</normaloff>:/images/contact.png</iconset>
    </property>
    <property name="text">
     <string>Add &amp;Contact</string>
@@ -331,7 +331,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionPastebin">
    <property name="icon">
     <iconset resource="../Images.qrc">
-     <normaloff>:/images/pastebin.ico</normaloff>:/images/pastebin.ico</iconset>
+     <normaloff>:/images/pastebin.png</normaloff>:/images/pastebin.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Pastebin</string>
@@ -353,6 +353,10 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
   <action name="actionAddG">
+   <property name="icon">
+    <iconset resource="../Images.qrc">
+     <normaloff>:/images/group.png</normaloff>:/images/group.png</iconset>
+   </property>
    <property name="text">
     <string>Add &amp;Group</string>
    </property>
@@ -361,6 +365,13 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
   <action name="actionCheckForUpdates">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../Images.qrc">
+     <normaloff>:/images/update.png</normaloff>:/images/update.png</iconset>
+   </property>
    <property name="text">
     <string>Check for &amp;updates</string>
    </property>

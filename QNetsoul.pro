@@ -1,4 +1,4 @@
-CONFIG += debug
+CONFIG += release
 QT += network
 TEMPLATE = app
 TARGET = QNetSoul

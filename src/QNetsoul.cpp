@@ -217,7 +217,8 @@ void    QNetsoul::openOptionsDialog(QLineEdit* newLineFocus)
   if (this->_options->isVisible() == false)
     {
       this->_options->updateOptions();
-      if (NULL != newLineFocus)
+      this->_options->tabWidget->setCurrentIndex(0);
+      if (newLineFocus != NULL)
         {
           newLineFocus->setFocus();
           this->_options->mainWidget->setConnectionOnOk(true);
