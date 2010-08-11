@@ -23,78 +23,40 @@ QPopup::~QPopup(void)
 {
 }
 
-void	QPopup::showUp(const QString& text, const int timeout)
+void    QPopup::showUp(const QString& text, const int timeout)
 {
   if (isVisible()) stopAnimation();
 
   setWindowOpacity(INITIAL_OPACITY);
   this->_text.setText("<font color=" + this->_textColor.name() + '>' +
-		      text + "</font>");
+                      text + "</font>");
   this->_hiddingTrigger->setInterval(timeout);
   this->_hiddingTrigger->start();
   showAnimation();
 }
 
-void	QPopup::paintEvent(QPaintEvent* event)
+void    QPopup::paintEvent(QPaintEvent* event)
 {
   Q_UNUSED(event);
 
-  if (this->_cache != NULL)
+  if (this->_cache == NULL)
+    {
+      buildCache();
+    }
+  else
     {
       QPainter painter(this);
       painter.drawPixmap(0, 0, *this->_cache);
     }
-  else
-    {
-      this->_cache = new QPixmap(size());
-      this->_cache->fill(Qt::transparent);
-
-      QPainter painter(this->_cache);
-
-      // Window's background
-      QPolygon background;
-
-      background << QPoint(           0,            16)
-		 << QPoint(          16,             0)
-		 << QPoint(width() - 16,             0)
-		 << QPoint(width()     ,            16)
-		 << QPoint(width()     , height() - 16)
-		 << QPoint(width() - 16,      height())
-		 << QPoint(          16,      height())
-		 << QPoint(           0, height() -  16);
-
-      painter.setPen  (QPen  (this->_backgroundColor));
-      painter.setBrush(QBrush(this->_backgroundColor));
-
-      painter.drawPolygon(background);
-
-      // Window's frame
-      QPolygon frame;
-
-      frame << QPoint(           4,            20)
-	    << QPoint(          20,             4)
-	    << QPoint(width() - 20,             4)
-	    << QPoint(width() -  4,            20)
-	    << QPoint(width() -  4, height() - 20)
-	    << QPoint(width() - 20,  height() - 4)
-	    << QPoint(          20,  height() - 4)
-	    << QPoint(           4, height() -  20);
-
-      painter.setPen(QPen(this->_frameColor));
-      painter.setBrush(Qt::NoBrush);
-
-      painter.drawPolygon(frame);
-      update();
-    }
 }
 
-void	QPopup::mousePressEvent(QMouseEvent* event)
+void    QPopup::mousePressEvent(QMouseEvent* event)
 {
   Q_UNUSED(event);
   stopAnimation();
 }
 
-void	QPopup::mouseMoveEvent(QMouseEvent* event)
+void    QPopup::mouseMoveEvent(QMouseEvent* event)
 {
   if (normalGeometry().contains(mapToGlobal(event->pos()), true))
     {
@@ -106,23 +68,23 @@ void	QPopup::mouseMoveEvent(QMouseEvent* event)
     }
 }
 
-void	QPopup::showAnimation(void)
+void    QPopup::showAnimation(void)
 {
   show();
 }
 
-void	QPopup::stopAnimation(void)
+void    QPopup::stopAnimation(void)
 {
   this->_hiddingTrigger->stop();
   hide();
 }
 
-void	QPopup::hideAnimation(void)
+void    QPopup::hideAnimation(void)
 {
   hide();
 }
 
-void	QPopup::init(void)
+void    QPopup::init(void)
 {
   const QRect geo = QApplication::desktop()->screenGeometry(this);
   this->_screenWidth = geo.width();
@@ -136,12 +98,55 @@ void	QPopup::init(void)
   setLayout(&this->_layout);
 
   setGeometry(this->_screenWidth - this->_popupWidth,
-	      this->_screenHeight - this->_popupHeight,
-	      this->_popupWidth,
-	      this->_popupHeight);
+              this->_screenHeight - this->_popupHeight,
+              this->_popupWidth,
+              this->_popupHeight);
   setLayout(&this->_layout);
 
   setMouseTracking(true);
   setWindowFlags(Qt::ToolTip);
   setAttribute(Qt::WA_TranslucentBackground);
+}
+
+void    QPopup::buildCache(void)
+{
+  this->_cache = new QPixmap(size());
+  this->_cache->fill(Qt::transparent);
+
+  QPainter painter(this->_cache);
+
+  // Window's background
+  QPolygon background;
+
+  background << QPoint(           0,            16)
+             << QPoint(          16,             0)
+             << QPoint(width() - 16,             0)
+             << QPoint(width()     ,            16)
+             << QPoint(width()     , height() - 16)
+             << QPoint(width() - 16,      height())
+             << QPoint(          16,      height())
+             << QPoint(           0, height() - 16);
+
+  painter.setPen  (QPen  (this->_backgroundColor));
+  painter.setBrush(QBrush(this->_backgroundColor));
+
+  painter.drawPolygon(background);
+
+  // Window's frame
+  QPolygon frame;
+
+  frame << QPoint(           4,            20)
+        << QPoint(          20,             4)
+        << QPoint(width() - 20,             4)
+        << QPoint(width() -  4,            20)
+        << QPoint(width() -  4, height() - 20)
+        << QPoint(width() - 20,  height() - 4)
+        << QPoint(          20,  height() - 4)
+        << QPoint(           4, height() - 20);
+
+  painter.setPen(QPen(this->_frameColor));
+  painter.setBrush(Qt::NoBrush);
+
+  painter.drawPolygon(frame);
+  update();
 }

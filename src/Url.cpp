@@ -52,7 +52,7 @@ namespace
             (in[i] >= '0' && in[i] <= '9') ||
             in[i] == '_' || in[i] == '-' || in[i] == '.')
           {
-            out += (char)in[i];
+            out += in[i];
           }
         else
           {

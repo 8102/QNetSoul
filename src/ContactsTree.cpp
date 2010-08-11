@@ -622,6 +622,7 @@ void    ContactsTree::dropEvent(QDropEvent* event)
   if (target && sourceType == Group)
     {
 #ifndef QT_NO_DEBUG
+      qDebug() << "Target type:" << target->data(0, Type).toInt();
       qDebug() << "Forbidden move: group -> contact || group";
 #endif
       return;

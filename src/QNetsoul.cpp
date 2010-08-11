@@ -428,8 +428,10 @@ void    QNetsoul::showConversation(const QStringList& properties,
 void    QNetsoul::processHandShaking(int step, QStringList args)
 {
   static QByteArray sum;
-  // DEBUG
-  //qDebug() << "Step:" << step;
+
+#ifndef QT_NO_DEBUG
+  //qDebug() << "[QNetsoul::processHandShaking] Step:" << step;
+#endif
 
   switch (step)
     {

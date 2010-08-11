@@ -10,33 +10,35 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
-class	QPopup : public QWidget
+class   QPopup : public QWidget
 {
   Q_OBJECT
 
-  public:
+    public:
   QPopup(const int width, const int height);
   ~QPopup(void);
 
-  void	showUp(const QString& text, const int timeout = 10000);
-  void	setTextColor(const QColor& c) { this->_textColor = c; }
-  void	setBackgroundColor(const QColor& c) { this->_backgroundColor = c; }
-  void	setFrameColor(const QColor& c) { this->_frameColor = c; }
+  void  setTextColor(const QColor& c) { this->_textColor = c; }
+  void  setBackgroundColor(const QColor& c) { this->_backgroundColor = c; }
+  void  setFrameColor(const QColor& c) { this->_frameColor = c; }
 
-protected:
-  virtual void	paintEvent(QPaintEvent* event);
-  virtual void	mousePressEvent(QMouseEvent* event);
-  virtual void	mouseMoveEvent(QMouseEvent* event);
-  virtual void	showAnimation(void);
-  virtual void	stopAnimation(void);
+  void  showUp(const QString& text, const int timeout = 10000);
 
-protected slots:
-  virtual void	hideAnimation(void);
+ protected:
+  virtual void  paintEvent(QPaintEvent* event);
+  virtual void  mousePressEvent(QMouseEvent* event);
+  virtual void  mouseMoveEvent(QMouseEvent* event);
+  virtual void  showAnimation(void);
+  virtual void  stopAnimation(void);
 
-private:
-  void	init(void);
+  protected slots:
+  virtual void  hideAnimation(void);
 
-protected:
+ private:
+  void  init(void);
+  void  buildCache(void);
+
+ protected:
   int _popupWidth;
   int _popupHeight;
   int _screenWidth;

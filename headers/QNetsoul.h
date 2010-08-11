@@ -50,7 +50,7 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
 
   static QString currentVersion(void)
   {
-    return "0.5d";
+    return "0.6";
   }
   static QString defaultComment(void)
   {

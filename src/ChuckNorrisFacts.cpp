@@ -15,6 +15,7 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <QDebug>
 #include <iostream>
 #include <QUrl>
 #include <QRegExp>
@@ -35,10 +36,9 @@ namespace
     str.replace("&quot;", "\"");
     str.replace("&lt;", "<");
     str.replace("&gt;", ">");
-    str.replace("&agrave", "à");
   }
-  const char*   facts_url =
-    "http://www.chucknorrisfacts.fr/fortunes/fortunes.txt";
+  const QUrl factsUrl =
+    QUrl("http://www.chucknorrisfacts.fr/fortunes/fortunes.txt");
 }
 
 ChuckNorrisFacts::ChuckNorrisFacts(QSlidingPopup* popup) : _popup(popup)
@@ -55,7 +55,7 @@ ChuckNorrisFacts::~ChuckNorrisFacts(void)
 void    ChuckNorrisFacts::getFact(void)
 {
   if (0 == this->_facts.size())
-    this->_manager->get(QNetworkRequest(QUrl(facts_url)));
+    this->_manager->get(QNetworkRequest(factsUrl));
   else
     pickAFact();
 }
@@ -64,15 +64,16 @@ void    ChuckNorrisFacts::pickAFact(void)
 {
   Q_ASSERT(this->_popup);
   const int size = this->_facts.size();
-
   if (size > 0)
-    this->_popup->showUp(this->_facts.at(rand_n(size)), 15000);
+    {
+      this->_popup->showUp(this->_facts.at(rand_n(size)), 15000);
+    }
 }
 
 void    ChuckNorrisFacts::replyFinished(QNetworkReply* reply)
 {
-  QByteArray    array = reply->readAll();
-  QString       buffer(QString::fromUtf8(array));
+  QByteArray array = reply->readAll();
+  QString    buffer(QString::fromLatin1(array));
 
   replaceHtmlSpecialChars(buffer);
   this->_facts = buffer.split("%\n", QString::SkipEmptyParts);
