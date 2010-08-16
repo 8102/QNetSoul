@@ -18,9 +18,10 @@
 #ifndef CHAT_H
 #define CHAT_H
 
-#include "Options.h"
 #include "ui_Chat.h"
 
+class   Options;
+class   Network;
 class   QStatusBar;
 
 class   Chat : public QWidget, public Ui_Chat
@@ -35,6 +36,7 @@ class   Chat : public QWidget, public Ui_Chat
   QString login(void) const { return this->_login; }
   QString location(void) const { return this->_location; }
   void    setOptions(Options* options) { this->_options = options; }
+  void    setNetwork(Network* network) { this->_network = network; }
 
   QString getFormatedDateTime(void) const;
   void    insertSmileys(void);
@@ -42,10 +44,7 @@ class   Chat : public QWidget, public Ui_Chat
   void    insertMessage(const QString& l, const QString& m, const QColor&);
   void    notifyTypingStatus(const bool typing);
   void    setPortrait(void); // if existing
-
- signals:
-  void  msgToSend(const int id, const QString& msg);
-  void  typingSignal(const QString&, bool);
+  void    autoReply(const int currentStatus);
 
  protected:
   void  keyPressEvent(QKeyEvent*);
@@ -63,6 +62,7 @@ class   Chat : public QWidget, public Ui_Chat
   QString  _location;
   QRect    _geometry;
   Options* _options;
+  Network* _network;
 };
 
 #endif // CHAT_H

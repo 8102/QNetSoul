@@ -22,10 +22,13 @@
 #include <QStatusBar>
 #include "Chat.h"
 #include "Smileys.h"
+#include "Options.h"
+#include "Network.h"
 #include "PortraitResolver.h"
 
 Chat::Chat(const int id, const QString& login, const QString& loc)
-  : _id(id), _alias(login), _login(login), _location(loc), _options(NULL)
+  : _id(id), _alias(login), _login(login), _location(loc),
+    _options(NULL), _network(NULL)
 {
   setupUi(this);
   setPortrait();
@@ -133,6 +136,27 @@ void    Chat::setPortrait(void)
     }
 }
 
+void    Chat::autoReply(const int currentStatus)
+{
+  Q_ASSERT(this->_network);
+
+  // No autoReply if you are online...
+  if (currentStatus == 0) return;
+  // No autoReply for yourself -_-
+  if (this->_options->loginLineEdit->text() == this->_login) return;
+
+  const QString autoReplyMsg =
+    this->_options->chatWidget->getReply(currentStatus);
+  if (autoReplyMsg.isEmpty() == false)
+    {
+      insertMessage(this->_options->loginLineEdit->text(),
+                    autoReplyMsg, QColor(32, 74, 135));
+      this->_network->transmitMsg(this->_login,
+				  this->_location,
+				  autoReplyMsg);
+    }
+}
+
 void    Chat::keyPressEvent(QKeyEvent* event)
 {
   Q_ASSERT(this->_options);
@@ -160,32 +184,26 @@ void    Chat::closeEvent(QCloseEvent* event)
 
 void    Chat::sendMessage(void)
 {
+  Q_ASSERT(this->_network);
+
   const QString message = this->inputTextEdit->toPlainText();
-  const int length = message.length();
+  if (message.length() == 0) return;
 
 #ifndef QT_NO_DEBUG
   qDebug() << "[Chat::sendMessage] Message:" << message;
 #endif
 
-  if (length > 0)
-    {
-      if (length < 512)
-        {
-          emit msgToSend(this->_id, message);
-          this->inputTextEdit->clear();
-        }
-      else
-        {
-          emit msgToSend(this->_id, message.left(256));
-          this->inputTextEdit->setPlainText(message.right(length - 256));
-        }
-    }
+  insertMessage(this->_options->loginLineEdit->text(),
+                message, QColor(32, 74, 135));
+  this->_network->transmitMsg(this->_login, this->_location, message);
+  this->inputTextEdit->clear();
 }
 
 void    Chat::handleTypingSignal(void)
 {
   Q_ASSERT(this->_options);
+  Q_ASSERT(this->_network);
   if (this->_options->chatWidget->notifyTyping())
-    emit typingSignal(this->_login,
-                      this->inputTextEdit->toPlainText().isEmpty());
+    this->_network->transmitTypingStatus(this->_login, this->_location,
+                                         this->inputTextEdit->isEmpty());
 }

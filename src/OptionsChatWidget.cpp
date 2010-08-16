@@ -94,9 +94,9 @@ QString OptionsChatWidget::getReply(const int index) const
 {
   switch (index)
     {
-    case 0: return this->_replyLocked;
-    case 1: return this->_replyAway;
-    case 2: return this->_replyServer;
+    case 1: return this->_replyLocked;
+    case 2: return this->_replyAway;
+    case 3: return this->_replyServer;
     default:
       qFatal("[OptionsChatWidget::getReply] Error: bad index (%d).", index);
     }

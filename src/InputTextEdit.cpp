@@ -27,31 +27,35 @@ InputTextEdit::~InputTextEdit(void)
 {
 }
 
-void	InputTextEdit::keyPressEvent(QKeyEvent* event)
+void    InputTextEdit::keyPressEvent(QKeyEvent* event)
 {
   if (Qt::Key_Return == event->key())
     {
       if (Qt::ControlModifier == event->modifiers())
         {
-	  QKeyEvent	returnEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier, "Return");
-	  QTextEdit::keyPressEvent(&returnEvent);
+          QKeyEvent returnEvent(QEvent::KeyPress,
+                                Qt::Key_Return,
+                                Qt::NoModifier, "Return");
+          QTextEdit::keyPressEvent(&returnEvent);
         }
       else
         {
-	  emit returnPressed();
+          emit returnPressed();
         }
     }
   else if (Qt::Key_Enter == event->key()) // numpad
     {
       if ((Qt::ControlModifier | Qt::KeypadModifier) == event->modifiers())
-	{
-	  QKeyEvent	returnEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier, "Return");
-	  QTextEdit::keyPressEvent(&returnEvent);
-	}
+        {
+          QKeyEvent returnEvent(QEvent::KeyPress,
+                                Qt::Key_Return,
+                                Qt::NoModifier, "Return");
+          QTextEdit::keyPressEvent(&returnEvent);
+        }
       else
-	{
-	  emit returnPressed();
-	}
+        {
+          emit returnPressed();
+        }
     }
   else
     {

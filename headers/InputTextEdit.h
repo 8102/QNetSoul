@@ -20,19 +20,21 @@
 
 #include <QTextEdit>
 
-class	InputTextEdit : public QTextEdit
+class   InputTextEdit : public QTextEdit
 {
   Q_OBJECT
 
-  public:
-  InputTextEdit(QWidget* parent = 0);
+    public:
+  InputTextEdit(QWidget* parent = NULL);
   ~InputTextEdit(void);
 
+  bool  isEmpty(void) const { return this->toPlainText().isEmpty(); }
+
  protected:
-  void	keyPressEvent(QKeyEvent* event);
+  void  keyPressEvent(QKeyEvent* event);
 
  signals:
-  void	returnPressed(void);
+  void  returnPressed(void);
 };
 
 #endif // INPUT_TEXT_EDIT_H

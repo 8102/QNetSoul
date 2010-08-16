@@ -61,6 +61,7 @@ QNetsoul::QNetsoul(QWidget* parent)
   setWhatsThis(whatsThis().replace("%CurrentVersion%", currentVersion()));
   readSettings();
   this->tree->setOptions(this->_options);
+  this->tree->setNetwork(this->_network);
   this->_network->setOptions(this->_options);
   if (QDir(QDir::currentPath()).exists("contacts.qns"))
     this->tree->loadContacts("contacts.qns");
@@ -204,6 +205,18 @@ void    QNetsoul::checkForUpdates(void)
 #endif
 }
 
+// Disable all chats linked with this login removed from ContactsTree
+void    QNetsoul::disableChats(const QString& login)
+{
+  QHashIterator<int, Chat*> i(this->_windowsChat);
+  while (i.hasNext())
+    {
+      i.next();
+      if (login == i.value()->login())
+	disableChat(i.value());
+    }
+}
+
 void    QNetsoul::saveStateBeforeQuiting(void)
 {
   if (this->tree->topLevelItemCount() > 0)
@@ -217,11 +230,11 @@ void    QNetsoul::openOptionsDialog(QLineEdit* newLineFocus)
   if (this->_options->isVisible() == false)
     {
       this->_options->updateOptions();
-      this->_options->tabWidget->setCurrentIndex(0);
       if (newLineFocus != NULL)
         {
           newLineFocus->setFocus();
           this->_options->mainWidget->setConnectionOnOk(true);
+	  this->_options->tabWidget->setCurrentIndex(0);
         }
       else
         {
@@ -245,18 +258,6 @@ void    QNetsoul::handleClicksOnTrayIcon
         {
           this->show();
         }
-    }
-}
-
-void    QNetsoul::sendStatus(const int& status) const
-{
-  switch (status)
-    {
-    case 0: this->_network->sendMessage("state actif\n"); break;
-    case 1: this->_network->sendMessage("state lock\n"); break;
-    case 2: this->_network->sendMessage("state away\n"); break;
-    case 3: this->_network->sendMessage("state server\n"); break;
-    default: qFatal("[QNetSoul::sendStatus] unknown state: %d", status);
     }
 }
 
@@ -289,15 +290,11 @@ void    QNetsoul::changeStatus(const QStringList& properties)
       {
         chat->statusLabel->setPixmap(QPixmap(states[i].pixmap));
         if ("login" == properties.at(4))
-          refreshContact(properties.at(0)); // get comment field
+          // get comment field
+          this->_network->refreshContact(properties.at(0));
         else if ("logout" == properties.at(4))
           {
-            chat->setEnabled(false);
-            this->_windowsChat.remove(id);
-            if (chat->isVisible())
-              chat->setAttribute(Qt::WA_DeleteOnClose);
-            else
-              delete chat;
+            disableChat(chat);
           }
         if (this->_trayIcon && this->_options->chatWidget->notifyState())
           this->_trayIcon->showMessage(properties.at(0),
@@ -358,7 +355,7 @@ void    QNetsoul::showConversation(const QStringList& properties,
 
   if (NULL == window)
     {
-      // DEBUG
+      // DEBUG focus
       //qDebug() << "CASE 1";
       window = createWindowChat(id, properties.at(0), properties.at(5));
       if (userEvent)
@@ -375,7 +372,7 @@ void    QNetsoul::showConversation(const QStringList& properties,
     {
       if (false == window->isVisible())
         {
-          // DEBUG
+          // DEBUG focus
           //qDebug() << "CASE 2";
           window->outputTextBrowser->clear();
           window->inputTextEdit->clear();
@@ -391,7 +388,7 @@ void    QNetsoul::showConversation(const QStringList& properties,
         }
       else
         {
-          // DEBUG
+          // DEBUG focus
           //qDebug() << "CASE 3";
           if (userEvent)
             {
@@ -406,18 +403,12 @@ void    QNetsoul::showConversation(const QStringList& properties,
     }
   if (message.isEmpty() == false)
     {
-      const int index = statusComboBox->currentIndex();
-
       if (window)
-        window->insertMessage(properties.at(0), message, QColor(204, 0, 0));
-      if (index > 0)
         {
-          const QString autoReply =
-            this->_options->chatWidget->getReply(index - 1);
-          if (autoReply.isEmpty() == false)
-            transmitMsg(id, autoReply);
+          window->insertMessage(properties.at(0), message, QColor(204, 0, 0));
+          window->autoReply(statusComboBox->currentIndex());
         }
-      else if (this->_trayIcon)
+      if (this->_trayIcon)
         {
           if (this->_options->chatWidget->notifyMsg())
             this->_trayIcon->showMessage(properties.at(0),
@@ -485,7 +476,7 @@ void    QNetsoul::processHandShaking(int step, QStringList args)
         state.append("\n");
         this->_network->sendMessage(state);
         watchLogContacts();
-        refreshContacts();
+        this->tree->refreshContacts();
         this->_ping.start(10000); // every 10 seconds, ping the server
         this->statusbar->showMessage(tr("You are now Netsouled."), 2000);
         break;
@@ -498,39 +489,6 @@ void    QNetsoul::processHandShaking(int step, QStringList args)
       }
     default:;
     }
-}
-
-void    QNetsoul::transmitMsg(const int id, const QString& msg)
-{
-  Chat* chat = getChat(id);
-
-  if (chat)
-    {
-      chat->insertMessage(this->_options->loginLineEdit->text(),
-                          msg, QColor(32, 74, 135));
-    }
-  QByteArray result;
-  result.append("user_cmd msg ");
-  result.append("*:" + chat->login());
-  result.append("@*");
-  result.append(url_encode(chat->location().toStdString().c_str()));
-  result.append("*");
-  result.append(" msg ");
-  result.append(url_encode(msg.toStdString().c_str()));
-  result.append('\n');
-  this->_network->sendMessage(result);
-}
-
-// TODO: move this function to Network module
-void    QNetsoul::transmitTypingStatus(const QString& login, bool status)
-{
-  QByteArray cmd("user_cmd msg_user ");
-  cmd += login;
-  if (!status)
-    cmd += " dotnetSoul_UserTyping null\n";
-  else
-    cmd += " dotnetSoul_UserCancelledTyping null\n";
-  this->_network->sendMessage(cmd.data());
 }
 
 void    QNetsoul::notifyTypingStatus(const int id, const bool typing)
@@ -574,6 +532,17 @@ Chat*   QNetsoul::getChat(const int id)
   return it.value();
 }
 
+void    QNetsoul::disableChat(Chat* chat)
+{
+  Q_ASSERT(chat != NULL);
+
+  chat->setEnabled(false);
+  this->_windowsChat.remove(chat->id());
+  if (chat->isVisible())
+    chat->setAttribute(Qt::WA_DeleteOnClose);
+  else delete chat;
+}
+
 void    QNetsoul::watchLogContacts(void)
 {
   const QStringList list = this->tree->getLoginList();
@@ -591,40 +560,6 @@ void    QNetsoul::watchLogContacts(void)
       netMsg.append("}\n");
       this->_network->sendMessage(netMsg);
     }
-}
-
-void    QNetsoul::watchLogContact(const QString& contact)
-{
-  QByteArray    netMsg("user_cmd watch_log_user ");
-  netMsg.append(contact + '\n');
-  this->_network->sendMessage(netMsg);
-}
-
-// TODO: move this function to Network module
-void    QNetsoul::refreshContact(const QString& contact)
-{
-  QByteArray    message("user_cmd who ");
-  message.append(contact + '\n');
-  this->_network->sendMessage(message);
-  this->_portraitResolver.addRequest(contact, false);
-}
-
-void    QNetsoul::refreshContacts(void)
-{
-  const QStringList contacts = this->tree->getLoginList();
-  const int size = contacts.size();
-
-  if (size == 0) return;
-
-  QByteArray netMsg("user_cmd who {");
-  for (int i = 0; i < size; ++i)
-    {
-      netMsg.append(contacts.at(i));
-      if (i + 1 < size)
-        netMsg.append(',');
-    }
-  netMsg.append("}\n");
-  this->_network->sendMessage(netMsg);
 }
 
 void    QNetsoul::resetAllContacts(void)
@@ -668,6 +603,8 @@ void    QNetsoul::connectQNetsoulItems(void)
           this, SLOT(showConversation(const QStringList&)));
   connect(this->tree, SIGNAL(downloadPortrait(const QString&)),
           &this->_portraitResolver, SLOT(addRequest(const QString&)));
+  connect(this->tree, SIGNAL(contactRemoved(const QString&)),
+	  SLOT(disableChats(const QString&)));
 }
 
 void    QNetsoul::connectActionsSignals(void)
@@ -681,7 +618,8 @@ void    QNetsoul::connectActionsSignals(void)
   // Contacts
   connect(actionAddG, SIGNAL(triggered()), this->tree, SLOT(addGroup()));
   connect(actionAddC, SIGNAL(triggered()), this->tree, SLOT(addContact()));
-  connect(actionRefresh, SIGNAL(triggered()), SLOT(refreshContacts()));
+  connect(actionRefresh, SIGNAL(triggered()),
+          this->tree, SLOT(refreshContacts()));
   connect(actionLoadContacts, SIGNAL(triggered()),
           this->tree, SLOT(loadContacts()));
   connect(actionSaveContacts, SIGNAL(triggered()),
@@ -698,7 +636,7 @@ void    QNetsoul::connectActionsSignals(void)
   connect(actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
   // Status
   connect(statusComboBox, SIGNAL(currentIndexChanged(int)),
-          SLOT(sendStatus(const int&)));
+          this->_network, SLOT(sendStatus(const int&)));
   // From Option widget
   connect(this->_options->mainWidget,
           SIGNAL(loginPasswordFilled()), SLOT(connectToServer()));
@@ -724,12 +662,9 @@ Chat*   QNetsoul::createWindowChat(const int id,
 {
   Chat* chat = new Chat(id, login, location);
   chat->setOptions(this->_options);
+  chat->setNetwork(this->_network);
   chat->inputTextEdit->setFocus();
   this->_windowsChat.insert(id, chat);
-  connect(chat, SIGNAL(msgToSend(const int, const QString&)),
-          this, SLOT(transmitMsg(const int, const QString&)));
-  connect(chat, SIGNAL(typingSignal(const QString&, bool)),
-          this, SLOT(transmitTypingStatus(const QString&, bool)));
   return chat;
 }
 
@@ -737,7 +672,6 @@ void    QNetsoul::deleteAllWindowChats(void)
 {
   QHash<int, Chat*>::const_iterator cit =
     this->_windowsChat.constBegin();
-
   for (; cit != this->_windowsChat.constEnd(); ++cit)
     delete cit.value();
 }

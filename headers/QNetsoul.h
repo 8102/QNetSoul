@@ -50,7 +50,7 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
 
   static QString currentVersion(void)
   {
-    return "0.6b";
+    return "0.7";
   }
   static QString defaultComment(void)
   {
@@ -66,28 +66,24 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
   void  reconnect(void);
   void  disconnect(void);
   void  updateWidgets(const QAbstractSocket::SocketState&);
-  void	checkForUpdates(void);
+  void  checkForUpdates(void);
 
+  void	disableChats(const QString& login);
   void  saveStateBeforeQuiting(void);
   void  openOptionsDialog(QLineEdit* newLineFocus = 0);
   void  handleClicksOnTrayIcon(QSystemTrayIcon::ActivationReason);
-  void  refreshContacts(void);
-  void  sendStatus(const int&) const;
   void  changeStatus(const QStringList& properties);
   void  updateContact(const QStringList& properties);
   void  showConversation(const QStringList&, const QString& msg = "");
   void  processHandShaking(int, QStringList);
-  void  transmitMsg(const int id, const QString& msg);
-  void  transmitTypingStatus(const QString&, bool);
   void  notifyTypingStatus(const int id, const bool typing);
   void  setPortrait(const QString&);
   void  aboutQNetSoul(void);
 
  private:
   Chat* getChat(const int id);
+  void	disableChat(Chat* chat);
   void  watchLogContacts(void);
-  void  watchLogContact(const QString&);
-  void  refreshContact(const QString&);
   void  resetAllContacts(void);
   void  readSettings(void);
   void  writeSettings(void);

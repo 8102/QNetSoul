@@ -22,7 +22,7 @@
 #include <QTcpSocket>
 #include <QStringList>
 
-class	Options;
+class   Options;
 
 class   Network : public QObject
 {
@@ -32,15 +32,23 @@ class   Network : public QObject
   Network(QObject* parent);
   virtual ~Network(void) { this->_socket.close(); }
 
-  void	setOptions(Options* options) { this->_options = options; }
+  void  setOptions(Options* options) { this->_options = options; }
   QAbstractSocket::SocketState state(void) const
     { return this->_socket.state(); }
-  void  sendMessage(const char* message) { this->_socket.write(message); }
-  void  sendMessage(const QByteArray& message){this->_socket.write(message);}
+  void  sendMessage(const char* msg) { this->_socket.write(msg); }
+  void  sendMessage(const QByteArray& msg) { this->_socket.write(msg); }
 
   void  connect(const QString& host, quint16);
   void  disconnect(void);
   void  resolveLocation(QString& oldLocation) const;
+
+  void  refreshContact(const QString& contact);
+  void  refreshContacts(const QStringList& contacts);
+  void	transmitTypingStatus(const QString&, const QString&, const bool);
+  void  transmitMsg(const QString&, const QString& loc, const QString& msg);
+
+  public slots:
+  void	sendStatus(const int& status);
 
  signals:
   void  reconnectionRequest(void);

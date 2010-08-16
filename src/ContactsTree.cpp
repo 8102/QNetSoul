@@ -23,6 +23,7 @@
 #include <QInputDialog>
 #include <QApplication>
 #include "Options.h"
+#include "Network.h"
 #include "ContactsTree.h"
 #include "ContactsReader.h"
 #include "ContactsWriter.h"
@@ -56,7 +57,8 @@ namespace
 }
 
 ContactsTree::ContactsTree(QWidget* parent)
-  : QTreeWidget(parent), _addContactDialog(this), _options(NULL)
+  : QTreeWidget(parent), _addContactDialog(this),
+    _options(NULL), _network(NULL)
 {
   // Setting up some properties
   setAnimated(true);
@@ -180,7 +182,7 @@ bool    ContactsTree::updateConnectionPoint(const QStringList& properties)
 #ifndef QT_NO_DEBUG
       else
         qDebug() << "[ContactsTree::updateConnectionPoint]"
-                 << " Logout but no connection point...";
+                 << "Logout but no connection point...";
 #endif
       return false;
     }
@@ -189,7 +191,7 @@ bool    ContactsTree::updateConnectionPoint(const QStringList& properties)
   if (connectionPoint == NULL)
     {
 #ifndef QT_NO_DEBUG
-      qDebug() << "[updateConnectionPoint]"
+      qDebug() << "[ContactsTree::updateConnectionPoint]"
                << "Creating connection point...";
 #endif
       connectionPoint = new QTreeWidgetItem(contact);
@@ -235,6 +237,7 @@ void    ContactsTree::removeAllConnectionPoints(void)
         children = root->child(i)->takeChildren();
         for (int c = 0; c < children.size(); ++c)
           delete children.at(c);
+        Contact::buildToolTip(root->child(i));
       }
     else if (Group == root->child(i)->data(0, Type).toInt())
       {
@@ -245,7 +248,9 @@ void    ContactsTree::removeAllConnectionPoints(void)
             children = group->child(j)->takeChildren();
             for (int c = 0; c < children.size(); ++c)
               delete children.at(c);
+            Contact::buildToolTip(group->child(j));
           }
+        Group::buildToolTip(group);
       }
 }
 
@@ -456,7 +461,7 @@ bool    ContactsTree::addContact(const QStringList& properties)
   if (group != root)
     Group::buildToolTip(group);
 
-  // TODO: send request "who" on login (properties.at(1))
+  this->_network->refreshContact(properties.at(1));
   return true;
 }
 
@@ -525,11 +530,12 @@ void    ContactsTree::removeCurrentItem(void)
   const int type = item->data(0, Type).toInt();
   if (type == Contact || type == Group)
     {
+      if (type == Contact)
+	emit contactRemoved(item->data(0, Login).toString());
       delete parent->takeChild(index);
       if (type == Contact && parent != invisibleRootItem())
         Group::buildToolTip(parent);
     }
-  // TODO: if its a contact, disable associated windows Chat
 }
 
 // Slot used by group + contact contextMenu
@@ -600,6 +606,12 @@ void    ContactsTree::loadContacts(void)
   if (fileName.isEmpty())
     return;
   loadContacts(fileName);
+}
+
+void    ContactsTree::refreshContacts(void)
+{
+  Q_ASSERT(this->_network);
+  this->_network->refreshContacts(getLoginList());
 }
 
 void    ContactsTree::dropEvent(QDropEvent* event)

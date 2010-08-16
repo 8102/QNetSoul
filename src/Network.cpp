@@ -83,12 +83,81 @@ void    Network::resolveLocation(QString& oldLocation) const
     }
 }
 
+void    Network::refreshContact(const QString& contact)
+{
+  QByteArray  message("user_cmd who ");
+  message.append(contact + '\n');
+  sendMessage(message);
+}
+
+void    Network::refreshContacts(const QStringList& contacts)
+{
+#ifndef QT_NO_DEBUG
+  qDebug() << "[Network::refreshContacts] refreshing...";
+#endif
+  const int size = contacts.size();
+  if (size == 0) return;
+
+  QByteArray netMsg("user_cmd who {");
+  for (int i = 0; i < size; ++i)
+    {
+      netMsg.append(contacts.at(i));
+      if (i + 1 < size)
+        netMsg.append(',');
+    }
+  netMsg.append("}\n");
+  sendMessage(netMsg);
+}
+
+void    Network::transmitTypingStatus(const QString& login,
+                                      const QString& location,
+                                      const bool status)
+{
+  QByteArray typingStatus("user_cmd msg ");
+  typingStatus.append("*:" + login);
+  typingStatus.append("@*");
+  typingStatus.append(url_encode(location.toStdString().c_str()));
+  typingStatus.append("*");
+  if (!status)
+    typingStatus += " dotnetSoul_UserTyping null\n";
+  else
+    typingStatus += " dotnetSoul_UserCancelledTyping null\n";
+  sendMessage(typingStatus);
+}
+
+void    Network::transmitMsg(const QString& login,
+                             const QString& location,
+                             const QString& message)
+{
+  QByteArray msg("user_cmd msg ");
+  msg.append("*:" + login);
+  msg.append("@*");
+  msg.append(url_encode(location.toStdString().c_str()));
+  msg.append("*");
+  msg.append(" msg ");
+  msg.append(url_encode(message.toStdString().c_str()));
+  msg.append('\n');
+  sendMessage(msg);
+}
+
+void    Network::sendStatus(const int& status)
+{
+  switch (status)
+    {
+    case 0: sendMessage("state actif\n"); break;
+    case 1: sendMessage("state lock\n"); break;
+    case 2: sendMessage("state away\n"); break;
+    case 3: sendMessage("state server\n"); break;
+    default: qFatal("[Network::sendStatus] unknown state: %d", status);
+    }
+}
+
 void    Network::handleSocketError(void)
 {
 #ifndef QT_NO_DEBUG
   qDebug() << "[Network::handleSocketError]"
-           << this->_socket.errorString() << '\n'
-           << "Socket state: " << this->_socket.state();
+           << this->_socket.errorString()
+           << "Socket state:" << this->_socket.state();
 #endif
   emit reconnectionRequest();
 }
@@ -241,7 +310,7 @@ void    Network::interpretLine(const QString& line)
           emit handShaking(-1, QStringList());
 #ifndef QT_NO_DEBUG
           qDebug() << "Failure...\n"
-		   << "Reason:" << line;
+                   << "Reason:" << line;
 #endif
         }
       else
