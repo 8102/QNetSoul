@@ -18,27 +18,23 @@
 #ifndef QNETSOUL_H_
 #define QNETSOUL_H_
 
-#include <QtGui>
-#include <QTimer>
-#include <QCryptographicHash>
-#include "Chat.h"
-#include "Options.h"
-#include "Network.h"
+#include <QAbstractSocket>
+#include <QSystemTrayIcon>
 #include "AddContact.h"
-#include "PortraitResolver.h"
-#include "Pastebin.h"
-#include "VieDeMerde.h"
-#include "ChuckNorrisFacts.h"
-#include "QSlidingPopup.h"
-#include "TrayIcon.h"
 #include "ui_QNetsoul.h"
 
-class   QMenu;
+class   Chat;
+class	QTimer;
 class   QAction;
-class   QLabel;
-class   QSystemTrayIcon;
-class   ContactWidget;
+class   Network;
+class   Options;
+class   Pastebin;
 class   TrayIcon;
+class   VieDeMerde;
+class   SlidingPopup;
+class	InternUpdater;
+class   ChuckNorrisFacts;
+class   PortraitResolver;
 
 class   QNetsoul : public QMainWindow, public Ui_QNetsoul
 {
@@ -50,7 +46,7 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
 
   static QString currentVersion(void)
   {
-    return "0.7";
+    return "0.8b";
   }
   static QString defaultComment(void)
   {
@@ -66,9 +62,8 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
   void  reconnect(void);
   void  disconnect(void);
   void  updateWidgets(const QAbstractSocket::SocketState&);
-  void  checkForUpdates(void);
 
-  void	disableChats(const QString& login);
+  void  disableChats(const QString& login);
   void  saveStateBeforeQuiting(void);
   void  openOptionsDialog(QLineEdit* newLineFocus = 0);
   void  handleClicksOnTrayIcon(QSystemTrayIcon::ActivationReason);
@@ -82,12 +77,12 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
 
  private:
   Chat* getChat(const int id);
-  void	disableChat(Chat* chat);
+  void  disableChat(Chat* chat);
   void  watchLogContacts(void);
   void  resetAllContacts(void);
   void  readSettings(void);
   void  writeSettings(void);
-  void  connectQNetsoulItems(void);
+  void  connectQNetsoulModules(void);
   void  connectActionsSignals(void);
   void  connectNetworkSignals(void);
   Chat* createWindowChat(const int, const QString&, const QString&);
@@ -99,12 +94,13 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
   QHash<int, Chat*> _windowsChat;
   QString           _timeStamp;
   QPoint            _oldPos;
-  PortraitResolver  _portraitResolver;
-  Pastebin          _pastebin;
-  QSlidingPopup     _popup;
-  VieDeMerde        _vdm;
-  ChuckNorrisFacts  _cnf;
-  QTimer            _ping;
+  PortraitResolver* _portraitResolver;
+  Pastebin*         _pastebin;
+  SlidingPopup*     _popup;
+  VieDeMerde*       _vdm;
+  ChuckNorrisFacts* _cnf;
+  QTimer*           _ping;
+  InternUpdater*    _internUpdater;
 };
 
 #endif // QNETSOUL_H_

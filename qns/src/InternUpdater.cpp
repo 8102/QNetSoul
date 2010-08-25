@@ -33,7 +33,7 @@ namespace
   const QString dlDir = "downloads";
 }
 
-InternUpdater::InternUpdater(QWidget* parent)
+InternUpdater::InternUpdater(QWidget* parent) : QObject(parent)
 {
   replaceUpdaterBinaryIfNeeded();
   this->_server = new QLocalServer(this);
@@ -72,12 +72,12 @@ void    InternUpdater::startUpdater(void)
   QProcess::startDetached("./Updater", args);
 }
 
-void    InternUpdater::replaceUpdaterBinaryIfNeeded(void)
+bool    InternUpdater::replaceUpdaterBinaryIfNeeded(void)
 {
   QDir downloadPath(QDir::current());
-  if (!downloadPath.exists(dlDir)) return;
+  if (!downloadPath.exists(dlDir)) return false;
   downloadPath.cd(dlDir);
-  if (!downloadPath.exists(BinaryName)) return;
+  if (!downloadPath.exists(BinaryName)) return false;
   QDir destPath(QDir::current());
   destPath.makeAbsolute();
   destPath.remove(BinaryName);
@@ -88,5 +88,5 @@ void    InternUpdater::replaceUpdaterBinaryIfNeeded(void)
   qDebug() << "[InternUpdater::replaceUpdaterBinaryIfNeeded]"
            << "moveResult:" << moveResult;
 #endif
-
+  return moveResult;
 }

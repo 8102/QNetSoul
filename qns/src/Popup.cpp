@@ -1,6 +1,22 @@
-#include <iostream>
+/*
+  Copyright 2010 Dally Richard
+  This file is part of QNetSoul.
+  QNetSoul is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  QNetSoul is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <QPainter>
-#include "QPopup.h"
+#include "Popup.h"
 
 namespace
 {
@@ -8,7 +24,7 @@ namespace
   qreal HOVER_OPACITY = 0.2;
 }
 
-QPopup::QPopup(const int width, const int height)
+Popup::Popup(const int width, const int height)
   : _popupWidth(width), _popupHeight(height),
     _textColor("#CC6633"), _backgroundColor("#171722"),
     _frameColor("#B1B1CB"), _cache(NULL)
@@ -19,11 +35,11 @@ QPopup::QPopup(const int width, const int height)
   connect(this->_hiddingTrigger, SIGNAL(timeout()), SLOT(hideAnimation()));
 }
 
-QPopup::~QPopup(void)
+Popup::~Popup(void)
 {
 }
 
-void    QPopup::showUp(const QString& text, const int timeout)
+void    Popup::showUp(const QString& text, const int timeout)
 {
   if (isVisible()) stopAnimation();
 
@@ -35,7 +51,7 @@ void    QPopup::showUp(const QString& text, const int timeout)
   showAnimation();
 }
 
-void    QPopup::paintEvent(QPaintEvent* event)
+void    Popup::paintEvent(QPaintEvent* event)
 {
   Q_UNUSED(event);
 
@@ -50,13 +66,13 @@ void    QPopup::paintEvent(QPaintEvent* event)
     }
 }
 
-void    QPopup::mousePressEvent(QMouseEvent* event)
+void    Popup::mousePressEvent(QMouseEvent* event)
 {
   Q_UNUSED(event);
   stopAnimation();
 }
 
-void    QPopup::mouseMoveEvent(QMouseEvent* event)
+void    Popup::mouseMoveEvent(QMouseEvent* event)
 {
   if (normalGeometry().contains(mapToGlobal(event->pos()), true))
     {
@@ -68,23 +84,23 @@ void    QPopup::mouseMoveEvent(QMouseEvent* event)
     }
 }
 
-void    QPopup::showAnimation(void)
+void    Popup::showAnimation(void)
 {
   show();
 }
 
-void    QPopup::stopAnimation(void)
+void    Popup::stopAnimation(void)
 {
   this->_hiddingTrigger->stop();
   hide();
 }
 
-void    QPopup::hideAnimation(void)
+void    Popup::hideAnimation(void)
 {
   hide();
 }
 
-void    QPopup::init(void)
+void    Popup::init(void)
 {
   const QRect geo = QApplication::desktop()->screenGeometry(this);
   this->_screenWidth = geo.width();
@@ -108,7 +124,7 @@ void    QPopup::init(void)
   setAttribute(Qt::WA_TranslucentBackground);
 }
 
-void    QPopup::buildCache(void)
+void    Popup::buildCache(void)
 {
   this->_cache = new QPixmap(size());
   this->_cache->fill(Qt::transparent);

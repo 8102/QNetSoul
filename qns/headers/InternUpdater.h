@@ -38,7 +38,7 @@ class   InternUpdater : public QObject
   void  quitApplication(void);
 
  private:
-  void	replaceUpdaterBinaryIfNeeded(void);
+  bool	replaceUpdaterBinaryIfNeeded(void);
 
  private:
   bool          _running;

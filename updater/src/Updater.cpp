@@ -224,7 +224,7 @@ void    Updater::handleFinishedRequest(QNetworkReply* reply)
       Q_ASSERT(args.size() == 2);
       if (args[0] > QCoreApplication::arguments().at(1))
         {
-          appendLog(tr("A new version is available !"));
+	  this->label->setText(tr("A new version is available !"));
           QString msg = QString(tr("Downloading QNetSoul v%1 on TuxFamily"))
             .arg(args[0]);
           appendLog(msg);
@@ -233,9 +233,9 @@ void    Updater::handleFinishedRequest(QNetworkReply* reply)
         }
       else
         {
+	  this->label->setText(tr("Your version is up-to-date."));
           appendLog(tr("You got the last version for your platform: v")
                     + args[0]);
-	  this->label->setText(tr("Your version is up-to-date."));
         }
       this->_lvReply = NULL;
     }

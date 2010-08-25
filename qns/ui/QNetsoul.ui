@@ -149,7 +149,7 @@ p, li { white-space: pre-wrap; }
    </widget>
    <widget class="QMenu" name="menuFeaturettes">
     <property name="title">
-     <string>Fun</string>
+     <string>&amp;Misc</string>
     </property>
     <addaction name="actionVDM"/>
     <addaction name="actionCNF"/>
@@ -366,7 +366,7 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionCheckForUpdates">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="../Images.qrc">

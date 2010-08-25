@@ -1,8 +1,24 @@
-#include <iostream>
-#include "QSlidingPopup.h"
+/*
+  Copyright 2010 Dally Richard
+  This file is part of QNetSoul.
+  QNetSoul is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-QSlidingPopup::QSlidingPopup(const int width, const int height)
-  : QPopup(width, height)
+  QNetSoul is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include "SlidingPopup.h"
+
+SlidingPopup::SlidingPopup(const int width, const int height)
+  : Popup(width, height)
 {
   this->_showAnimationTimer = new QTimer(this);
   this->_hideAnimationTimer = new QTimer(this);
@@ -21,16 +37,16 @@ QSlidingPopup::QSlidingPopup(const int width, const int height)
   connect(this->_hideAnimationTimer, SIGNAL(timeout()), SLOT(moveDown()));
 
   connect(this->_stopShowingTimer, SIGNAL(timeout()),
-	  this->_showAnimationTimer, SLOT(stop()));
+          this->_showAnimationTimer, SLOT(stop()));
   connect(this->_stopHidingTimer, SIGNAL(timeout()),
-	  this->_hideAnimationTimer, SLOT(stop()));
+          this->_hideAnimationTimer, SLOT(stop()));
 }
 
-QSlidingPopup::~QSlidingPopup()
+SlidingPopup::~SlidingPopup()
 {
 }
 
-void	QSlidingPopup::showAnimation(void)
+void    SlidingPopup::showAnimation(void)
 {
   show();
   move(this->_screenWidth - this->_popupWidth, this->_screenHeight);
@@ -39,7 +55,7 @@ void	QSlidingPopup::showAnimation(void)
   this->_stopShowingTimer->start();
 }
 
-void	QSlidingPopup::stopAnimation(void)
+void    SlidingPopup::stopAnimation(void)
 {
   this->_hiddingTrigger->stop();
   this->_showAnimationTimer->stop();
@@ -49,18 +65,18 @@ void	QSlidingPopup::stopAnimation(void)
   hide();
 }
 
-void	QSlidingPopup::hideAnimation(void)
+void    SlidingPopup::hideAnimation(void)
 {
   this->_hideAnimationTimer->start();
   this->_stopHidingTimer->start();
 }
 
-void	QSlidingPopup::moveUp(void)
+void    SlidingPopup::moveUp(void)
 {
   move(x(), y() - 1);
 }
 
-void	QSlidingPopup::moveDown(void)
+void    SlidingPopup::moveDown(void)
 {
   move(x(), y() + 1);
 }

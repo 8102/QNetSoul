@@ -1,7 +1,7 @@
 CONFIG += release
 QT += network
 TEMPLATE = app
-TARGET = QNetSoul
+TARGET = ../QNetSoul
 DEPENDPATH += . \
     headers \
     src \
@@ -36,11 +36,12 @@ HEADERS += headers/QNetsoul.h \
     headers/OptionsBlockedWidget.h \
     headers/OptionsFunWidget.h \
     headers/OptionsAdvancedWidget.h \
-    headers/QPopup.h \
-    headers/QSlidingPopup.h \
+    headers/Popup.h \
+    headers/SlidingPopup.h \
     headers/Randn.h \
     headers/ContactsTree.h \
-    headers/ToolTipBuilder.h
+    headers/ToolTipBuilder.h \
+    headers/InternUpdater.h
 
 FORMS += ui/QNetsoul.ui \
     ui/Options.ui \
@@ -69,11 +70,12 @@ SOURCES += src/main.cpp \
     src/OptionsBlockedWidget.cpp \
     src/OptionsFunWidget.cpp \
     src/OptionsAdvancedWidget.cpp \
-    src/QPopup.cpp \
-    src/QSlidingPopup.cpp \
+    src/Popup.cpp \
+    src/SlidingPopup.cpp \
     src/Randn.cpp \
     src/ContactsTree.cpp \
-    src/ToolTipBuilder.cpp
+    src/ToolTipBuilder.cpp \
+    src/InternUpdater.cpp
 
 # Output
 DESTDIR = .

@@ -15,10 +15,22 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
-#include <QByteArray>
+#include <QTimer>
+#include <QDateTime>
+#include <QMessageBox>
+#include <QCryptographicHash>
 #include "Url.h"
+#include "Chat.h"
+#include "Network.h"
+#include "Options.h"
+#include "Pastebin.h"
+#include "TrayIcon.h"
 #include "QNetsoul.h"
+#include "VieDeMerde.h"
+#include "SlidingPopup.h"
+#include "InternUpdater.h"
+#include "ChuckNorrisFacts.h"
+#include "PortraitResolver.h"
 
 namespace
 {
@@ -41,22 +53,23 @@ namespace
     };
 }
 
-QNetsoul::QNetsoul(QWidget* parent)
-  :     QMainWindow(parent),
-        _network(new Network(this)),
-        _options(new Options(this)),
-        _trayIcon(NULL),
-        _popup(300, 200),
-        _vdm(&this->_popup),
-        _cnf(&this->_popup)
+QNetsoul::QNetsoul(QWidget* parent) : QMainWindow(parent), _trayIcon(NULL)
 {
   setupUi(this);
+  this->_popup = new SlidingPopup(300, 200);
+  this->_network = new Network(this);
+  this->_options = new Options(this);
+  this->_vdm = new VieDeMerde(this->_popup);
+  this->_cnf = new ChuckNorrisFacts(this->_popup);
+  this->_ping = new QTimer(this);
+  this->_pastebin = new Pastebin;
+  this->_internUpdater = new InternUpdater;
+  this->_portraitResolver = new PortraitResolver;
   if (QSystemTrayIcon::isSystemTrayAvailable())
     this->_trayIcon = new TrayIcon(this);
-  connectQNetsoulItems();
+  connectQNetsoulModules();
   connectActionsSignals();
   connectNetworkSignals();
-  QObject::connect(&this->_ping, SIGNAL(timeout()), this, SLOT(ping()));
   QWidget::setAttribute(Qt::WA_AlwaysShowToolTips);
   setWhatsThis(whatsThis().replace("%CurrentVersion%", currentVersion()));
   readSettings();
@@ -65,19 +78,26 @@ QNetsoul::QNetsoul(QWidget* parent)
   this->_network->setOptions(this->_options);
   if (QDir(QDir::currentPath()).exists("contacts.qns"))
     this->tree->loadContacts("contacts.qns");
-  this->_portraitResolver.addRequest(this->tree->getLoginList());
+  this->_portraitResolver->addRequest(this->tree->getLoginList());
   if (this->_options->mainWidget->autoConnect())
     connectToServer();
   const QString startWith = this->_options->funWidget->getStartingModule();
   if (startWith == QObject::tr("Vie de merde"))
-    this->_vdm.getVdm();
+    this->_vdm->getVdm();
   else if (startWith == QObject::tr("Chuck Norris facts"))
-    this->_cnf.getFact();
+    this->_cnf->getFact();
 }
 
 QNetsoul::~QNetsoul(void)
 {
+  delete this->_vdm;
+  delete this->_cnf;
+  delete this->_ping;
+  delete this->_popup;
+  delete this->_pastebin;
   delete this->_trayIcon;
+  delete this->_internUpdater;
+  delete this->_portraitResolver;
 }
 
 void    QNetsoul::closeEvent(QCloseEvent* event)
@@ -159,7 +179,7 @@ void    QNetsoul::reconnect(void)
 
 void    QNetsoul::disconnect(void)
 {
-  this->_ping.stop();
+  this->_ping->stop();
   resetAllContacts();
   this->_network->disconnect();
 }
@@ -197,14 +217,6 @@ void    QNetsoul::updateWidgets(const QAbstractSocket::SocketState& state)
     }
 }
 
-void    QNetsoul::checkForUpdates(void)
-{
-#ifndef QT_NO_DEBUG
-  qDebug() << "[QNetsoul::checkForUpdates]"
-           << "Fill here :)";
-#endif
-}
-
 // Disable all chats linked with this login removed from ContactsTree
 void    QNetsoul::disableChats(const QString& login)
 {
@@ -213,7 +225,7 @@ void    QNetsoul::disableChats(const QString& login)
     {
       i.next();
       if (login == i.value()->login())
-	disableChat(i.value());
+        disableChat(i.value());
     }
 }
 
@@ -234,7 +246,7 @@ void    QNetsoul::openOptionsDialog(QLineEdit* newLineFocus)
         {
           newLineFocus->setFocus();
           this->_options->mainWidget->setConnectionOnOk(true);
-	  this->_options->tabWidget->setCurrentIndex(0);
+          this->_options->tabWidget->setCurrentIndex(0);
         }
       else
         {
@@ -468,8 +480,8 @@ void    QNetsoul::processHandShaking(int step, QStringList args)
       }
     case 2:
       {
-        QByteArray      state;
-        QDateTime       dt = QDateTime::currentDateTime();
+        QByteArray state;
+        QDateTime  dt = QDateTime::currentDateTime();
 
         state.append("state actif:");
         state.append(QString::number(static_cast<uint>(dt.toTime_t())));
@@ -477,7 +489,7 @@ void    QNetsoul::processHandShaking(int step, QStringList args)
         this->_network->sendMessage(state);
         watchLogContacts();
         this->tree->refreshContacts();
-        this->_ping.start(10000); // every 10 seconds, ping the server
+        this->_ping->start(10000); // every 10 seconds, ping the server
         this->statusbar->showMessage(tr("You are now Netsouled."), 2000);
         break;
       }
@@ -594,17 +606,20 @@ void    QNetsoul::writeSettings(void)
   settings.endGroup();
 }
 
-void    QNetsoul::connectQNetsoulItems(void)
+void    QNetsoul::connectQNetsoulModules(void)
 {
-  connect(&this->_portraitResolver,
+  connect(this->_ping, SIGNAL(timeout()), this, SLOT(ping()));
+  connect(this->_internUpdater, SIGNAL(quitApplication()),
+          this, SLOT(saveStateBeforeQuiting()));
+  connect(this->_portraitResolver,
           SIGNAL(downloadedPortrait(const QString&)),
           SLOT(setPortrait(const QString&)));
   connect(this->tree, SIGNAL(openConversation(const QStringList&)),
           this, SLOT(showConversation(const QStringList&)));
   connect(this->tree, SIGNAL(downloadPortrait(const QString&)),
-          &this->_portraitResolver, SLOT(addRequest(const QString&)));
+          this->_portraitResolver, SLOT(addRequest(const QString&)));
   connect(this->tree, SIGNAL(contactRemoved(const QString&)),
-	  SLOT(disableChats(const QString&)));
+          SLOT(disableChats(const QString&)));
 }
 
 void    QNetsoul::connectActionsSignals(void)
@@ -613,7 +628,7 @@ void    QNetsoul::connectActionsSignals(void)
   connect(actionConnect, SIGNAL(triggered()), SLOT(connectToServer()));
   connect(actionDisconnect, SIGNAL(triggered()), SLOT(disconnect()));
   connect(actionCheckForUpdates, SIGNAL(triggered()),
-          SLOT(checkForUpdates()));
+          this->_internUpdater, SLOT(startUpdater()));
   connect(actionQuit, SIGNAL(triggered()), SLOT(saveStateBeforeQuiting()));
   // Contacts
   connect(actionAddG, SIGNAL(triggered()), this->tree, SLOT(addGroup()));
@@ -625,10 +640,10 @@ void    QNetsoul::connectActionsSignals(void)
   connect(actionSaveContacts, SIGNAL(triggered()),
           this->tree, SLOT(saveContacts()));
   // Featurettes
-  connect(actionVDM, SIGNAL(triggered()), &this->_vdm, SLOT(getVdm()));
-  connect(actionCNF, SIGNAL(triggered()), &this->_cnf, SLOT(getFact()));
+  connect(actionVDM, SIGNAL(triggered()), this->_vdm, SLOT(getVdm()));
+  connect(actionCNF, SIGNAL(triggered()), this->_cnf, SLOT(getFact()));
   connect(actionPastebin, SIGNAL(triggered()),
-          &this->_pastebin, SLOT(pastebinIt()));
+          this->_pastebin, SLOT(pastebinIt()));
   // Options
   connect(actionPreferences, SIGNAL(triggered()), SLOT(openOptionsDialog()));
   // Help

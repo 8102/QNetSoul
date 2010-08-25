@@ -1,5 +1,22 @@
-#ifndef QPOPUP_H_
-#define QPOPUP_H_
+/*
+  Copyright 2010 Dally Richard
+  This file is part of QNetSoul.
+  QNetSoul is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  QNetSoul is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#ifndef POPUP_H_
+#define POPUP_H_
 
 #include <QLabel>
 #include <QTimer>
@@ -10,13 +27,13 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
-class   QPopup : public QWidget
+class   Popup : public QWidget
 {
   Q_OBJECT
 
     public:
-  QPopup(const int width, const int height);
-  ~QPopup(void);
+  Popup(const int width, const int height);
+  ~Popup(void);
 
   void  setTextColor(const QColor& c) { this->_textColor = c; }
   void  setBackgroundColor(const QColor& c) { this->_backgroundColor = c; }

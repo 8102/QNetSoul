@@ -24,7 +24,7 @@
 #include <QNetworkAccessManager>
 #include "Url.h"
 #include "Randn.h"
-#include "QSlidingPopup.h"
+#include "Popup.h"
 #include "ChuckNorrisFacts.h"
 
 namespace
@@ -41,7 +41,7 @@ namespace
     QUrl("http://www.chucknorrisfacts.fr/fortunes/fortunes.txt");
 }
 
-ChuckNorrisFacts::ChuckNorrisFacts(QSlidingPopup* popup) : _popup(popup)
+ChuckNorrisFacts::ChuckNorrisFacts(Popup* popup) : _popup(popup)
 {
   this->_manager = new QNetworkAccessManager(this);
   connect(this->_manager, SIGNAL(finished(QNetworkReply*)),

@@ -22,14 +22,14 @@
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
 
-class   QSlidingPopup;
+class   Popup;
 
 class   VieDeMerde : public QNetworkAccessManager
 {
   Q_OBJECT
 
     public:
-  VieDeMerde(QSlidingPopup* popup);
+  VieDeMerde(Popup* popup);
   virtual ~VieDeMerde(void);
 
   public slots:
@@ -39,7 +39,7 @@ class   VieDeMerde : public QNetworkAccessManager
   void  replyFinished(QNetworkReply* reply);
 
  private:
-  QSlidingPopup* _popup;
+  Popup* _popup;
 };
 
 #endif // VIEDEMERDE_H

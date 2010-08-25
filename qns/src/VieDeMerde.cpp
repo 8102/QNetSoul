@@ -23,7 +23,7 @@
 #include <QNetworkAccessManager>
 #include "Url.h"
 #include "VieDeMerde.h"
-#include "QSlidingPopup.h"
+#include "Popup.h"
 
 namespace
 {
@@ -39,7 +39,7 @@ namespace
     QUrl("http://api.viedemerde.fr/1.2/view/random?key=readonly");
 }
 
-VieDeMerde::VieDeMerde(QSlidingPopup* popup) : _popup(popup)
+VieDeMerde::VieDeMerde(Popup* popup) : _popup(popup)
 {
   connect(this, SIGNAL(finished(QNetworkReply*)),
 	  SLOT(replyFinished(QNetworkReply*)));

@@ -23,14 +23,14 @@
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
 
-class   QSlidingPopup;
+class   Popup;
 
 class   ChuckNorrisFacts : public QObject
 {
   Q_OBJECT
 
     public:
-  ChuckNorrisFacts(QSlidingPopup* popup);
+  ChuckNorrisFacts(Popup* popup);
   virtual ~ChuckNorrisFacts(void);
 
   void  setProxy(const QNetworkProxy& p) { this->_manager->setProxy(p); }
@@ -45,7 +45,7 @@ class   ChuckNorrisFacts : public QObject
   void  replyFinished(QNetworkReply* reply);
 
  private:
-  QSlidingPopup*          _popup;
+  Popup*                  _popup;
   QStringList             _facts;
   QNetworkAccessManager*  _manager;
 };
