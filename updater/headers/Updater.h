@@ -59,8 +59,9 @@ class   Updater : public QWidget, public Ui_Updater
 
  private:
   QFile*                _file;
-  QNetworkReply*        _dlReply; // download reply
-  QNetworkReply*        _lvReply; // last version reply
+  QNetworkReply*        _dlReply; // download last version reply
+  QNetworkReply*        _lvReply; // last version php reply
+  QNetworkReply*        _7zReply; // 7zip download reply
   QNetworkAccessManager _manager;
   QLocalSocket          _socket;
   QDir                  _downloadPath;

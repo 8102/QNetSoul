@@ -31,6 +31,8 @@
 #include "InternUpdater.h"
 #include "ChuckNorrisFacts.h"
 #include "PortraitResolver.h"
+#include "Credentials.h"
+#include "Singleton.hpp"
 
 namespace
 {
@@ -53,18 +55,15 @@ namespace
     };
 }
 
-QNetsoul::QNetsoul(QWidget* parent) : QMainWindow(parent), _trayIcon(NULL)
+QNetsoul::QNetsoul(QWidget* parent)
+  : QMainWindow(parent), _network(new Network(this)),
+    _options(new Options(this)), _trayIcon(NULL),
+    _portraitResolver(new PortraitResolver), _pastebin(new Pastebin),
+    _popup(new SlidingPopup(300, 200)), _vdm(new VieDeMerde(this->_popup)),
+    _cnf(new ChuckNorrisFacts(this->_popup)), _ping(new QTimer(this)),
+    _internUpdater(new InternUpdater)
 {
   setupUi(this);
-  this->_popup = new SlidingPopup(300, 200);
-  this->_network = new Network(this);
-  this->_options = new Options(this);
-  this->_vdm = new VieDeMerde(this->_popup);
-  this->_cnf = new ChuckNorrisFacts(this->_popup);
-  this->_ping = new QTimer(this);
-  this->_pastebin = new Pastebin;
-  this->_internUpdater = new InternUpdater;
-  this->_portraitResolver = new PortraitResolver;
   if (QSystemTrayIcon::isSystemTrayAvailable())
     this->_trayIcon = new TrayIcon(this);
   connectQNetsoulModules();
@@ -76,7 +75,7 @@ QNetsoul::QNetsoul(QWidget* parent) : QMainWindow(parent), _trayIcon(NULL)
   this->tree->setOptions(this->_options);
   this->tree->setNetwork(this->_network);
   this->_network->setOptions(this->_options);
-  if (QDir(QDir::currentPath()).exists("contacts.qns"))
+  if (QDir::current().exists("contacts.qns"))
     this->tree->loadContacts("contacts.qns");
   this->_portraitResolver->addRequest(this->tree->getLoginList());
   if (this->_options->mainWidget->autoConnect())
@@ -86,24 +85,48 @@ QNetsoul::QNetsoul(QWidget* parent) : QMainWindow(parent), _trayIcon(NULL)
     this->_vdm->getVdm();
   else if (startWith == QObject::tr("Chuck Norris facts"))
     this->_cnf->getFact();
+  Credentials& instance = Singleton<Credentials>::Instance();
+  instance.setOptions(this->_options);
 }
 
 QNetsoul::~QNetsoul(void)
 {
   delete this->_vdm;
   delete this->_cnf;
-  delete this->_ping;
   delete this->_popup;
   delete this->_pastebin;
-  delete this->_trayIcon;
   delete this->_internUpdater;
   delete this->_portraitResolver;
 }
 
+void    QNetsoul::openOptionsDialog(Options* options,
+                                    const int currentTab,
+                                    QWidget* focus)
+{
+  Q_ASSERT(options);
+  Q_ASSERT(currentTab < options->tabWidget->count());
+  if (options->isVisible() == false)
+    {
+      options->updateOptions();
+      if (currentTab != -1)
+        options->tabWidget->setCurrentIndex(currentTab);
+      if (focus)
+        {
+          focus->setFocus();
+          if (currentTab == 0)
+            options->mainWidget->setConnectionOnOk(true);
+        }
+      else
+        {
+          options->serverLineEdit->setFocus();
+        }
+      options->show();
+    }
+}
+
 void    QNetsoul::closeEvent(QCloseEvent* event)
 {
-  static volatile bool  firstTime = true;
-
+  static volatile bool firstTime = true;
   if (NULL == this->_trayIcon)
     {
       event->accept();
@@ -145,20 +168,23 @@ void    QNetsoul::connectToServer(void)
           else
             {
               QMessageBox::warning(this, "QNetSoul", tr("Port is invalid."));
-              openOptionsDialog(this->_options->portLineEdit);
+              openOptionsDialog(this->_options, 0,
+                                this->_options->portLineEdit);
             }
         }
       else
         {
           QMessageBox::warning(this, "QNetSoul",
                                tr("Your password is missing."));
-          openOptionsDialog(this->_options->passwordLineEdit);
+          openOptionsDialog(this->_options, 0,
+                            this->_options->passwordLineEdit);
         }
     }
   else
     {
       QMessageBox::warning(this, "QNetSoul", tr("Your login is missing."));
-      openOptionsDialog(this->_options->loginLineEdit);
+      openOptionsDialog(this->_options, 0,
+                        this->_options->loginLineEdit);
     }
 }
 
@@ -217,6 +243,11 @@ void    QNetsoul::updateWidgets(const QAbstractSocket::SocketState& state)
     }
 }
 
+void    QNetsoul::openOptionsDialog(void)
+{
+  openOptionsDialog(this->_options);
+}
+
 // Disable all chats linked with this login removed from ContactsTree
 void    QNetsoul::disableChats(const QString& login)
 {
@@ -235,25 +266,6 @@ void    QNetsoul::saveStateBeforeQuiting(void)
     this->tree->saveContacts("contacts.qns");
   writeSettings();
   qApp->quit();
-}
-
-void    QNetsoul::openOptionsDialog(QLineEdit* newLineFocus)
-{
-  if (this->_options->isVisible() == false)
-    {
-      this->_options->updateOptions();
-      if (newLineFocus != NULL)
-        {
-          newLineFocus->setFocus();
-          this->_options->mainWidget->setConnectionOnOk(true);
-          this->_options->tabWidget->setCurrentIndex(0);
-        }
-      else
-        {
-          this->_options->serverLineEdit->setFocus();
-        }
-      this->_options->show();
-    }
 }
 
 void    QNetsoul::handleClicksOnTrayIcon

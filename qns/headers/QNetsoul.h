@@ -24,7 +24,7 @@
 #include "ui_QNetsoul.h"
 
 class   Chat;
-class	QTimer;
+class   QTimer;
 class   QAction;
 class   Network;
 class   Options;
@@ -32,7 +32,7 @@ class   Pastebin;
 class   TrayIcon;
 class   VieDeMerde;
 class   SlidingPopup;
-class	InternUpdater;
+class   InternUpdater;
 class   ChuckNorrisFacts;
 class   PortraitResolver;
 
@@ -46,12 +46,15 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
 
   static QString currentVersion(void)
   {
-    return "0.8b";
+    return "0.8c";
   }
   static QString defaultComment(void)
   {
     return QString("-=[QNetSoul v%1]=-").arg(currentVersion());
   }
+  static void  openOptionsDialog(Options* options,
+                                 const int currentTab = -1,
+                                 QWidget* focus = NULL);
 
  protected:
   void  closeEvent(QCloseEvent*);
@@ -62,10 +65,9 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
   void  reconnect(void);
   void  disconnect(void);
   void  updateWidgets(const QAbstractSocket::SocketState&);
-
+  void  openOptionsDialog(void);
   void  disableChats(const QString& login);
   void  saveStateBeforeQuiting(void);
-  void  openOptionsDialog(QLineEdit* newLineFocus = 0);
   void  handleClicksOnTrayIcon(QSystemTrayIcon::ActivationReason);
   void  changeStatus(const QStringList& properties);
   void  updateContact(const QStringList& properties);

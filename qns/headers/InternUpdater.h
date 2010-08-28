@@ -22,6 +22,8 @@
 
 class   QProcess;
 class   QLocalServer;
+class	QNetworkReply;
+class   QNetworkAccessManager;
 
 class   InternUpdater : public QObject
 {
@@ -31,6 +33,8 @@ class   InternUpdater : public QObject
   InternUpdater(QWidget* parent = NULL);
   ~InternUpdater(void);
 
+  bool  download7zipIfNeeded(void);
+
   public slots:
   void  startUpdater(void);
 
@@ -38,11 +42,16 @@ class   InternUpdater : public QObject
   void  quitApplication(void);
 
  private:
-  bool	replaceUpdaterBinaryIfNeeded(void);
+  void	setupNetworkAccessManager(void);
+  bool  replaceUpdaterBinaryIfNeeded(void);
+
+  private slots:
+  void	finishedDownload(QNetworkReply* reply);
 
  private:
-  bool          _running;
-  QLocalServer* _server;
+  bool                   _running;
+  QLocalServer*          _server;
+  QNetworkAccessManager* _netManager;
 };
 
 #endif

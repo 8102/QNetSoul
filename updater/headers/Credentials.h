@@ -15,38 +15,32 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OPTIONS_ADVANCED_WIDGET_H_
-#define OPTIONS_ADVANCED_WIDGET_H_
+#ifndef CREDENTIALS_H_
+#define CREDENTIALS_H_
 
-#include <QDir>
-#include <QWidget>
-#include <QNetworkProxy>
-#include "OptionsWidget.h"
+#include <QObject>
 
-class	OptionsAdvancedWidget : public QWidget, public OptionsWidget
+class   QStringList;
+class   QNetworkProxy;
+class   QAuthenticator;
+class   CredentialsDialog;
+
+class   Credentials : public QObject
 {
   Q_OBJECT
 
-public:
-  OptionsAdvancedWidget(QWidget* parent = 0);
-  ~OptionsAdvancedWidget(void);
+    public:
+  Credentials(void);
+  ~Credentials(void);
 
-  //bool	isProxyEnabled(void) const { return this->_useProxy; }
+  public slots:
+  void  handleCredentials(const QNetworkProxy& proxy, QAuthenticator* auth);
 
-  void	enableProxy(void);
-  void	readOptions(QSettings& settings);
-  void	writeOptions(QSettings& settings);
-  void	updateOptions(void);
-  void	saveOptions(void);
-  void	setProxy(void);
-  bool  validFields(void) const;
+ private:
+  QStringList getCredentials(const QString& proxyHostName);
 
-private:
-  bool	  _useProxy;
-  QString _proxy;
-  QString _proxyPort;
-  QString _proxyLogin;
-  QString _proxyPassword;
+ private:
+  CredentialsDialog* _dialog;
 };
 
 #endif

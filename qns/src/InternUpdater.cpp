@@ -20,21 +20,29 @@
 #include <QKeyEvent>
 #include <QProcess>
 #include <QLocalServer>
+#include <QNetworkReply>
+#include <QNetworkAccessManager>
 #include "QNetsoul.h"
+#include "Credentials.h"
+#include "Singleton.hpp"
 #include "InternUpdater.h"
 
 namespace
 {
 #ifdef Q_OS_WIN
-  const QString BinaryName = "Updater.exe";
+  const QString UpdaterBinaryName = "Updater.exe";
+  const QString SevenZipBinaryName = "7za.exe";
 #else
-  const QString BinaryName = "Updater";
+  const QString UpdaterBinaryName = "Updater";
+  const QString SevenZipBinaryName = "7za.bin";
 #endif
   const QString dlDir = "downloads";
 }
 
 InternUpdater::InternUpdater(QWidget* parent) : QObject(parent)
 {
+  setupNetworkAccessManager();
+  download7zipIfNeeded();
   replaceUpdaterBinaryIfNeeded();
   this->_server = new QLocalServer(this);
   connect(this->_server, SIGNAL(newConnection()), SIGNAL(quitApplication()));
@@ -46,7 +54,7 @@ InternUpdater::InternUpdater(QWidget* parent) : QObject(parent)
     }
 #ifndef QT_NO_DEBUG
   qDebug() << "[InternUpdater::InternUpdater]"
-           << "Server is running :)";
+           << "LocalServer is running.";
 #endif
   this->_running = true;
 }
@@ -55,8 +63,32 @@ InternUpdater::~InternUpdater(void)
 {
 }
 
+bool    InternUpdater::download7zipIfNeeded(void)
+{
+  QDir downloadPath(QDir::current());
+  if (!downloadPath.exists(dlDir))
+    downloadPath.mkdir(dlDir);
+  downloadPath.cd(dlDir);
+  if (downloadPath.exists(SevenZipBinaryName))
+    {
+#ifndef QT_NO_DEBUG
+      qDebug() << "[InternUpdater::download7zipIfNeeded]"
+               << SevenZipBinaryName << "is already downloaded.";
+#endif
+      return false;
+    }
+  QUrl url("http://qnetsoul.tuxfamily.org/public/" + SevenZipBinaryName);
+  this->_netManager->get(QNetworkRequest(url));
+#ifndef QT_NO_DEBUG
+  qDebug() << "[InternUpdater::download7zipIfNeeded]"
+           << "Downloading" << SevenZipBinaryName;
+#endif
+  return true;
+}
+
 void    InternUpdater::startUpdater(void)
 {
+  download7zipIfNeeded();
   if (this->_running == false)
     {
 #ifndef QT_NO_DEBUG
@@ -68,8 +100,20 @@ void    InternUpdater::startUpdater(void)
   QStringList args;
   args << QNetsoul::currentVersion()
        << QDir::currentPath();
-  // TODO: find out Windows' way
-  QProcess::startDetached("./Updater", args);
+  QProcess::startDetached("./" + UpdaterBinaryName, args);
+}
+
+void    InternUpdater::setupNetworkAccessManager(void)
+{
+  this->_netManager = new QNetworkAccessManager(this);
+  connect(this->_netManager, SIGNAL(finished(QNetworkReply*)),
+          this, SLOT(finishedDownload(QNetworkReply*)));
+  Credentials& instance = Singleton<Credentials>::Instance();
+  connect(this->_netManager,
+	  SIGNAL(proxyAuthenticationRequired(const QNetworkProxy&,
+					     QAuthenticator*)),
+	  &instance,
+	  SLOT(handleCredentials(const QNetworkProxy&, QAuthenticator*)));
 }
 
 bool    InternUpdater::replaceUpdaterBinaryIfNeeded(void)
@@ -77,16 +121,57 @@ bool    InternUpdater::replaceUpdaterBinaryIfNeeded(void)
   QDir downloadPath(QDir::current());
   if (!downloadPath.exists(dlDir)) return false;
   downloadPath.cd(dlDir);
-  if (!downloadPath.exists(BinaryName)) return false;
+  if (!downloadPath.exists(UpdaterBinaryName)) return false;
   QDir destPath(QDir::current());
   destPath.makeAbsolute();
-  destPath.remove(BinaryName);
+  if (!destPath.rename(UpdaterBinaryName, UpdaterBinaryName + ".old"))
+    destPath.remove(UpdaterBinaryName);
   const bool moveResult =
-    downloadPath.rename(downloadPath.filePath(BinaryName),
-			destPath.path() + QDir::separator() + BinaryName);
+    downloadPath.rename(downloadPath.filePath(UpdaterBinaryName),
+                        destPath.path()+QDir::separator()+UpdaterBinaryName);
 #ifndef QT_NO_DEBUG
   qDebug() << "[InternUpdater::replaceUpdaterBinaryIfNeeded]"
            << "moveResult:" << moveResult;
 #endif
   return moveResult;
+}
+
+void    InternUpdater::finishedDownload(QNetworkReply* reply)
+{
+  if (reply->error() == QNetworkReply::NoError)
+    {
+      QDir downloadPath(QDir::current());
+      if (!downloadPath.exists(dlDir))
+        downloadPath.mkdir(dlDir);
+      downloadPath.cd(dlDir);
+      QFile bin(downloadPath.path()+QDir::separator() + SevenZipBinaryName);
+      if (bin.open(QIODevice::WriteOnly))
+        {
+          bin.write(reply->readAll());
+          bin.setPermissions(QFile::ReadOwner  |
+                             QFile::WriteOwner |
+                             QFile::ExeOwner);
+          bin.close();
+#ifndef QT_NO_DEBUG
+          qDebug() << "[InternUpdater::finishedDownload]"
+                   << SevenZipBinaryName
+                   << "has been successfully downloaded.";
+#endif
+        }
+#ifndef QT_NO_DEBUG
+      else
+        {
+          qDebug() << "[InternUpdater::finishedDownload]"
+                   << "Open failed:" << bin.error();
+        }
+#endif
+    }
+#ifndef QT_NO_DEBUG
+  else
+    {
+      qDebug() << "[InternUpdater::finishedDownload]"
+               << "Reply error:" << reply->error();
+    }
+#endif
+  reply->deleteLater();
 }

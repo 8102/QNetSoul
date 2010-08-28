@@ -15,38 +15,27 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OPTIONS_ADVANCED_WIDGET_H_
-#define OPTIONS_ADVANCED_WIDGET_H_
+#ifndef SINGLETON_HPP_
+#define SINGLETON_HPP_
 
-#include <QDir>
-#include <QWidget>
-#include <QNetworkProxy>
-#include "OptionsWidget.h"
+#include <QObject>
 
-class	OptionsAdvancedWidget : public QWidget, public OptionsWidget
+template <class T>
+class Singleton
 {
-  Q_OBJECT
-
 public:
-  OptionsAdvancedWidget(QWidget* parent = 0);
-  ~OptionsAdvancedWidget(void);
-
-  //bool	isProxyEnabled(void) const { return this->_useProxy; }
-
-  void	enableProxy(void);
-  void	readOptions(QSettings& settings);
-  void	writeOptions(QSettings& settings);
-  void	updateOptions(void);
-  void	saveOptions(void);
-  void	setProxy(void);
-  bool  validFields(void) const;
+  static T& Instance()
+  {
+    static T _instance; // create static instance of our class
+    return _instance;   // return it
+  }
 
 private:
-  bool	  _useProxy;
-  QString _proxy;
-  QString _proxyPort;
-  QString _proxyLogin;
-  QString _proxyPassword;
+  Singleton();// hide constructor
+  ~Singleton();// hide destructor
+  Singleton(const Singleton &); // hide copy constructor
+  Singleton& operator=(const Singleton &); // hide assign op
 };
+
 
 #endif

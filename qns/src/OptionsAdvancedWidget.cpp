@@ -30,6 +30,16 @@ OptionsAdvancedWidget::~OptionsAdvancedWidget(void)
 {
 }
 
+void    OptionsAdvancedWidget::enableProxy(void)
+{
+  this->_useProxy = true;
+  this->_options->proxyCheckBox->setCheckState(Qt::Checked);
+  this->_options->proxyLineEdit->setEnabled(true);
+  this->_options->proxyPortLineEdit->setEnabled(true);
+  this->_options->proxyLoginLineEdit->setEnabled(true);
+  this->_options->proxyPasswordLineEdit->setEnabled(true);
+}
+
 void    OptionsAdvancedWidget::readOptions(QSettings& settings)
 {
   settings.beginGroup("AdvancedOptions");

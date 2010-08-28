@@ -1,16 +1,22 @@
 CONFIG += release
 QT += network
 TEMPLATE = app
-TARGET = ../QNetSoul
+
+unix: TARGET = ../QNetSoul
+win32: TARGET = ../../QNetSoul
+
 DEPENDPATH += . \
     headers \
+    tpl \
     src \
     ui
 INCLUDEPATH += . \
-    headers
+    headers \
+    tpl
 
 # Input
 RESOURCES += Images.qrc
+HEADERS += tpl/Singleton.hpp
 HEADERS += headers/QNetsoul.h \
     headers/Network.h \
     headers/Options.h \
@@ -41,12 +47,15 @@ HEADERS += headers/QNetsoul.h \
     headers/Randn.h \
     headers/ContactsTree.h \
     headers/ToolTipBuilder.h \
-    headers/InternUpdater.h
+    headers/InternUpdater.h \
+    headers/Credentials.h \
+    headers/CredentialsDialog.h
 
 FORMS += ui/QNetsoul.ui \
     ui/Options.ui \
     ui/AddContact.ui \
     ui/Chat.ui \
+    ui/CredentialsDialog.ui
 
 SOURCES += src/main.cpp \
     src/QNetsoul.cpp \
@@ -75,7 +84,9 @@ SOURCES += src/main.cpp \
     src/Randn.cpp \
     src/ContactsTree.cpp \
     src/ToolTipBuilder.cpp \
-    src/InternUpdater.cpp
+    src/InternUpdater.cpp \
+    src/Credentials.cpp \
+    src/CredentialsDialog.cpp
 
 # Output
 DESTDIR = .
@@ -83,4 +94,5 @@ OBJECTS_DIR = obj
 MOC_DIR = moc
 UI_SOURCES_DIR = ui
 UI_HEADERS_DIR = headers
-win32:RC_FILE = Windows/windowsIcon.rc
+win32:RC_FILE = appIcon/windows.rc
+#macx:ICON = appIcon/qnetsoul.icns

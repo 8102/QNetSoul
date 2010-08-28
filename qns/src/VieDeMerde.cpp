@@ -15,12 +15,9 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
 #include <QUrl>
 #include <QRegExp>
-#include <QString>
-#include <QByteArray>
-#include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include "Url.h"
 #include "VieDeMerde.h"
 #include "Popup.h"
@@ -42,7 +39,7 @@ namespace
 VieDeMerde::VieDeMerde(Popup* popup) : _popup(popup)
 {
   connect(this, SIGNAL(finished(QNetworkReply*)),
-	  SLOT(replyFinished(QNetworkReply*)));
+          SLOT(replyFinished(QNetworkReply*)));
 }
 
 VieDeMerde::~VieDeMerde(void)
@@ -57,9 +54,7 @@ void    VieDeMerde::getVdm(void)
 void    VieDeMerde::replyFinished(QNetworkReply* reply)
 {
   Q_ASSERT(this->_popup);
-  QByteArray array = reply->readAll();
-
-  QString buffer(QString::fromUtf8(array));
+  QString buffer(QString::fromUtf8(reply->readAll()));
   QRegExp textRegExp("<texte>(.+)</texte>");
 
   replaceHtmlSpecialChars(buffer);
@@ -67,6 +62,7 @@ void    VieDeMerde::replyFinished(QNetworkReply* reply)
     {
       //qDebug() << textRegExp.cap(1);
       this->_popup->showUp(textRegExp.cap(1), 20000);
+      this->_lastVdm = textRegExp.cap(1);
     }
   reply->deleteLater();
 }

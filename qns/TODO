@@ -1,6 +1,7 @@
 === TODO LIST ===
 
 <Top List>
+- Gerer le proxy pour les requetes HTTP.
 - Coder la version Windows et Mac de l'updater.
 
 

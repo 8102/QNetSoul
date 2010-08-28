@@ -1,0 +1,22 @@
+IDI_ICON1               ICON    DISCARDABLE     "qnetsoul.ico"
+
+1 VERSIONINFO
+FILEVERSION             0,8,3,0 // 0.8c
+PRODUCTVERSION          0,8,3,0
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName",      "Richard Dally\0"
+            VALUE "FileDescription",  "Efficient C++/Qt4 messenger.\0"
+            VALUE "FileVersion",      "0.8.3.0\0"
+            VALUE "ProductName",      "QNetSoul\0"
+            VALUE "ProductVersion",   "0.8.3.0\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END

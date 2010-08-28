@@ -15,31 +15,13 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VIEDEMERDE_H
-#define VIEDEMERDE_H
+#include "CredentialsDialog.h"
 
-#include <QNetworkAccessManager>
-
-class   Popup;
-class   QNetworkReply;
-
-class   VieDeMerde : public QNetworkAccessManager
+CredentialsDialog::CredentialsDialog(QWidget* parent) : QDialog(parent)
 {
-  Q_OBJECT
+  setupUi(this);
+}
 
-    public:
-  VieDeMerde(Popup* popup);
-  virtual ~VieDeMerde(void);
-
-  public slots:
-  void  getVdm(void);
-
-  private slots:
-  void  replyFinished(QNetworkReply* reply);
-
- private:
-  Popup*  _popup;
-  QString _lastVdm;
-};
-
-#endif // VIEDEMERDE_H
+CredentialsDialog::~CredentialsDialog(void)
+{
+}

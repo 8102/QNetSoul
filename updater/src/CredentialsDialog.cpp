@@ -1,0 +1,1 @@
+../../qns/src/CredentialsDialog.cpp

@@ -18,7 +18,10 @@
 #include <QDebug>
 #include <QProcess>
 #include <QKeyEvent>
+#include <QMessageBox>
 #include "Updater.h"
+#include "Credentials.h"
+#include "Singleton.hpp"
 
 /*
  * 1) Retrieve last current version for the platform
@@ -33,8 +36,10 @@ namespace
 {
 #ifdef Q_OS_WIN
   const QString BinaryName = "QNetSoul.exe";
+  const QString SevenZipBinaryName = "7za.exe";
 #else
   const QString BinaryName = "QNetSoul";
+  const QString SevenZipBinaryName = "7za.bin";
 #endif
   const QString dlDir = "downloads";
   const QString ftp = "http://qnetsoul.tuxfamily.org/public/";
@@ -43,25 +48,26 @@ namespace
 
 Updater::Updater(QWidget* parent)
   : QWidget(parent), _file(NULL), _dlReply(NULL), _lvReply(NULL),
-    _downloadPath(QDir::current())
+    _7zReply(NULL), _downloadPath(QDir::current())
 {
   setupUi(this);
   move(400, 300);
   resize(100, 100);
   this->progressBar->hide();
   this->textBrowser->hide();
+  Credentials& instance = Singleton<Credentials>::Instance();
   connect(this->pushButton, SIGNAL(clicked()), SLOT(checkVersion()));
   connect(&this->_manager, SIGNAL(finished(QNetworkReply*)),
           this, SLOT(handleFinishedRequest(QNetworkReply*)));
+  connect(&this->_manager,
+          SIGNAL(proxyAuthenticationRequired(const QNetworkProxy&,
+                                             QAuthenticator*)),
+          &instance,
+          SLOT(handleCredentials(const QNetworkProxy&, QAuthenticator*)));
 }
 
 Updater::~Updater(void)
 {
-  if (this->_dlReply)
-    {
-      this->_dlReply->abort();
-      delete this->_dlReply;
-    }
   if (this->_file)
     {
       if (this->_file->isOpen())
@@ -87,7 +93,7 @@ void    Updater::keyPressEvent(QKeyEvent* event)
 
 void    Updater::closeEvent(QCloseEvent* event)
 {
-  qDebug() << "closeEvent";
+  qDebug() << "[Updater::closeEvent]";
   QWidget::closeEvent(event);
 }
 
@@ -103,11 +109,12 @@ void    Updater::retrieveLastVersion(void)
 #ifdef Q_OS_MAC
   platform = "Mac32";
 #endif
-#ifdef QT_SHARED
+#if defined (QT_SHARED) || defined (QT_DLL)
   platform += "dynamic";
 #else
   platform += "static";
 #endif
+  appendLog(tr("Detected platform: ") + platform);
   appendLog(tr("Retrieving last version on TuxFamily..."));
   QUrl url(lastVersionUrl + platform);
   this->_lvReply = this->_manager.get(QNetworkRequest(url));
@@ -147,6 +154,9 @@ void    Updater::install(void)
 #endif
       return;
     }
+  QMessageBox::information(this, "QNetSoul Updater",
+			   tr("QNetSoul is about to restart") + "<br />" +
+			   tr("When you are ready press Ok"));
   // Shutting down QNetSoul to replace binary
   this->_socket.connectToServer("QNetSoul");
   if (replaceBinary() == false) return;
@@ -154,6 +164,7 @@ void    Updater::install(void)
     appendLog(tr("QNetSoul has been successfully updated :)"));
 }
 
+// 7zip powered !
 bool    Updater::unzip(void)
 {
   QProcess* unzip = new QProcess(this);
@@ -161,14 +172,14 @@ bool    Updater::unzip(void)
   unzip->setProcessEnvironment(env);
   unzip->setWorkingDirectory(this->_downloadPath.path());
   QStringList args;
-  args << "-o"
-       << this->_downloadPath.path() + QDir::separator() + "out.zip";
-  unzip->start("unzip", args);
+  args << "e"
+       << this->_downloadPath.path() + QDir::separator() + "out";
+  unzip->start(this->_downloadPath.path() + QDir::separator() +
+               SevenZipBinaryName, args);
   const bool result = unzip->waitForFinished(2000);
   delete unzip;
 #ifndef QT_NO_DEBUG
-  qDebug() << "[Updater::unzip]"
-           << "Unzip result:" << result;
+  qDebug() << "[Updater::unzip]" << "7zip result:" << result;
 #endif
   return result;
 }
@@ -180,14 +191,13 @@ bool    Updater::replaceBinary(void)
   dest.cdUp();
   dest.makeAbsolute();
   destPath = dest.path() + QDir::separator() + BinaryName;
-  if (this->_downloadPath.rename(destPath, destPath + ".old") == false)
-    dest.remove(BinaryName); // removing QNetSoul
+  //if (this->_downloadPath.rename(destPath, destPath + ".old") == false)
+  dest.remove(BinaryName); // removing QNetSoul
   const bool moveResult =
     this->_downloadPath.rename(this->_downloadPath.filePath(BinaryName),
                                destPath);
 #ifndef QT_NO_DEBUG
-  qDebug() << "[Updater::replaceBinary]"
-           << "moveResult:" << moveResult;
+  qDebug() << "[Updater::replaceBinary]" << "moveResult:" << moveResult;
 #endif
   return moveResult;
 }
@@ -216,7 +226,8 @@ void    Updater::handleFinishedRequest(QNetworkReply* reply)
   if (reply == this->_lvReply)
     {
 #ifndef QT_NO_DEBUG
-      qDebug() << "Last version retrieved";
+      qDebug() << "[Updater::handleFinishedRequest]"
+               << "Last version retrieved";
 #endif
       QByteArray array = reply->readAll();
       QString buffer(QString::fromUtf8(array));
@@ -224,16 +235,16 @@ void    Updater::handleFinishedRequest(QNetworkReply* reply)
       Q_ASSERT(args.size() == 2);
       if (args[0] > QCoreApplication::arguments().at(1))
         {
-	  this->label->setText(tr("A new version is available !"));
+          this->label->setText(tr("A new version is available !"));
           QString msg = QString(tr("Downloading QNetSoul v%1 on TuxFamily"))
             .arg(args[0]);
           appendLog(msg);
           setupDownloadsDir();
-          download(ftp + args[1], "out.zip");
+          download(ftp + args[1], "out");
         }
       else
         {
-	  this->label->setText(tr("Your version is up-to-date."));
+          this->label->setText(tr("Your version is up-to-date."));
           appendLog(tr("You got the last version for your platform: v")
                     + args[0]);
         }
