@@ -19,6 +19,7 @@
 #include <QProcess>
 #include <QKeyEvent>
 #include <QMessageBox>
+#include <QNetworkReply>
 #include "Updater.h"
 #include "Credentials.h"
 #include "Singleton.hpp"
@@ -142,7 +143,6 @@ void    Updater::download(const QString& url, const QString& filename)
   connect(this->_dlReply, SIGNAL(readyRead()), SLOT(handleBytesReceived()));
 }
 
-// TODO: warn user that QNetSoul will shutdown
 void    Updater::install(void)
 {
   appendLog(tr("Installing last version of QNetSoul"));
@@ -155,8 +155,8 @@ void    Updater::install(void)
       return;
     }
   QMessageBox::information(this, "QNetSoul Updater",
-			   tr("QNetSoul is about to restart") + "<br />" +
-			   tr("When you are ready press Ok"));
+                           tr("QNetSoul is about to restart") + "<br />" +
+                           tr("When you are ready press Ok"));
   // Shutting down QNetSoul to replace binary
   this->_socket.connectToServer("QNetSoul");
   if (replaceBinary() == false) return;
@@ -229,24 +229,33 @@ void    Updater::handleFinishedRequest(QNetworkReply* reply)
       qDebug() << "[Updater::handleFinishedRequest]"
                << "Last version retrieved";
 #endif
-      QByteArray array = reply->readAll();
-      QString buffer(QString::fromUtf8(array));
-      QStringList args = buffer.split(' ');
-      Q_ASSERT(args.size() == 2);
-      if (args[0] > QCoreApplication::arguments().at(1))
+      if (reply->error() == QNetworkReply::NoError)
         {
-          this->label->setText(tr("A new version is available !"));
-          QString msg = QString(tr("Downloading QNetSoul v%1 on TuxFamily"))
-            .arg(args[0]);
-          appendLog(msg);
-          setupDownloadsDir();
-          download(ftp + args[1], "out");
+          const QString buffer(QString::fromUtf8(reply->readAll()));
+          if (buffer.startsWith("Error:"))
+            {
+              appendLog(buffer);
+            }
+          else if (buffer.section(' ', 0, 0) >
+		   QCoreApplication::arguments().at(1))
+            {
+              this->label->setText(tr("A new version is available !"));
+              QString msg = QString(tr("Downloading QNetSoul v%1 on TuxFamily"))
+                .arg(buffer.section(' ', 0, 0));
+              appendLog(msg);
+              setupDownloadsDir();
+              download(ftp + buffer.section(' ', -1), "out");
+            }
+          else
+            {
+              this->label->setText(tr("Your version is up-to-date."));
+              appendLog(tr("You got the last version for your platform: v")
+                        + QCoreApplication::arguments().at(1));
+            }
         }
       else
         {
-          this->label->setText(tr("Your version is up-to-date."));
-          appendLog(tr("You got the last version for your platform: v")
-                    + args[0]);
+          appendLog(reply->errorString());
         }
       this->_lvReply = NULL;
     }

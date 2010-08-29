@@ -21,13 +21,12 @@
 #include <QDir>
 #include <QFile>
 #include <QLocalSocket>
-#include <QNetworkReply>
 #include <QNetworkAccessManager>
 #include "ui_Updater.h"
 
 class   QKeyEvent;
+class	QNetworkReply;
 
-// TODO: manage the proxy/credentials !
 class   Updater : public QWidget, public Ui_Updater
 {
   Q_OBJECT

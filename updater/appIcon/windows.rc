@@ -1,8 +1,8 @@
 IDI_ICON1               ICON    DISCARDABLE     "updater.ico"
 
 1 VERSIONINFO
-FILEVERSION             0,8,3,0 // 0.8c
-PRODUCTVERSION          0,8,3,0
+FILEVERSION             0,8,5,0 // 0.8e
+PRODUCTVERSION          0,8,5,0
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
@@ -10,9 +10,9 @@ BEGIN
         BEGIN
             VALUE "CompanyName",      "Richard Dally\0"
             VALUE "FileDescription",  "QNetSoul updater.\0"
-            VALUE "FileVersion",      "0.8.3.0\0"
+            VALUE "FileVersion",      "0.8.5.0\0"
             VALUE "ProductName",      "QNetSoul Updater\0"
-            VALUE "ProductVersion",   "0.8.3.0\0"
+            VALUE "ProductVersion",   "0.8.5.0\0"
         END
     END
     BLOCK "VarFileInfo"
