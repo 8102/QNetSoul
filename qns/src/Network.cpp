@@ -140,6 +140,35 @@ void    Network::transmitMsg(const QString& login,
   sendMessage(msg);
 }
 
+void    Network::monitorContact(const QString& contact)
+{
+#ifndef QT_NO_DEBUG
+  qDebug() << "[Network::monitorContact]" << contact;
+#endif
+  QByteArray msg("user_cmd watch_log_user ");
+  msg.append(contact + "\n");
+  sendMessage(msg);
+}
+
+void    Network::monitorContacts(const QStringList& contacts)
+{
+#ifndef QT_NO_DEBUG
+  qDebug() << "[Network::monitorContacts]" << contacts;
+#endif
+  const int size = contacts.size();
+  if (size == 0) return;
+
+  QByteArray netMsg("user_cmd watch_log_user {");
+  for (int i = 0; i < size; ++i)
+    {
+      netMsg.append(contacts.at(i));
+      if (i + 1 < size)
+        netMsg.append(',');
+    }
+  netMsg.append("}\n");
+  sendMessage(netMsg);
+}
+
 void    Network::sendStatus(const int& status)
 {
   switch (status)
@@ -304,19 +333,25 @@ void    Network::interpretLine(const QString& line)
       else if (line.startsWith("ping"))
         {
           sendMessage("ping\n");
+#ifndef QT_NO_DEBUG
+          qDebug() << "[Network::interpretLine]"
+                   << "Ping received, ping answered.";
+#endif
         }
       else if (line.startsWith("rep 033 --"))
         {
           emit handShaking(-1, QStringList());
 #ifndef QT_NO_DEBUG
-          qDebug() << "Failure...\n"
+          qDebug() << "[Network::interpretLine]"
+                   << "Failure...\n"
                    << "Reason:" << line;
 #endif
         }
       else
         {
 #ifndef QT_NO_DEBUG
-          qDebug() << "Unparsed command:" << line;
+          qDebug() << "[Network::interpretLine]"
+                   << "Unparsed command:" << line;
 #endif
         }
     }

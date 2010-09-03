@@ -39,7 +39,8 @@ namespace
   const QString dlDir = "downloads";
 }
 
-InternUpdater::InternUpdater(QWidget* parent) : QObject(parent)
+InternUpdater::InternUpdater(QWidget* parent)
+  : QObject(parent), _running(false)
 {
   setupNetworkAccessManager();
   download7zipIfNeeded();
@@ -50,13 +51,13 @@ InternUpdater::InternUpdater(QWidget* parent) : QObject(parent)
     {
       if (QLocalServer::removeServer("QNetSoul"))
         this->_running = this->_server->listen("QNetSoul");
-      return;
     }
+  else this->_running = true;
 #ifndef QT_NO_DEBUG
   qDebug() << "[InternUpdater::InternUpdater]"
-           << "LocalServer is running.";
+           << (this->_running?
+	       "LocalServer is running." : "LocalServer is not running.");
 #endif
-  this->_running = true;
 }
 
 InternUpdater::~InternUpdater(void)

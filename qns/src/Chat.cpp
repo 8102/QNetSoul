@@ -85,11 +85,12 @@ void    Chat::insertSmileys(void)
 void    Chat::replaceUrls(QString msg)
 {
   //msg = Qt::escape(msg); // magic function <3
-  msg.replace(QRegExp("(https?://[a-zA-Z0-9.+%:_/?=&-]+)"), "<a href='\\1'>\\1</a>");
+  msg.replace(QRegExp("(https?://[a-zA-Z0-9.+%:_/?=&-]+)"),
+	      "<a href='\\1'>\\1</a>");
   this->outputTextBrowser->insertHtml(msg);
 }
 
-void    Chat::insertMessage(const QString& login,
+void    Chat::insertMessage(const QString& alias,
                             const QString& msg,
                             const QColor& color)
 {
@@ -101,7 +102,7 @@ void    Chat::insertMessage(const QString& login,
   if (scrollBar && scrollBar->value() != scrollBar->maximum())
     scrollBarValue = scrollBar->value();
   QString html("<p>");
-  html += QString("<span style=' color:%1;'>%2 %3</span>").arg(color.name()).arg(getFormatedDateTime()).arg(login);
+  html += QString("<span style=' color:%1;'>%2 %3</span>").arg(color.name()).arg(getFormatedDateTime()).arg(alias);
   html.append(": </p>");
   this->outputTextBrowser->moveCursor(QTextCursor::End);
   this->outputTextBrowser->insertHtml(html);
@@ -142,13 +143,14 @@ void    Chat::autoReply(const int currentStatus)
 
   // No autoReply if you are online...
   if (currentStatus == 0) return;
-  // No autoReply for yourself -_-
+  // No autoReply for yourself :)
   if (this->_options->loginLineEdit->text() == this->_login) return;
 
   const QString autoReplyMsg =
     this->_options->chatWidget->getReply(currentStatus);
   if (autoReplyMsg.isEmpty() == false)
     {
+      // Fetch self login
       insertMessage(this->_options->loginLineEdit->text(),
                     autoReplyMsg, QColor(32, 74, 135));
       this->_network->transmitMsg(this->_login,
@@ -175,9 +177,14 @@ void    Chat::showEvent(QShowEvent* event)
     setGeometry(this->_geometry);
 }
 
-void    Chat::closeEvent(QCloseEvent* event)
+void	Chat::hideEvent(QHideEvent* event)
 {
   this->_geometry = geometry();
+  QWidget::hideEvent(event);
+}
+
+void    Chat::closeEvent(QCloseEvent* event)
+{
   this->hide();
   event->ignore();
 }

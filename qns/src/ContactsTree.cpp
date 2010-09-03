@@ -461,6 +461,7 @@ bool    ContactsTree::addContact(const QStringList& properties)
   if (group != root)
     Group::buildToolTip(group);
 
+  this->_network->monitorContact(properties.at(1));
   this->_network->refreshContact(properties.at(1));
   return true;
 }
@@ -612,6 +613,12 @@ void    ContactsTree::refreshContacts(void)
 {
   Q_ASSERT(this->_network);
   this->_network->refreshContacts(getLoginList());
+}
+
+void    ContactsTree::monitorContacts(void)
+{
+  Q_ASSERT(this->_network);
+  this->_network->monitorContacts(getLoginList());
 }
 
 void    ContactsTree::dropEvent(QDropEvent* event)

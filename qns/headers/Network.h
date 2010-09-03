@@ -44,11 +44,13 @@ class   Network : public QObject
 
   void  refreshContact(const QString& contact);
   void  refreshContacts(const QStringList& contacts);
-  void	transmitTypingStatus(const QString&, const QString&, const bool);
+  void  transmitTypingStatus(const QString&, const QString&, const bool);
   void  transmitMsg(const QString&, const QString& loc, const QString& msg);
+  void  monitorContact(const QString& contact);
+  void  monitorContacts(const QStringList& contacts);
 
   public slots:
-  void	sendStatus(const int& status);
+  void  sendStatus(const int& status);
 
  signals:
   void  reconnectionRequest(void);

@@ -191,7 +191,11 @@ void    QNetsoul::connectToServer(void)
 void    QNetsoul::ping(void)
 {
   Q_ASSERT(this->_network);
+#ifndef QT_NO_DEBUG
+  qDebug() << "[QNetsoul::ping] Pingin'...";
+#endif
   this->_network->sendMessage("ping\n");
+  this->tree->refreshContacts();
 }
 
 void    QNetsoul::reconnect(void)
@@ -345,8 +349,8 @@ void    QNetsoul::updateContact(const QStringList& properties)
   if (ok)
     chat = getChat(id);
   else
-    qFatal("[QNetSoul::updateContact] "
-           "properties.at(1) must be a number. "
+    qFatal("[QNetSoul::updateContact]"
+           "properties.at(1) a.k.a id must be a number."
            "current value == %s",
            properties.at(1).toStdString().c_str());
 
@@ -382,47 +386,33 @@ void    QNetsoul::showConversation(const QStringList& properties,
       // DEBUG focus
       //qDebug() << "CASE 1";
       window = createWindowChat(id, properties.at(0), properties.at(5));
+      window->show();
+    }
+  if (false == window->isVisible())
+    {
+      // DEBUG focus
+      //qDebug() << "CASE 2";
+      //window->outputTextBrowser->clear();
+      //window->inputTextEdit->clear();
       if (userEvent)
         {
-          window->setVisible(true);
+          window->show();
+          window->activateWindow();
           QApplication::setActiveWindow(window);
+          window->inputTextEdit->setFocus();
         }
-      else
-        {
-          window->showMinimized();
-        }
+      else window->showMinimized();
     }
   else
     {
-      if (false == window->isVisible())
+      // DEBUG focus
+      //qDebug() << "CASE 3";
+      if (userEvent)
         {
-          // DEBUG focus
-          //qDebug() << "CASE 2";
-          window->outputTextBrowser->clear();
-          window->inputTextEdit->clear();
-          window->inputTextEdit->setFocus();
-          if (userEvent)
-            {
-              window->show();
-              window->activateWindow();
-              window->raise();
-            }
-          else
-            window->showMinimized();
-        }
-      else
-        {
-          // DEBUG focus
-          //qDebug() << "CASE 3";
-          if (userEvent)
-            {
-              window->showNormal();
-              //window->hide();
-              window->show();
-              window->activateWindow();
-              window->raise();
-              //QApplication::setActiveWindow(window);
-            }
+          window->showNormal();
+          window->activateWindow();
+          QApplication::setActiveWindow(window);
+	  window->inputTextEdit->setFocus();
         }
     }
   if (message.isEmpty() == false)
@@ -499,10 +489,10 @@ void    QNetsoul::processHandShaking(int step, QStringList args)
         state.append(QString::number(static_cast<uint>(dt.toTime_t())));
         state.append("\n");
         this->_network->sendMessage(state);
-        watchLogContacts();
+	this->tree->monitorContacts();
         this->tree->refreshContacts();
         this->_ping->start(10000); // every 10 seconds, ping the server
-        this->statusbar->showMessage(tr("You are now Netsouled."), 2000);
+        this->statusbar->showMessage(tr("You are now NetSouled."), 2000);
         break;
       }
     case -1:
@@ -549,7 +539,6 @@ void    QNetsoul::aboutQNetSoul(void)
 Chat*   QNetsoul::getChat(const int id)
 {
   QHash<int, Chat*>::iterator it;
-
   it = this->_windowsChat.find(id);
   if (this->_windowsChat.end() == it)
     return NULL;
@@ -559,31 +548,11 @@ Chat*   QNetsoul::getChat(const int id)
 void    QNetsoul::disableChat(Chat* chat)
 {
   Q_ASSERT(chat != NULL);
-
   chat->setEnabled(false);
   this->_windowsChat.remove(chat->id());
   if (chat->isVisible())
     chat->setAttribute(Qt::WA_DeleteOnClose);
   else delete chat;
-}
-
-void    QNetsoul::watchLogContacts(void)
-{
-  const QStringList list = this->tree->getLoginList();
-  const int size = list.size();
-
-  if (size > 0)
-    {
-      QByteArray netMsg("user_cmd watch_log_user {");
-      for (int i = 0; i < size; ++i)
-        {
-          netMsg.append(list[i]);
-          if (i + 1 < size)
-            netMsg.append(',');
-        }
-      netMsg.append("}\n");
-      this->_network->sendMessage(netMsg);
-    }
 }
 
 void    QNetsoul::resetAllContacts(void)
@@ -690,7 +659,6 @@ Chat*   QNetsoul::createWindowChat(const int id,
   Chat* chat = new Chat(id, login, location);
   chat->setOptions(this->_options);
   chat->setNetwork(this->_network);
-  chat->inputTextEdit->setFocus();
   this->_windowsChat.insert(id, chat);
   return chat;
 }

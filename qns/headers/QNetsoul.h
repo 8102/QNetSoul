@@ -46,7 +46,7 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
 
   static QString currentVersion(void)
   {
-    return "0.8e";
+    return "0.8f";
   }
   static QString defaultComment(void)
   {
@@ -80,7 +80,6 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
  private:
   Chat* getChat(const int id);
   void  disableChat(Chat* chat);
-  void  watchLogContacts(void);
   void  resetAllContacts(void);
   void  readSettings(void);
   void  writeSettings(void);

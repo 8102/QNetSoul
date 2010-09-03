@@ -68,6 +68,7 @@ class   ContactsTree : public QTreeWidget
   void  saveContacts(void);
   void  loadContacts(void);
   void  refreshContacts(void);
+  void	monitorContacts(void);
 
  signals:
   void  downloadPortrait(const QString& login);
