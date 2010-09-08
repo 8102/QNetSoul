@@ -125,8 +125,8 @@ bool    InternUpdater::replaceUpdaterBinaryIfNeeded(void)
   if (!downloadPath.exists(UpdaterBinaryName)) return false;
   QDir destPath(QDir::current());
   destPath.makeAbsolute();
-  if (!destPath.rename(UpdaterBinaryName, UpdaterBinaryName + ".old"))
-    destPath.remove(UpdaterBinaryName);
+  //if (!destPath.rename(UpdaterBinaryName, UpdaterBinaryName + ".old"))
+  destPath.remove(UpdaterBinaryName);
   const bool moveResult =
     downloadPath.rename(downloadPath.filePath(UpdaterBinaryName),
                         destPath.path()+QDir::separator()+UpdaterBinaryName);

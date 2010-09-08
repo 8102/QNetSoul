@@ -46,9 +46,9 @@ void    ContactsWriter::writeItem(QTreeWidgetItem *item)
   const int type = item->data(0, ContactsTree::Type).toInt();
   if (type == ContactsTree::Group)
     {
-      const bool folded = !this->_tree->isItemExpanded(item);
+      const bool expanded = this->_tree->isItemExpanded(item);
       writeStartElement("Group");
-      writeAttribute("expanded", folded ? "yes" : "no");
+      writeAttribute("expanded", expanded ? "yes" : "no");
       writeTextElement("name", item->text(0));
       for (int i = 0; i < item->childCount(); ++i)
         writeItem(item->child(i));
@@ -56,9 +56,9 @@ void    ContactsWriter::writeItem(QTreeWidgetItem *item)
     }
   else if (type == ContactsTree::Contact)
     {
-      const bool folded = !this->_tree->isItemExpanded(item);
+      const bool expanded = this->_tree->isItemExpanded(item);
       writeStartElement("Contact");
-      writeAttribute("expanded", folded ? "yes" : "no");
+      writeAttribute("expanded", expanded ? "yes" : "no");
       writeTextElement("alias", item->text(0));
       writeTextElement("login",
                        item->data(0, ContactsTree::Login).toString());

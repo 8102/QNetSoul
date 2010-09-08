@@ -90,9 +90,9 @@ void    ContactsReader::readGroup(QTreeWidgetItem* parent)
   Q_ASSERT(isStartElement() && name() == "Group");
 
   QTreeWidgetItem* group = createChildItem(parent);
-  const bool expanded = (attributes().value("expanded") != "no");
+  const bool expanded = (attributes().value("expanded") == "yes");
 
-  this->_tree->setItemExpanded(group, !expanded);
+  this->_tree->setItemExpanded(group, expanded);
   group->setIcon(0, QIcon(":/images/group.png"));
   group->setData(0, ContactsTree::Type, ContactsTree::Group);
   group->setData(0, ContactsTree::IconPath, ":/images/group.png");
@@ -128,17 +128,16 @@ void    ContactsReader::readContact(QTreeWidgetItem* parent)
 
   QString login, portraitPath;
   QTreeWidgetItem* contact = createChildItem(parent);
-  const bool expanded = (attributes().value("expanded") != "no");
+  const bool expanded = (attributes().value("expanded") == "yes");
 
-  this->_tree->setItemExpanded(contact, !expanded);
+  this->_tree->setItemExpanded(contact, expanded);
   contact->setIcon(0, QIcon(":/images/contact.png"));
   contact->setData(0, ContactsTree::Type, ContactsTree::Contact);
   contact->setData(0, ContactsTree::IconPath, ":/images/contact.png");
   contact->setFlags(Qt::ItemIsSelectable  |
                     Qt::ItemIsEditable    |
                     Qt::ItemIsEnabled     |
-                    Qt::ItemIsDragEnabled |
-                    Qt::ItemIsDropEnabled);
+                    Qt::ItemIsDragEnabled);
   while (!atEnd())
     {
       readNext();

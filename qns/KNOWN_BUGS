@@ -1,4 +1,3 @@
                              === KNOWN BUGS ===
 
-- Le focus est incorrect lorsque une fenetre de chat est minimisee puis aggrandie... :(
-- Portraits dont show up, sometimes on Windows.
+- Portraits dont show up, sometimes on Windows (dll is the source of the problem)

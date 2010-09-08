@@ -441,8 +441,7 @@ bool    ContactsTree::addContact(const QStringList& properties)
   contact->setFlags(Qt::ItemIsSelectable  |
                     Qt::ItemIsEditable    |
                     Qt::ItemIsEnabled     |
-                    Qt::ItemIsDragEnabled |
-                    Qt::ItemIsDropEnabled);
+                    Qt::ItemIsDragEnabled);
   contact->setText(0, properties.at(2));
   contact->setData(0, Type, Contact);
   contact->setData(0, Login, properties.at(1));
@@ -532,7 +531,7 @@ void    ContactsTree::removeCurrentItem(void)
   if (type == Contact || type == Group)
     {
       if (type == Contact)
-	emit contactRemoved(item->data(0, Login).toString());
+        emit contactRemoved(item->data(0, Login).toString());
       delete parent->takeChild(index);
       if (type == Contact && parent != invisibleRootItem())
         Group::buildToolTip(parent);
@@ -623,41 +622,25 @@ void    ContactsTree::monitorContacts(void)
 
 void    ContactsTree::dropEvent(QDropEvent* event)
 {
-  QTreeWidgetItem* target = itemAt(event->pos());
-  const QTreeWidgetItem* source = currentItem();
-  QTreeWidgetItem* sourceParent = NULL;
+  QTreeWidgetItem* source = currentItem();
   if (source == NULL) return;
-  sourceParent = source->parent();
-  int sourceType = source->data(0, Type).toInt();
 
-  // Group contact in another contact
-  if ((sourceType == Contact && target) &&
-      Contact == target->data(0, Type).toInt())
-    {
-#ifndef QT_NO_DEBUG
-      qDebug() << "Forbidden move: contact -> contact";
-#endif
-      return;
-    }
-  // Group move into another group or contact is forbidden
-  if (target && sourceType == Group)
-    {
-#ifndef QT_NO_DEBUG
-      qDebug() << "Target type:" << target->data(0, Type).toInt();
-      qDebug() << "Forbidden move: group -> contact || group";
-#endif
-      return;
-    }
-  // ConnectionPoint move is forbidden
-  if (sourceType == ConnectionPoint)
-    {
-#ifndef QT_NO_DEBUG
-      qDebug() << "Forbidden move: connectionPoint -> anything";
-#endif
-      return;
-    }
+  QTreeWidgetItem* target = itemAt(event->pos());
+  QTreeWidgetItem* sourceParent = source->parent();
+  const int sourceType = source->data(0, Type).toInt();
 
+  // Group move into another group is forbidden
+  if (Group == sourceType && target)
+    if (target->data(0, Type).toInt() == Group)
+      {
+#ifndef QT_NO_DEBUG
+        qDebug() << "Forbidden move: group -> group";
+#endif
+        return;
+      }
+  const bool expanded = source->isExpanded();
   QTreeWidget::dropEvent(event);
+  source->setExpanded(expanded);
 
   // Update old group if existing
   if (sourceParent && Group == sourceParent->data(0, Type).toInt())

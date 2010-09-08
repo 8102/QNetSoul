@@ -44,20 +44,28 @@ Chat::~Chat(void)
 
 QString Chat::getFormatedDateTime(void) const
 {
-  return (QString('(' + QDateTime::currentDateTime().toString("h:m:s") + ')'));
+  return QString('('+QDateTime::currentDateTime().toString("hh:mm:ss")+')');
 }
 
+// TODO: add smileys later
 void    Chat::insertSmileys(void)
 {
   static const Smileys  smileys[] =
     {
       {":)", ":/images/smile.png"},
+      {":-)", ":/images/smile.png"},
       {";)", ":/images/wink.png"},
+      {";-)", ":/images/wink.png"},
       {"xD", ":/images/evilgrin.png"},
       {":D", ":/images/grin.png"},
+      {":-D", ":/images/grin.png"},
       {"^^", ":/images/happy.png"},
       {":o", ":/images/surprised.png"},
+      {":o)", ":/images/surprised.png"},
+      {":-o", ":/images/surprised.png"},
+      {":-o)", ":/images/surprised.png"},
       {":p", ":/images/tongue.png"},
+      {":-p", ":/images/tongue.png"},
       {":}", ":/images/waii.png"},
       {":(", ":/images/unhappy.png"},
       {NULL, NULL}
@@ -66,14 +74,17 @@ void    Chat::insertSmileys(void)
   const QTextCursor save = this->outputTextBrowser->textCursor();
 
   this->outputTextBrowser->moveCursor(QTextCursor::StartOfBlock);
-  for (int i = 0; (NULL != smileys[i].smiley); ++i)
+  for (int i = 0; (smileys[i].smiley); ++i)
     {
       do
         {
-          thereIsSmiley = this->outputTextBrowser->find(smileys[i].smiley, QTextDocument::FindWholeWords);
+          thereIsSmiley =
+            this->outputTextBrowser->find(smileys[i].smiley,
+                                          QTextDocument::FindWholeWords);
           if (true == thereIsSmiley)
             {
-              this->outputTextBrowser->textCursor().insertImage(QImage(smileys[i].imagePath));
+              this->outputTextBrowser->textCursor()
+                .insertImage(QImage(smileys[i].imagePath));
               this->outputTextBrowser->moveCursor(QTextCursor::StartOfBlock);
             }
         } while (thereIsSmiley);
@@ -81,12 +92,11 @@ void    Chat::insertSmileys(void)
   this->outputTextBrowser->setTextCursor(save);
 }
 
-// Version 0.04 replaced url + html entities "< >"
 void    Chat::replaceUrls(QString msg)
 {
   //msg = Qt::escape(msg); // magic function <3
   msg.replace(QRegExp("(https?://[a-zA-Z0-9.+%:_/?=&-]+)"),
-	      "<a href='\\1'>\\1</a>");
+              "<a href='\\1'>\\1</a>");
   this->outputTextBrowser->insertHtml(msg);
 }
 
@@ -154,8 +164,8 @@ void    Chat::autoReply(const int currentStatus)
       insertMessage(this->_options->loginLineEdit->text(),
                     autoReplyMsg, QColor(32, 74, 135));
       this->_network->transmitMsg(this->_login,
-				  this->_location,
-				  autoReplyMsg);
+                                  this->_location,
+                                  autoReplyMsg);
     }
 }
 
@@ -177,7 +187,7 @@ void    Chat::showEvent(QShowEvent* event)
     setGeometry(this->_geometry);
 }
 
-void	Chat::hideEvent(QHideEvent* event)
+void    Chat::hideEvent(QHideEvent* event)
 {
   this->_geometry = geometry();
   QWidget::hideEvent(event);
@@ -193,13 +203,14 @@ void    Chat::sendMessage(void)
 {
   Q_ASSERT(this->_network);
 
-  const QString message = this->inputTextEdit->toPlainText();
+  QString message = this->inputTextEdit->toPlainText();
   if (message.length() == 0) return;
 
 #ifndef QT_NO_DEBUG
   qDebug() << "[Chat::sendMessage] Message:" << message;
 #endif
 
+  message.replace("\n", "<br />");
   insertMessage(this->_options->loginLineEdit->text(),
                 message, QColor(32, 74, 135));
   this->_network->transmitMsg(this->_login, this->_location, message);

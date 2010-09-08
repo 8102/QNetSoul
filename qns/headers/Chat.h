@@ -36,14 +36,14 @@ class   Chat : public QWidget, public Ui_Chat
   QString login(void) const { return this->_login; }
   QString location(void) const { return this->_location; }
 
-  void	  setAlias(const QString& alias) { this->_alias = alias; }
+  void    setAlias(const QString& alias) { this->_alias = alias; }
   void    setOptions(Options* options) { this->_options = options; }
   void    setNetwork(Network* network) { this->_network = network; }
 
   QString getFormatedDateTime(void) const;
   void    insertSmileys(void);
   void    replaceUrls(QString msg);
-  void    insertMessage(const QString& l, const QString& m, const QColor&);
+  void    insertMessage(const QString& a, const QString& m, const QColor&);
   void    notifyTypingStatus(const bool typing);
   void    setPortrait(void); // if existing
   void    autoReply(const int currentStatus);
@@ -51,7 +51,7 @@ class   Chat : public QWidget, public Ui_Chat
  protected:
   void  keyPressEvent(QKeyEvent*);
   void  showEvent(QShowEvent*);
-  void	hideEvent(QHideEvent*);
+  void  hideEvent(QHideEvent*);
   void  closeEvent(QCloseEvent*);
 
   private slots:

@@ -94,27 +94,36 @@ void    Updater::keyPressEvent(QKeyEvent* event)
 
 void    Updater::closeEvent(QCloseEvent* event)
 {
+#ifndef QT_NO_DEBUG
   qDebug() << "[Updater::closeEvent]";
+#endif
   QWidget::closeEvent(event);
 }
 
 void    Updater::retrieveLastVersion(void)
 {
   QString platform;
-#ifdef Q_OS_WIN32
-  platform = "Win32";
+
+#if defined(Q_OS_WIN)
+  platform = "Win";
+#elif defined(Q_OS_LINUX)
+  platform = "Linux";
+#elif defined(Q_OS_MAC)
+  platform = "Mac";
+#else
+  appendLog(tr("Unknown platform."));
+  return;
 #endif
-#ifdef Q_OS_LINUX
-  platform = "Linux32";
-#endif
-#ifdef Q_OS_MAC
-  platform = "Mac32";
-#endif
+
+  // Platform version
+  platform += "32";
+
 #if defined (QT_SHARED) || defined (QT_DLL)
-  platform += "dynamic";
+  platform += "shared";
 #else
   platform += "static";
 #endif
+
   appendLog(tr("Detected platform: ") + platform);
   appendLog(tr("Retrieving last version on TuxFamily..."));
   QUrl url(lastVersionUrl + platform);
@@ -159,6 +168,7 @@ void    Updater::install(void)
                            tr("When you are ready press Ok"));
   // Shutting down QNetSoul to replace binary
   this->_socket.connectToServer("QNetSoul");
+  this->_socket.waitForDisconnected(3000);
   if (replaceBinary() == false) return;
   if (QProcess::startDetached("./" + BinaryName))
     appendLog(tr("QNetSoul has been successfully updated :)"));
@@ -176,7 +186,7 @@ bool    Updater::unzip(void)
        << this->_downloadPath.path() + QDir::separator() + "out";
   unzip->start(this->_downloadPath.path() + QDir::separator() +
                SevenZipBinaryName, args);
-  const bool result = unzip->waitForFinished(2000);
+  const bool result = unzip->waitForFinished(3000);
   delete unzip;
 #ifndef QT_NO_DEBUG
   qDebug() << "[Updater::unzip]" << "7zip result:" << result;
@@ -194,8 +204,8 @@ bool    Updater::replaceBinary(void)
   //if (this->_downloadPath.rename(destPath, destPath + ".old") == false)
   dest.remove(BinaryName); // removing QNetSoul
   const bool moveResult =
-    this->_downloadPath.rename(this->_downloadPath.filePath(BinaryName),
-                               destPath);
+    this->_downloadPath
+    .rename(this->_downloadPath.filePath(BinaryName), destPath);
 #ifndef QT_NO_DEBUG
   qDebug() << "[Updater::replaceBinary]" << "moveResult:" << moveResult;
 #endif
