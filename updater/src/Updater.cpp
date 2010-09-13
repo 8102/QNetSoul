@@ -18,9 +18,12 @@
 #include <QDebug>
 #include <QProcess>
 #include <QKeyEvent>
+#include <QSettings>
 #include <QMessageBox>
 #include <QNetworkReply>
+#include <QNetworkProxy>
 #include "Updater.h"
+#include "Encryption.h"
 #include "Credentials.h"
 #include "Singleton.hpp"
 
@@ -54,6 +57,7 @@ Updater::Updater(QWidget* parent)
   setupUi(this);
   move(400, 300);
   resize(100, 100);
+  initProxyFromSettings();
   this->progressBar->hide();
   this->textBrowser->hide();
   Credentials& instance = Singleton<Credentials>::Instance();
@@ -100,6 +104,41 @@ void    Updater::closeEvent(QCloseEvent* event)
   QWidget::closeEvent(event);
 }
 
+void    Updater::initProxyFromSettings(void)
+{
+  QSettings settings("Epitech", "QNetsoul");
+
+  settings.beginGroup("AdvancedOptions");
+  if (settings.value("useproxy", bool(false)).toBool() == true)
+    {
+      const QString proxyServer =
+        settings.value("proxy", QString("proxy.epitech.net")).toString();
+      const QString proxyPort =
+        settings.value("port", QString("3128")).toString();
+      const QString proxyLogin = settings.value("login").toString();
+      QString proxyPassword = settings.value("password").toString();
+
+      bool port_ok;
+      proxyPort.toUShort(&port_ok);
+      if (!proxyServer.isEmpty() && !proxyLogin.isEmpty() &&
+          !proxyPassword.isEmpty() && port_ok)
+        {
+          proxyPassword = unencrypt(proxyPassword);
+          QNetworkProxy proxy(QNetworkProxy::HttpProxy,
+                              proxyServer,
+                              proxyPort.toUShort(),
+                              proxyLogin,
+                              proxyPassword);
+          QNetworkProxy::setApplicationProxy(proxy);
+#ifndef QT_NO_DEBUG
+          qDebug() << "[Updater::initProxyFromSettings]"
+                   << "Proxy has been set.";
+#endif
+        }
+    }
+  settings.endGroup();
+}
+
 void    Updater::retrieveLastVersion(void)
 {
   QString platform;
@@ -116,7 +155,15 @@ void    Updater::retrieveLastVersion(void)
 #endif
 
   // Platform version
-  platform += "32";
+  if (sizeof(int*) == 4)
+    platform += "32";
+  else if (sizeof(int*) == 8)
+    platform += "64";
+  else
+    {
+      appendLog(tr("Unknown platform."));
+      return;
+    }
 
 #if defined (QT_SHARED) || defined (QT_DLL)
   platform += "shared";
@@ -247,7 +294,7 @@ void    Updater::handleFinishedRequest(QNetworkReply* reply)
               appendLog(buffer);
             }
           else if (buffer.section(' ', 0, 0) >
-		   QCoreApplication::arguments().at(1))
+                   QCoreApplication::arguments().at(1))
             {
               this->label->setText(tr("A new version is available !"));
               QString msg = QString(tr("Downloading QNetSoul v%1 on TuxFamily"))

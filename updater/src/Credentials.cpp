@@ -39,6 +39,10 @@ void    Credentials::handleCredentials(const QNetworkProxy& proxy,
                                        QAuthenticator* auth)
 {
   const QStringList credentials = getCredentials(proxy.hostName());
+#ifndef QT_NO_DEBUG
+  qDebug() << "[Credentials::handleCredentials]"
+	   << "credentials size:" << credentials.size();
+#endif
   if (credentials.size() == 2)
     {
       auth->setUser(credentials.at(0));

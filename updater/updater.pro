@@ -10,10 +10,13 @@ DEPENDPATH += . \
     tpl \
     src \
     ui \
+    ../qns/src \
+    ../qns/headers
 
 INCLUDEPATH += . \
     headers \
-    tpl
+    tpl \
+    ../qns/headers
 
 # Input
 FORMS += ui/Updater.ui ui/CredentialsDialog.ui
@@ -26,6 +29,10 @@ SOURCES += src/main.cpp \
 src/Updater.cpp \
 src/Credentials.cpp \
 src/CredentialsDialog.cpp
+
+# Common
+SOURCES += ../qns/src/Encryption.cpp
+HEADERS += ../qns/headers/Encryption.h
 
 # Output
 DESTDIR = .

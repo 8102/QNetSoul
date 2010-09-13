@@ -28,6 +28,7 @@ namespace
   {
     Location location[] =
       {
+        {"sm23-rack",     "10.200."},
         {"ip20",          "10.246."},
         {"pasteur",       "10.247."},
         {"sr",            "10.248."},

@@ -25,7 +25,7 @@
 #include "ui_Updater.h"
 
 class   QKeyEvent;
-class	QNetworkReply;
+class   QNetworkReply;
 
 class   Updater : public QWidget, public Ui_Updater
 {
@@ -43,6 +43,7 @@ class   Updater : public QWidget, public Ui_Updater
   void  closeEvent(QCloseEvent* event);
 
  private:
+  void  initProxyFromSettings(void);
   void  retrieveLastVersion(void);
   void  download(const QString& url, const QString& filename);
   void  install(void);
