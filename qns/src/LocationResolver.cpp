@@ -28,7 +28,6 @@ namespace
   {
     Location location[] =
       {
-        {"sm23-rack",     "10.200."},
         {"ip20",          "10.246."},
         {"pasteur",       "10.247."},
         {"sr",            "10.248."},
@@ -49,7 +48,7 @@ namespace
   }
   void	smLocation(QString& result, const QString& ip)
   {
-    if (result.isEmpty() && ip.startsWith("10.42."))
+    if (result.isEmpty() && ip.startsWith("10.200."))
       result = "sm-" + ip.section('.', 2, 2);
   }
   void	restLocation(QString& result, const QString& ip)

@@ -16,7 +16,6 @@
 */
 
 #include <string>
-#include <iostream>
 #include <algorithm>
 #include "Encryption.h"
 
@@ -42,10 +41,10 @@ namespace
   }
 */
 
-QString         encrypt(const QString& msg)
+QString encrypt(const QString& msg)
 {
-  std::string   std_msg = msg.toStdString();
-  const int     size = std_msg.length();
+  std::string std_msg = msg.toStdString();
+  const int size = std_msg.length();
 
   for (int i = 0; i < size; ++i)
     std_msg[i] = code[std_msg[i] - 33];
@@ -53,10 +52,10 @@ QString         encrypt(const QString& msg)
   return msg.fromStdString(std_msg);
 }
 
-QString         unencrypt(const QString& msg)
+QString unencrypt(const QString& msg)
 {
-  std::string   std_msg = msg.toStdString();
-  const int     size = std_msg.length();
+  std::string std_msg = msg.toStdString();
+  const int size = std_msg.length();
 
   for (int i = 0; i < size; ++i)
     for (int j = 0; j < 94; ++j)

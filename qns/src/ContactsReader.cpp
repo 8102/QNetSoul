@@ -15,7 +15,6 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
 #include "Options.h"
 #include "ContactsReader.h"
 #include "ToolTipBuilder.h"

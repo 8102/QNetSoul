@@ -16,7 +16,6 @@
 */
 
 #include <QFile>
-#include <iostream>
 #include <QInputDialog>
 #include "Options.h"
 #include "OptionsFunWidget.h"

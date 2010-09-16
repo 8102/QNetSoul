@@ -15,7 +15,6 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
 #include <QTreeWidgetItem>
 #include "ContactsTree.h"
 #include "ToolTipBuilder.h"
@@ -91,6 +90,7 @@ namespace ConnectionPoint
   {
     Q_ASSERT(item);
     QString tt;
+
     tt = QString("<b>" + QObject::tr("Id") + "</b>: %1<br />"
                  "<b>" + QObject::tr("State") + "</b>: %2<br />"
                  "<b>" + QObject::tr("Ip") + "</b>: %3<br />"

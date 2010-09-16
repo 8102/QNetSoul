@@ -15,7 +15,6 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
 #include <QUrl>
 #include <QMimeData>
 #include <QClipboard>
@@ -57,16 +56,16 @@ void	Pastebin::pastebinIt(void)
     }
   if (mimeData->hasText())
     {
-      QString	post_content(mimeData->text());
-
+      QString post_content(mimeData->text());
       mbox.setDetailedText(post_content);
       int ret = mbox.exec();
       if (ret == QMessageBox::Cancel)
 	return;
 
       post_content.prepend("paste_private=1&paste_code=");
-      this->_manager.post(QNetworkRequest(QUrl("http://pastebin.com/api_public.php")),
-			  post_content.toAscii());
+      this->_manager.post
+	(QNetworkRequest(QUrl("http://pastebin.com/api_public.php")),
+	 post_content.toAscii());
     }
   else
     {
@@ -77,14 +76,18 @@ void	Pastebin::pastebinIt(void)
 
 void	Pastebin::replyFinished(QNetworkReply* reply)
 {
-  QByteArray    array = reply->readAll();
-
-  if (!array.startsWith("ERROR"))
+  if (reply->error() == QNetworkReply::NoError)
     {
-      qDebug() << "Reply:" << array;
-      QString	url = QString("<a href='%1'>%1</a>").arg(array.data());
+      QByteArray array = reply->readAll();
+      QString url = QString("<a href='%1'>%1</a>").arg(array.data());
       QMessageBox::information(0, "PasteBin", url);
     }
-  else qDebug() << "Error on pastebin:" << array;
+#ifndef QT_NO_DEBUG
+  else
+    {
+      qDebug() << "[Pastebin::replyFinished]"
+	       << "Reply error:" << reply->errorString();
+    }
+#endif
   reply->deleteLater();
 }

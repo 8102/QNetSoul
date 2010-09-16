@@ -15,7 +15,6 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
 #include <QDir>
 #include <QClipboard>
 #include <QMessageBox>

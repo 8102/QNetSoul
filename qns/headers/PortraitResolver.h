@@ -15,10 +15,9 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PORTRAITRESOLVER_H
-#define PORTRAITRESOLVER_H
+#ifndef PORTRAIT_RESOLVER_H_
+#define PORTRAIT_RESOLVER_H_
 
-#include <iostream>
 #include <QDir>
 #include <QFile>
 #include <QNetworkReply>
@@ -57,4 +56,4 @@ class   PortraitResolver : public QNetworkAccessManager
   QDir _dir;
 };
 
-#endif // PORTRAITRESOLVER_H
+#endif // PORTRAITRESOLVER_H_

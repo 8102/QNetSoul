@@ -54,15 +54,31 @@ void    VieDeMerde::getVdm(void)
 void    VieDeMerde::replyFinished(QNetworkReply* reply)
 {
   Q_ASSERT(this->_popup);
-  QString buffer(QString::fromUtf8(reply->readAll()));
-  QRegExp textRegExp("<texte>(.+)</texte>");
 
-  replaceHtmlSpecialChars(buffer);
-  if (buffer.contains(textRegExp))
+  if (reply->error() == QNetworkReply::NoError)
     {
-      //qDebug() << textRegExp.cap(1);
-      this->_popup->showUp(textRegExp.cap(1), 20000);
-      this->_lastVdm = textRegExp.cap(1);
+      QString buffer(QString::fromUtf8(reply->readAll()));
+      QRegExp textRegExp("<texte>(.+)</texte>");
+      replaceHtmlSpecialChars(buffer);
+      if (buffer.contains(textRegExp))
+	{
+	  //qDebug() << textRegExp.cap(1);
+	  this->_popup->showUp(textRegExp.cap(1), 20000);
+	  this->_lastVdm = textRegExp.cap(1);
+	}
+#ifndef QT_NO_DEBUG
+      else
+	{
+	  qDebug() << "[Pastebin::replyFinished] Bad format.";
+	}
+#endif
     }
+#ifndef QT_NO_DEBUG
+  else
+    {
+      qDebug() << "[Pastebin::replyFinished]"
+               << "Reply error:" << reply->errorString();
+    }
+#endif
   reply->deleteLater();
 }

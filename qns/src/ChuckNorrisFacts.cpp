@@ -15,8 +15,6 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QDebug>
-#include <iostream>
 #include <QUrl>
 #include <QRegExp>
 #include <QString>
@@ -72,11 +70,20 @@ void    ChuckNorrisFacts::pickAFact(void)
 
 void    ChuckNorrisFacts::replyFinished(QNetworkReply* reply)
 {
-  QByteArray array = reply->readAll();
-  QString    buffer(QString::fromLatin1(array));
-
-  replaceHtmlSpecialChars(buffer);
-  this->_facts = buffer.split("%\n", QString::SkipEmptyParts);
-  pickAFact();
+  if (reply->error() == QNetworkReply::NoError)
+    {
+      QByteArray array = reply->readAll();
+      QString buffer(QString::fromLatin1(array));
+      replaceHtmlSpecialChars(buffer);
+      this->_facts = buffer.split("%\n", QString::SkipEmptyParts);
+      pickAFact();
+    }
+#ifndef QT_NO_DEBUG
+  else
+    {
+      qDebug() << "[ChuckNorrisFacts::replyFinished]"
+	       << "Reply error:" << reply->errorString();
+    }
+#endif
   reply->deleteLater();
 }
