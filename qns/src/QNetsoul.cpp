@@ -412,7 +412,7 @@ void    QNetsoul::showConversation(const QStringList& properties,
           window->showNormal();
           window->activateWindow();
           QApplication::setActiveWindow(window);
-	  window->inputTextEdit->setFocus();
+          window->inputTextEdit->setFocus();
         }
     }
   if (message.isEmpty() == false)
@@ -489,7 +489,7 @@ void    QNetsoul::processHandShaking(int step, QStringList args)
         state.append(QString::number(static_cast<uint>(dt.toTime_t())));
         state.append("\n");
         this->_network->sendMessage(state);
-	this->tree->monitorContacts();
+        this->tree->monitorContacts();
         this->tree->refreshContacts();
         this->_ping->start(10000); // every 10 seconds, ping the server
         this->statusbar->showMessage(tr("You are now NetSouled."), 2000);

@@ -16,6 +16,7 @@
 */
 
 #include <QUrl>
+#include <QDebug>
 #include <QRegExp>
 #include <QNetworkReply>
 #include "Url.h"
