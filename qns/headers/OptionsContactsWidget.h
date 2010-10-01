@@ -15,27 +15,33 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef OPTIONS_CONTACTS_WIDGET_H_
+#define OPTIONS_CONTACTS_WIDGET_H_
 
-#include <QDir>
-#include <QDialog>
-#include "ui_Options.h"
+#include <QWidget>
+#include "AbstractOptions.h"
 
-class Options : public QDialog, public Ui_Options
+// EXPAND is the default behavior
+namespace ContactBehavior{ enum { EXPAND, OPEN_CONVERSATION, BOTH }; }
+
+class   OptionsContactsWidget : public QWidget, public AbstractOptions
 {
   Q_OBJECT
 
-  public:
-  Options(QWidget* parent);
-  ~Options(void);
+    public:
+  OptionsContactsWidget(QWidget* parent = NULL);
+  ~OptionsContactsWidget(void);
 
-  void	readOptionSettings(void);
-  void	writeOptionSettings(void);
-  void	updateOptions(void);
+  // Behavior on double cliking on it.
+  int contactBehavior(void) const { return this->_contactBehavior; }
 
-private slots:
-  void	save(void);
+  void readOptions(QSettings& settings);
+  void writeOptions(QSettings& settings);
+  void updateOptions(void);
+  void saveOptions(void);
+
+ private:
+  int _contactBehavior;
 };
 
-#endif // OPTIONS_H
+#endif
