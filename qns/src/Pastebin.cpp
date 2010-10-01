@@ -34,24 +34,24 @@ Pastebin::~Pastebin(void)
 {
 }
 
-void	Pastebin::pastebinIt(void)
+void    Pastebin::pastebinIt(void)
 {
-  const QClipboard*	clipboard = QApplication::clipboard();
+  const QClipboard* clipboard = QApplication::clipboard();
 
   //#ifdef Q_WS_X11
-  //const QMimeData*	mimeData = clipboard->mimeData(QClipboard::Selection);
+  //const QMimeData* mimeData = clipboard->mimeData(QClipboard::Selection);
   //#else
-  const QMimeData*	mimeData = clipboard->mimeData();
+  const QMimeData* mimeData = clipboard->mimeData();
   //#endif
 
   QMessageBox mbox(QMessageBox::Question, "QNetSoul",
-		   tr("Are you sure to past this ?"),
-		   QMessageBox::Ok | QMessageBox::Cancel);
+                   tr("Are you sure to past this ?"),
+                   QMessageBox::Ok | QMessageBox::Cancel);
 
   if (mimeData == 0)
     {
       QMessageBox::information(NULL, "QNetSoul Pastebin",
-			       tr("Clipboard is empty"));
+                               tr("Clipboard is empty"));
       return;
     }
   if (mimeData->hasText())
@@ -60,33 +60,33 @@ void	Pastebin::pastebinIt(void)
       mbox.setDetailedText(post_content);
       int ret = mbox.exec();
       if (ret == QMessageBox::Cancel)
-	return;
+        return;
 
       post_content.prepend("paste_private=1&paste_code=");
       this->_manager.post
-	(QNetworkRequest(QUrl("http://pastebin.com/api_public.php")),
-	 post_content.toAscii());
+        (QNetworkRequest(QUrl("http://pastebin.com/api_public.php")),
+         post_content.toAscii());
     }
   else
     {
       QMessageBox::information(NULL, "QNetSoul Pastebin",
-			       tr("Clipboard has no text"));
+                               tr("Clipboard has no text"));
     }
 }
 
-void	Pastebin::replyFinished(QNetworkReply* reply)
+void    Pastebin::replyFinished(QNetworkReply* reply)
 {
   if (reply->error() == QNetworkReply::NoError)
     {
       QByteArray array = reply->readAll();
       QString url = QString("<a href='%1'>%1</a>").arg(array.data());
-      QMessageBox::information(0, "PasteBin", url);
+      QMessageBox::information(NULL, "PasteBin", url);
     }
 #ifndef QT_NO_DEBUG
   else
     {
       qDebug() << "[Pastebin::replyFinished]"
-	       << "Reply error:" << reply->errorString();
+               << "Reply error:" << reply->errorString();
     }
 #endif
   reply->deleteLater();

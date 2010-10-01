@@ -22,12 +22,12 @@
 #include <QXmlStreamReader>
 #include "ContactsTree.h"
 
-class   Options;
+class   OptionsWidget;
 
 class ContactsReader : public QXmlStreamReader
 {
  public:
-  ContactsReader(QTreeWidget *tree, Options* options);
+  ContactsReader(QTreeWidget *tree, OptionsWidget* options);
   bool read(QIODevice *device);
 
  private:
@@ -39,8 +39,8 @@ class ContactsReader : public QXmlStreamReader
   inline QTreeWidgetItem* createChildItem(QTreeWidgetItem *item);
 
  private:
-  QTreeWidget* _tree;
-  Options*     _options;
+  QTreeWidget*   _tree;
+  OptionsWidget* _options;
 };
 
 #endif

@@ -17,9 +17,9 @@
 
 #include <QMessageBox>
 #include "Url.h"
-#include "Options.h"
 #include "Network.h"
 #include "QNetsoul.h"
+#include "OptionsWidget.h"
 #include "LocationResolver.h"
 
 Network::Network(QObject* parent)

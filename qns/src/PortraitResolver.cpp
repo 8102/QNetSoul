@@ -66,9 +66,10 @@ bool    PortraitResolver::isAvailable(QString& portraitPath,
   return false;
 }
 
-QString PortraitResolver::buildFilename(const QString& login, bool fun)
+QString PortraitResolver::buildFilename(const QString& login, const bool fun)
 {
-  return fun? (login + "1.jpeg") : (login + "0.jpeg");
+  // WARNING: test this extension instead jpeg
+  return fun? (login + "1.png") : (login + "0.png");
 }
 
 QDir    PortraitResolver::getPortraitDir(void)
@@ -103,19 +104,26 @@ void    PortraitResolver::replyFinished(QNetworkReply* reply)
   const QString login = reply->url().toString().section('=', -1);
 
   QImage img = QImage::fromData(reply->readAll());
-  if (img.save(DirName + QDir::separator() + buildFilename(login, fun)))
+  if (img.isNull())
+    {
+#ifndef QT_NO_DEBUG
+      qDebug() << "[PortraitResolver::replyFinished]"
+	       << "img is NULL, website is probably down.";
+#endif
+    }
+  else if (img.save(DirName + QDir::separator() + buildFilename(login, fun)))
     {
       if (fun == false)
         emit downloadedPortrait(login);
     }
+#ifndef QT_NO_DEBUG
   else
     {
-#ifndef QT_NO_DEBUG
       qDebug() << "[PortraitResolver::replyFinished]"
                << "QImage saving failed with"
                << login;
-#endif
     }
+#endif
   reply->deleteLater();
 }
 

@@ -17,7 +17,7 @@
 
 #include <QFile>
 #include <QInputDialog>
-#include "Options.h"
+#include "OptionsWidget.h"
 #include "OptionsFunWidget.h"
 
 OptionsFunWidget::OptionsFunWidget(QWidget* parent)

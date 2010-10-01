@@ -17,7 +17,7 @@
 
 #include <QFile>
 #include <QInputDialog>
-#include "Options.h"
+#include "OptionsWidget.h"
 #include "OptionsBlockedWidget.h"
 
 OptionsBlockedWidget::OptionsBlockedWidget(QWidget* parent) : QWidget(parent)
@@ -28,32 +28,32 @@ OptionsBlockedWidget::~OptionsBlockedWidget(void)
 {
 }
 
-void	OptionsBlockedWidget::setOptions(Options* options)
+void    OptionsBlockedWidget::setOptions(OptionsWidget* options)
 {
-  OptionsWidget::setOptions(options);
+  AbstractOptions::setOptions(options);
   connect(this->_options->addButton,
-	  SIGNAL(clicked()), SLOT(addBlockedContact()));
+          SIGNAL(clicked()), SLOT(addBlockedContact()));
   connect(this->_options->deleteButton,
-	  SIGNAL(clicked()), SLOT(deleteBlockedContact()));
+          SIGNAL(clicked()), SLOT(deleteBlockedContact()));
   connect(this->_options->deleteAllButton,
-	  SIGNAL(clicked()), SLOT(deleteAllBlockedContacts()));
+          SIGNAL(clicked()), SLOT(deleteAllBlockedContacts()));
 }
 
-void	OptionsBlockedWidget::readOptions(QSettings& settings)
+void    OptionsBlockedWidget::readOptions(QSettings& settings)
 {
   Q_UNUSED(settings);
 }
 
-void	OptionsBlockedWidget::writeOptions(QSettings& settings)
+void    OptionsBlockedWidget::writeOptions(QSettings& settings)
 {
   Q_UNUSED(settings);
 }
 
-void	OptionsBlockedWidget::updateOptions(void)
+void    OptionsBlockedWidget::updateOptions(void)
 {
 }
 
-void	OptionsBlockedWidget::saveOptions(void)
+void    OptionsBlockedWidget::saveOptions(void)
 {
 }
 
@@ -66,7 +66,7 @@ QStringList OptionsBlockedWidget::getList(void) const
   return list;
 }
 
-bool	OptionsBlockedWidget::isBlocked(const QString& contact) const
+bool    OptionsBlockedWidget::isBlocked(const QString& contact) const
 {
   const int size = this->_options->listWidget->count();
   for (int i = 0; i < size; ++i)
@@ -75,7 +75,7 @@ bool	OptionsBlockedWidget::isBlocked(const QString& contact) const
   return false;
 }
 
-void	OptionsBlockedWidget::addBlockedContact(const QString& login)
+void    OptionsBlockedWidget::addBlockedContact(const QString& login)
 {
   // if login isnt found in the list, add it.
   if (!this->_options->listWidget->findItems(login, Qt::MatchFixedString).size())
@@ -86,7 +86,7 @@ void	OptionsBlockedWidget::addBlockedContact(const QString& login)
     }
 }
 
-void	OptionsBlockedWidget::addBlockedContact(void)
+void    OptionsBlockedWidget::addBlockedContact(void)
 {
   const QString login =
     QInputDialog::getText(this, tr("Block login"), tr("Login to block:"));
@@ -95,7 +95,7 @@ void	OptionsBlockedWidget::addBlockedContact(void)
   addBlockedContact(login);
 }
 
-void	OptionsBlockedWidget::deleteBlockedContact(void)
+void    OptionsBlockedWidget::deleteBlockedContact(void)
 {
   int row;
   const QList<QListWidgetItem*> selected =
@@ -104,10 +104,10 @@ void	OptionsBlockedWidget::deleteBlockedContact(void)
   if (selected.size() > 0)
     {
       for (int i = 0; i < selected.size(); ++i)
-	{
-	  row = this->_options->listWidget->row(selected.at(i));
-	  delete this->_options->listWidget->takeItem(row);
-	}
+        {
+          row = this->_options->listWidget->row(selected.at(i));
+          delete this->_options->listWidget->takeItem(row);
+        }
       if (this->_options->listWidget->count() == 0)
         {
           this->_options->deleteButton->setEnabled(false);
@@ -116,7 +116,7 @@ void	OptionsBlockedWidget::deleteBlockedContact(void)
     }
 }
 
-void	OptionsBlockedWidget::deleteAllBlockedContacts(void)
+void    OptionsBlockedWidget::deleteAllBlockedContacts(void)
 {
   this->_options->listWidget->clear();
   this->_options->deleteButton->setEnabled(false);

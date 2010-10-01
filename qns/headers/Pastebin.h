@@ -22,22 +22,22 @@
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
 
-class	Pastebin : public QObject
+class   Pastebin : public QObject
 {
   Q_OBJECT
 
-  public:
+    public:
   Pastebin(void);
   ~Pastebin(void);
 
   void  setProxy(const QNetworkProxy& p) { this->_manager.setProxy(p); }
 
-public slots:
-  void	pastebinIt(void);
-  void	replyFinished(QNetworkReply* reply);
+  public slots:
+  void  pastebinIt(void);
+  void  replyFinished(QNetworkReply* reply);
 
-private:
-  QNetworkAccessManager	_manager;
+ private:
+  QNetworkAccessManager _manager;
 };
 
 #endif

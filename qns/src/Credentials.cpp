@@ -2,8 +2,8 @@
 #include <QStringList>
 #include <QNetworkProxy>
 #include <QAuthenticator>
-#include "Options.h"
 #include "Credentials.h"
+#include "OptionsWidget.h"
 #include "CredentialsDialog.h"
 
 // Example:

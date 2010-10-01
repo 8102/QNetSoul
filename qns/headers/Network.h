@@ -22,7 +22,7 @@
 #include <QTcpSocket>
 #include <QStringList>
 
-class   Options;
+class   OptionsWidget;
 
 class   Network : public QObject
 {
@@ -32,7 +32,7 @@ class   Network : public QObject
   Network(QObject* parent);
   virtual ~Network(void) { this->_socket.close(); }
 
-  void  setOptions(Options* options) { this->_options = options; }
+  void  setOptions(OptionsWidget* options) { this->_options = options; }
   QAbstractSocket::SocketState state(void) const
     { return this->_socket.state(); }
   void  sendMessage(const char* msg) { this->_socket.write(msg); }
@@ -69,13 +69,13 @@ class   Network : public QObject
   void  interpretLine(const QString& line);
 
  private:
-  Options*   _options;
-  QString    _rbuffer;
-  QTcpSocket _socket;
-  int        _handShakingStep;
-  QString    _host;
-  quint16    _port;
-  QTimer     _reconnectionTimer;
+  OptionsWidget* _options;
+  QString        _rbuffer;
+  QTcpSocket     _socket;
+  int            _handShakingStep;
+  QString        _host;
+  quint16        _port;
+  QTimer         _reconnectionTimer;
 };
 
 #endif // NETWORK_H

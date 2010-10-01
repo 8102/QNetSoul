@@ -19,9 +19,9 @@
 #define OPTIONS_CHAT_WIDGET_H_
 
 #include <QWidget>
-#include "OptionsWidget.h"
+#include "AbstractOptions.h"
 
-class   OptionsChatWidget : public QWidget, public OptionsWidget
+class   OptionsChatWidget : public QWidget, public AbstractOptions
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class   OptionsChatWidget : public QWidget, public OptionsWidget
   bool notifyMsg(void) const { return this->_notifyMsg; }
   bool notifyState(void) const { return this->_notifyState; }
 
-  void    setOptions(Options* options);
+  void    setOptions(OptionsWidget* options);
   void    readOptions(QSettings& settings);
   void    writeOptions(QSettings& settings);
   void    updateOptions(void);

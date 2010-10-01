@@ -20,11 +20,11 @@
 
 #include <QDir>
 #include <QWidget>
-#include "OptionsWidget.h"
+#include "AbstractOptions.h"
 
 class   QRadioButton;
 
-class   OptionsFunWidget : public QWidget, public OptionsWidget
+class   OptionsFunWidget : public QWidget, public AbstractOptions
 {
   Q_OBJECT
 

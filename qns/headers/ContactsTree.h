@@ -25,8 +25,8 @@
 #include <QContextMenuEvent>
 #include "AddContact.h"
 
-class   Options;
 class   Network;
+class   OptionsWidget;
 
 class   ContactsTree : public QTreeWidget
 {
@@ -40,7 +40,7 @@ class   ContactsTree : public QTreeWidget
   ContactsTree(QWidget* parent = NULL);
   ~ContactsTree(void);
 
-  void  setOptions(Options* options) { this->_options = options; }
+  void  setOptions(OptionsWidget* options) { this->_options = options; }
   void  setNetwork(Network* network) { this->_network = network; }
 
   bool  addGroup(const QString& groupName);
@@ -53,6 +53,7 @@ class   ContactsTree : public QTreeWidget
   void  loadContacts(const QString& fileName);
   QStringList getLoginList(void) const;
   QStringList getGroupList(void) const;
+  QString getAliasByLogin(const QString& login) const;
 
   public slots:
   void  addGroup(void);
@@ -68,32 +69,35 @@ class   ContactsTree : public QTreeWidget
   void  saveContacts(void);
   void  loadContacts(void);
   void  refreshContacts(void);
-  void	monitorContacts(void);
+  void  monitorContacts(void);
 
  signals:
   void  downloadPortrait(const QString& login);
   void  openConversation(const QStringList&);
-  void	contactRemoved(const QString& login);
+  void  contactRemoved(const QString& login);
 
  protected:
   virtual void  dropEvent(QDropEvent* event);
   virtual void  contextMenuEvent(QContextMenuEvent* event);
-  virtual void  mouseDoubleClickEvent(QMouseEvent* event);
 
  private:
   bool  existingGroup(const QString& name) const;
   bool  existingContact(const QString& login, QTreeWidgetItem** dst) const;
+  void	openConversation(QTreeWidgetItem* connectionPoint);
   void  createContextMenus(void);
 
+  private slots:
+  void	onItemDoubleClicked(QTreeWidgetItem* item);
+
  private:
-  QMenu       _treeMenu;
-  QMenu       _groupMenu;
-  QAction*    _sortContacts;
-  QMenu       _contactMenu;
-  QMenu       _connectionPointMenu;
-  AddContact  _addContactDialog;
-  Options*    _options;
-  Network*    _network;
+  QMenu          _treeMenu;
+  QMenu          _groupMenu;
+  QAction*       _sortContacts;
+  QMenu          _contactMenu;
+  QMenu          _connectionPointMenu;
+  AddContact     _addContactDialog;
+  Network*       _network;
+  OptionsWidget* _options;
 };
 
 #endif

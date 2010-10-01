@@ -21,12 +21,12 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QApplication>
-#include "Options.h"
 #include "Network.h"
 #include "ContactsTree.h"
 #include "ContactsReader.h"
 #include "ContactsWriter.h"
 #include "ToolTipBuilder.h"
+#include "OptionsWidget.h"
 #include "PortraitResolver.h"
 
 namespace
@@ -57,15 +57,18 @@ namespace
 
 ContactsTree::ContactsTree(QWidget* parent)
   : QTreeWidget(parent), _addContactDialog(this),
-    _options(NULL), _network(NULL)
+    _network(NULL), _options(NULL)
 {
   // Setting up some properties
   setAnimated(true);
   setHeaderHidden(true);
   setDefaultDropAction(Qt::MoveAction);
   setDragDropMode(QAbstractItemView::InternalMove);
+  setEditTriggers(QAbstractItemView::EditKeyPressed);
   connect(&this->_addContactDialog, SIGNAL(newContact(const QStringList&)),
           this, SLOT(addContact(const QStringList&)));
+  connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
+          this, SLOT(onItemDoubleClicked(QTreeWidgetItem*)));
   createContextMenus();
 }
 
@@ -381,6 +384,19 @@ QStringList ContactsTree::getGroupList(void) const
   return groupList;
 }
 
+QString ContactsTree::getAliasByLogin(const QString& login) const
+{
+  QTreeWidgetItemIterator it(invisibleRootItem());
+  while (*it)
+    {
+      if (Contact == (*it)->data(0, Type).toInt() &&
+	  login == (*it)->data(0, Login).toString())
+	return (*it)->text(0);
+      ++it;
+    }
+  return login;
+}
+
 // Slot used by tree contextMenu
 void    ContactsTree::addGroup(void)
 {
@@ -679,40 +695,6 @@ void    ContactsTree::contextMenuEvent(QContextMenuEvent* event)
     }
 }
 
-// properties.at(0): Login
-// properties.at(1): Id
-// properties.at(2): Ip
-// properties.at(3): Promo
-// properties.at(4): State
-// properties.at(5): Location
-// properties.at(6): Comment
-void    ContactsTree::mouseDoubleClickEvent(QMouseEvent* event)
-{
-  if (Qt::LeftButton != event->button())
-    {
-      QTreeWidget::mouseDoubleClickEvent(event);
-      return;
-    }
-  QTreeWidgetItem* item = currentItem();
-  if (item == NULL) return;
-  if (ConnectionPoint == item->data(0, Type).toInt())
-    {
-      QStringList properties;
-      properties << item->data(0, Login).toString()
-                 << item->data(0, Id).toString()
-                 << item->data(0, Ip).toString()
-                 << item->data(0, Promo).toString()
-                 << item->data(0, State).toString()
-                 << item->data(0, Location).toString()
-                 << item->data(0, Comment).toString();
-      emit openConversation(properties);
-    }
-  else
-    {
-      item->setExpanded(!item->isExpanded());
-    }
-}
-
 bool    ContactsTree::existingGroup(const QString& name) const
 {
   const QTreeWidgetItem* root = invisibleRootItem();
@@ -754,6 +736,30 @@ bool    ContactsTree::existingContact(const QString& login,
   return false;
 }
 
+// properties.at(0): Login
+// properties.at(1): Id
+// properties.at(2): Ip
+// properties.at(3): Promo
+// properties.at(4): State
+// properties.at(5): Location
+// properties.at(6): Comment
+void    ContactsTree::openConversation(QTreeWidgetItem* connectionPoint)
+{
+#ifndef QT_NO_DEBUG
+  if (connectionPoint->data(0, Type).toInt() != ConnectionPoint)
+    qFatal("[ContactsTree::openConversation] Logic failure");
+#endif
+  QStringList properties;
+  properties << connectionPoint->data(0, Login).toString()
+             << connectionPoint->data(0, Id).toString()
+             << connectionPoint->data(0, Ip).toString()
+             << connectionPoint->data(0, Promo).toString()
+             << connectionPoint->data(0, State).toString()
+             << connectionPoint->data(0, Location).toString()
+             << connectionPoint->data(0, Comment).toString();
+  emit openConversation(properties);
+}
+
 void    ContactsTree::createContextMenus(void)
 {
   // tree menu
@@ -787,4 +793,40 @@ void    ContactsTree::createContextMenus(void)
 
   // connection point menu
   this->_connectionPointMenu.addAction(tr("&Copy ip"), this, SLOT(copyIp()));
+}
+
+void    ContactsTree::onItemDoubleClicked(QTreeWidgetItem* item)
+{
+  if (item == NULL) return;
+  if (ConnectionPoint == item->data(0, Type).toInt())
+    {
+      openConversation(item);
+    }
+  else if (Contact == item->data(0, Type).toInt())
+    {
+      Q_ASSERT(this->_options);
+
+      const int behavior = this->_options->contactsWidget->contactBehavior();
+      switch(behavior)
+        {
+        case ContactBehavior::EXPAND:
+          item->setExpanded(!item->isExpanded());
+          break;
+        case ContactBehavior::OPEN_CONVERSATION:
+          if (item->childCount() == 0) break;
+          openConversation(item->child(0));
+          break;
+        case ContactBehavior::BOTH:
+          if (!item->isExpanded())
+            item->setExpanded(true);
+          if (item->childCount() == 0) break;
+          openConversation(item->child(0));
+          break;
+        default: item->setExpanded(!item->isExpanded());
+        }
+    }
+  else
+    {
+      item->setExpanded(!item->isExpanded());
+    }
 }

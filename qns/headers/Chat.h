@@ -20,9 +20,9 @@
 
 #include "ui_Chat.h"
 
-class   Options;
 class   Network;
 class   QStatusBar;
+class   OptionsWidget;
 
 class   Chat : public QWidget, public Ui_Chat
 {
@@ -37,7 +37,7 @@ class   Chat : public QWidget, public Ui_Chat
   QString location(void) const { return this->_location; }
 
   void    setAlias(const QString& alias) { this->_alias = alias; }
-  void    setOptions(Options* options) { this->_options = options; }
+  void    setOptions(OptionsWidget* options) { this->_options = options; }
   void    setNetwork(Network* network) { this->_network = network; }
 
   QString getFormatedDateTime(void) const;
@@ -59,13 +59,13 @@ class   Chat : public QWidget, public Ui_Chat
   void  handleTypingSignal(void);
 
  private:
-  int      _id;
-  QString  _alias;
-  QString  _login;
-  QString  _location;
-  QRect    _geometry;
-  Options* _options;
-  Network* _network;
+  int            _id;
+  QString        _alias;
+  QString        _login;
+  QString        _location;
+  QRect          _geometry;
+  Network*       _network;
+  OptionsWidget* _options;
 };
 
 #endif // CHAT_H

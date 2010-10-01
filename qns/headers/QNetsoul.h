@@ -27,12 +27,12 @@ class   Chat;
 class   QTimer;
 class   QAction;
 class   Network;
-class   Options;
 class   Pastebin;
 class   TrayIcon;
 class   VieDeMerde;
 class   SlidingPopup;
 class   InternUpdater;
+class   OptionsWidget;
 class   ChuckNorrisFacts;
 class   PortraitResolver;
 
@@ -46,13 +46,13 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
 
   static QString currentVersion(void)
   {
-    return "0.9d";
+    return "1.0";
   }
   static QString defaultComment(void)
   {
     return QString("-=[QNetSoul v%1]=-").arg(currentVersion());
   }
-  static void  openOptionsDialog(Options* options,
+  static void  openOptionsDialog(OptionsWidget* options,
                                  const int currentTab = -1,
                                  QWidget* focus = NULL);
 
@@ -90,7 +90,7 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
   void  deleteAllWindowChats(void);
 
   Network*          _network;
-  Options*          _options;
+  OptionsWidget*    _options;
   TrayIcon*         _trayIcon;
   QHash<int, Chat*> _windowsChat;
   QString           _timeStamp;

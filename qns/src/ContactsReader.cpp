@@ -15,12 +15,12 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Options.h"
+#include "OptionsWidget.h"
 #include "ContactsReader.h"
 #include "ToolTipBuilder.h"
 #include "PortraitResolver.h"
 
-ContactsReader::ContactsReader(QTreeWidget* tree, Options* options)
+ContactsReader::ContactsReader(QTreeWidget* tree, OptionsWidget* options)
   : _tree(tree), _options(options)
 {
 }
@@ -76,8 +76,8 @@ void    ContactsReader::readQNS(void)
             readGroup(0);
           else if (name() == "Contact")
             readContact(0);
-	  else if (name() == "BlockedContact")
-	    readBlocked();
+          else if (name() == "BlockedContact")
+            readBlocked();
           else
             readUnknownElement();
         }
@@ -164,7 +164,7 @@ void    ContactsReader::readContact(QTreeWidgetItem* parent)
       parent->removeChild(contact);
       delete contact;
       qDebug() << "[ContactsReader::readContact]"
-	       << "A contact does not have a login";
+               << "A contact does not have a login";
 #endif
       return;
     }
@@ -176,7 +176,7 @@ void    ContactsReader::readContact(QTreeWidgetItem* parent)
   Contact::buildToolTip(contact);
 }
 
-void	ContactsReader::readBlocked(void)
+void    ContactsReader::readBlocked(void)
 {
   while (!atEnd())
     {
@@ -184,11 +184,11 @@ void	ContactsReader::readBlocked(void)
       if (isEndElement())
         break;
       if (isStartElement())
-	{
-	  if (name() == "login")
-	    this->_options->blockedWidget->addBlockedContact(readElementText());
+        {
+          if (name() == "login")
+            this->_options->blockedWidget->addBlockedContact(readElementText());
           else readUnknownElement();
-	}
+        }
     }
 }
 

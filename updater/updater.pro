@@ -1,9 +1,6 @@
 CONFIG += release
-QT += network
 TEMPLATE = app
-
-unix: TARGET = ../Updater
-win32: TARGET = ../../Updater
+QT += network
 
 DEPENDPATH += . \
     headers \
@@ -30,15 +27,20 @@ src/Updater.cpp \
 src/Credentials.cpp \
 src/CredentialsDialog.cpp
 
-# Common
+# Common input
 SOURCES += ../qns/src/Encryption.cpp
 HEADERS += ../qns/headers/Encryption.h
 
 # Output
-DESTDIR = .
+TARGET = Updater
 OBJECTS_DIR = obj
 MOC_DIR = moc
 UI_SOURCES_DIR = ui
 UI_HEADERS_DIR = headers
-win32:RC_FILE = appIcon/windows.rc
-#macx:ICON = appIcon/updater.icns
+
+unix:  DESTDIR = ../
+win32: DESTDIR = ../../
+macx:  DESTDIR = .
+
+win32: RC_FILE = appIcon/windows.rc
+#macx:  ICON = appIcon/updater.icns

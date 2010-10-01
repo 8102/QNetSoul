@@ -19,9 +19,9 @@
 #define OPTION_MAIN_WIDGET_H_
 
 #include <QWidget>
-#include "OptionsWidget.h"
+#include "AbstractOptions.h"
 
-class	OptionsMainWidget : public QWidget, public OptionsWidget
+class	OptionsMainWidget : public QWidget, public AbstractOptions
 {
   Q_OBJECT
 

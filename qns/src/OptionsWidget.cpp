@@ -18,63 +18,69 @@
 #include <QFile>
 #include <QSettings>
 #include <QInputDialog>
-#include "Options.h"
+#include "OptionsWidget.h"
 #include "Encryption.h"
 
-Options::Options(QWidget* parent) : QDialog(parent)
+OptionsWidget::OptionsWidget(QWidget* parent) : QDialog(parent)
 {
   setupUi(this);
   this->mainWidget->setOptions(this);
+  this->contactsWidget->setOptions(this);
   this->chatWidget->setOptions(this);
   this->blockedWidget->setOptions(this);
   this->funWidget->setOptions(this);
   this->funWidget->init();
-  this->advancedWidget->setOptions(this);
+  this->proxyWidget->setOptions(this);
   readOptionSettings();
   updateOptions();
   connect(this, SIGNAL(accepted()), SLOT(save()));
 }
 
-Options::~Options(void)
+OptionsWidget::~OptionsWidget(void)
 {
 }
 
-void	Options::readOptionSettings(void)
+void    OptionsWidget::readOptionSettings(void)
 {
   QSettings settings("Epitech", "QNetsoul");
 
   this->mainWidget->readOptions(settings);
+  this->contactsWidget->readOptions(settings);
   this->chatWidget->readOptions(settings);
   this->blockedWidget->readOptions(settings);
   this->funWidget->readOptions(settings);
-  this->advancedWidget->readOptions(settings);
+  this->proxyWidget->readOptions(settings);
 }
 
-void	Options::writeOptionSettings(void)
+void    OptionsWidget::writeOptionSettings(void)
 {
   QSettings settings("Epitech", "QNetsoul");
 
   this->mainWidget->writeOptions(settings);
+  this->contactsWidget->writeOptions(settings);
   this->chatWidget->writeOptions(settings);
   this->blockedWidget->writeOptions(settings);
   this->funWidget->writeOptions(settings);
-  this->advancedWidget->writeOptions(settings);
+  this->proxyWidget->writeOptions(settings);
 }
 
-void	Options::updateOptions(void)
+void    OptionsWidget::updateOptions(void)
 {
   this->mainWidget->updateOptions();
+  this->contactsWidget->updateOptions();
   this->chatWidget->updateOptions();
   this->blockedWidget->updateOptions();
   this->funWidget->updateOptions();
-  this->advancedWidget->updateOptions();
+  this->proxyWidget->updateOptions();
 }
 
-void	Options::save(void)
+// Order does matter
+void    OptionsWidget::save(void)
 {
-  this->advancedWidget->saveOptions();
+  this->proxyWidget->saveOptions();
   this->funWidget->saveOptions();
   this->chatWidget->saveOptions();
+  this->contactsWidget->saveOptions();
   this->mainWidget->saveOptions();
   writeOptionSettings();
 }

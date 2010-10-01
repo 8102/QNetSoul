@@ -15,10 +15,10 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Options.h"
+#include "OptionsWidget.h"
 #include "ContactsWriter.h"
 
-ContactsWriter::ContactsWriter(QTreeWidget* tree, Options* options)
+ContactsWriter::ContactsWriter(QTreeWidget* tree, OptionsWidget* options)
   : _tree(tree), _options(options)
 {
   setAutoFormatting(true);

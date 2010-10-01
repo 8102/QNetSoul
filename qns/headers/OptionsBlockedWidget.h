@@ -20,9 +20,9 @@
 
 #include <QDir>
 #include <QWidget>
-#include "OptionsWidget.h"
+#include "AbstractOptions.h"
 
-class   OptionsBlockedWidget : public QWidget, public OptionsWidget
+class   OptionsBlockedWidget : public QWidget, public AbstractOptions
 {
   Q_OBJECT
 
@@ -30,7 +30,7 @@ class   OptionsBlockedWidget : public QWidget, public OptionsWidget
   OptionsBlockedWidget(QWidget* parent = 0);
   ~OptionsBlockedWidget(void);
 
-  void        setOptions(Options* options);
+  void        setOptions(OptionsWidget* options);
   void        readOptions(QSettings& settings);
   void        writeOptions(QSettings& settings);
   void        updateOptions(void);

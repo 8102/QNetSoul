@@ -1,9 +1,6 @@
 CONFIG += release
-QT += network
 TEMPLATE = app
-
-unix: TARGET = ../QNetSoul
-win32: TARGET = ../../QNetSoul
+QT += network
 
 DEPENDPATH += . \
     headers \
@@ -19,7 +16,6 @@ RESOURCES += Images.qrc
 HEADERS += tpl/Singleton.hpp
 HEADERS += headers/QNetsoul.h \
     headers/Network.h \
-    headers/Options.h \
     headers/AddContact.h \
     headers/Chat.h \
     headers/Url.h \
@@ -36,12 +32,14 @@ HEADERS += headers/QNetsoul.h \
     headers/Encryption.h \
     headers/Pastebin.h \
     headers/TrayIcon.h \
+    headers/AbstractOptions.h \
     headers/OptionsWidget.h \
     headers/OptionsMainWidget.h \
+    headers/OptionsContactsWidget.h \
     headers/OptionsChatWidget.h \
     headers/OptionsBlockedWidget.h \
     headers/OptionsFunWidget.h \
-    headers/OptionsAdvancedWidget.h \
+    headers/OptionsProxyWidget.h \
     headers/Popup.h \
     headers/SlidingPopup.h \
     headers/Randn.h \
@@ -59,7 +57,6 @@ FORMS += ui/QNetsoul.ui \
 
 SOURCES += src/main.cpp \
     src/QNetsoul.cpp \
-    src/Options.cpp \
     src/Network.cpp \
     src/AddContact.cpp \
     src/Chat.cpp \
@@ -74,11 +71,13 @@ SOURCES += src/main.cpp \
     src/Pastebin.cpp \
     src/Encryption.cpp \
     src/TrayIcon.cpp \
+    src/OptionsWidget.cpp \
     src/OptionsMainWidget.cpp \
+    src/OptionsContactsWidget.cpp \
     src/OptionsChatWidget.cpp \
     src/OptionsBlockedWidget.cpp \
     src/OptionsFunWidget.cpp \
-    src/OptionsAdvancedWidget.cpp \
+    src/OptionsProxyWidget.cpp \
     src/Popup.cpp \
     src/SlidingPopup.cpp \
     src/Randn.cpp \
@@ -89,10 +88,15 @@ SOURCES += src/main.cpp \
     src/CredentialsDialog.cpp
 
 # Output
-DESTDIR = .
+TARGET = QNetSoul
 OBJECTS_DIR = obj
 MOC_DIR = moc
 UI_SOURCES_DIR = ui
 UI_HEADERS_DIR = headers
-win32:RC_FILE = appIcon/windows.rc
-#macx:ICON = appIcon/qnetsoul.icns
+
+unix:  DESTDIR = ../
+win32: DESTDIR = ../../
+macx:  DESTDIR = .
+
+win32: RC_FILE = appIcon/windows.rc
+#macx:  ICON = appIcon/qnetsoul.icns

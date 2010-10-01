@@ -22,13 +22,13 @@
 #include "Url.h"
 #include "Chat.h"
 #include "Network.h"
-#include "Options.h"
 #include "Pastebin.h"
 #include "TrayIcon.h"
 #include "QNetsoul.h"
 #include "VieDeMerde.h"
 #include "SlidingPopup.h"
 #include "InternUpdater.h"
+#include "OptionsWidget.h"
 #include "ChuckNorrisFacts.h"
 #include "PortraitResolver.h"
 #include "Credentials.h"
@@ -57,7 +57,7 @@ namespace
 
 QNetsoul::QNetsoul(QWidget* parent)
   : QMainWindow(parent), _network(new Network(this)),
-    _options(new Options(this)), _trayIcon(NULL),
+    _options(new OptionsWidget(this)), _trayIcon(NULL),
     _portraitResolver(new PortraitResolver), _pastebin(new Pastebin),
     _popup(new SlidingPopup(300, 200)), _vdm(new VieDeMerde(this->_popup)),
     _cnf(new ChuckNorrisFacts(this->_popup)), _ping(new QTimer(this)),
@@ -99,7 +99,7 @@ QNetsoul::~QNetsoul(void)
   delete this->_portraitResolver;
 }
 
-void    QNetsoul::openOptionsDialog(Options* options,
+void    QNetsoul::openOptionsDialog(OptionsWidget* options,
                                     const int currentTab,
                                     QWidget* focus)
 {
@@ -325,9 +325,9 @@ void    QNetsoul::changeStatus(const QStringList& properties)
             disableChat(chat);
           }
         if (this->_trayIcon && this->_options->chatWidget->notifyState())
-          this->_trayIcon->showMessage(properties.at(0),
-                                       tr("is now ") +
-                                       states[i].displayState);
+	  this->_trayIcon->showMessage
+	    (this->tree->getAliasByLogin(properties.at(0)),
+	     tr("is now ") + states[i].displayState);
         break;
       }
   this->tree->updateConnectionPoint(properties);
@@ -421,13 +421,10 @@ void    QNetsoul::showConversation(const QStringList& properties,
         {
           window->insertMessage(properties.at(0), message, QColor(204, 0, 0));
           window->autoReply(statusComboBox->currentIndex());
+          QApplication::alert(window);
         }
-      if (this->_trayIcon)
-        {
-          if (this->_options->chatWidget->notifyMsg())
-            this->_trayIcon->showMessage(properties.at(0),
-                                         tr(" is talking to you."));
-        }
+      if (this->_trayIcon && this->_options->chatWidget->notifyMsg())
+        this->_trayIcon->showMessage(properties.at(0), tr(" is talking to you."));
     }
 }
 
@@ -443,7 +440,7 @@ void    QNetsoul::processHandShaking(int step, QStringList args)
     {
     case 0:
       {
-        const QString   password = this->_options->passwordLineEdit->text();
+        const QString password(this->_options->passwordLineEdit->text());
         if (!password.isEmpty() && args.size() > 3)
           {
             sum.clear();
@@ -518,6 +515,7 @@ void    QNetsoul::setPortrait(const QString& login)
 
   if (PortraitResolver::isAvailable(portraitPath, login) == false)
     return;
+
   QHashIterator<int, Chat*> i(this->_windowsChat);
   while (i.hasNext())
     {
@@ -569,7 +567,7 @@ void    QNetsoul::readSettings(void)
   QSettings settings("Epitech", "QNetsoul");
 
   settings.beginGroup("MainWindow");
-  resize(settings.value("size", QSize(240, 545)).toSize());
+  resize(settings.value("size", QSize(268, 584)).toSize());
   move(settings.value("pos", QPoint(501, 232)).toPoint());
   settings.endGroup();
 }
@@ -659,14 +657,18 @@ Chat*   QNetsoul::createWindowChat(const int id,
   Chat* chat = new Chat(id, login, location);
   chat->setOptions(this->_options);
   chat->setNetwork(this->_network);
+  // Binding shortcuts
+  chat->addAction(this->actionVDM);
+  chat->addAction(this->actionCNF);
+  chat->addAction(this->actionPastebin);
+  chat->addAction(this->actionPreferences);
   this->_windowsChat.insert(id, chat);
   return chat;
 }
 
 void    QNetsoul::deleteAllWindowChats(void)
 {
-  QHash<int, Chat*>::const_iterator cit =
-    this->_windowsChat.constBegin();
+  QHash<int, Chat*>::const_iterator cit = this->_windowsChat.constBegin();
   for (; cit != this->_windowsChat.constEnd(); ++cit)
     delete cit.value();
 }

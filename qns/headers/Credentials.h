@@ -3,9 +3,9 @@
 
 #include <QObject>
 
-class	Options;
 class	QStringList;
 class	QNetworkProxy;
+class	OptionsWidget;
 class	QAuthenticator;
 class	CredentialsDialog;
 
@@ -17,7 +17,7 @@ class   Credentials : public QObject
   Credentials(void);
   ~Credentials(void);
 
-  void	setOptions(Options* options) { this->_options = options; }
+  void	setOptions(OptionsWidget* options) { this->_options = options; }
 
   public slots:
   void	handleCredentials(const QNetworkProxy& proxy, QAuthenticator* auth);
@@ -26,7 +26,7 @@ class   Credentials : public QObject
   QStringList getCredentials(const QString& proxyHostName);
 
  private:
-  Options*           _options;
+  OptionsWidget*     _options;
   CredentialsDialog* _dialog;
 };
 

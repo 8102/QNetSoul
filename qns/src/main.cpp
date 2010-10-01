@@ -18,7 +18,7 @@
 #include <QtGui>
 #include "QNetsoul.h"
 
-int	main(int argc, char** argv)
+int main(int argc, char** argv)
 {
   QApplication	app(argc, argv);
   QNetsoul	netsoul;

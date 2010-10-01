@@ -21,13 +21,13 @@
 #include <QStatusBar>
 #include "Chat.h"
 #include "Smileys.h"
-#include "Options.h"
 #include "Network.h"
+#include "OptionsWidget.h"
 #include "PortraitResolver.h"
 
 Chat::Chat(const int id, const QString& login, const QString& loc)
   : _id(id), _alias(login), _login(login), _location(loc),
-    _options(NULL), _network(NULL)
+    _network(NULL), _options(NULL)
 {
   setupUi(this);
   setPortrait();
@@ -51,22 +51,28 @@ void    Chat::insertSmileys(void)
 {
   static const Smileys  smileys[] =
     {
+      {"=)", ":/images/smile.png"},
       {":)", ":/images/smile.png"},
       {":-)", ":/images/smile.png"},
       {";)", ":/images/wink.png"},
       {";-)", ":/images/wink.png"},
       {"xD", ":/images/evilgrin.png"},
+      {"=D", ":/images/grin.png"},
       {":D", ":/images/grin.png"},
       {":-D", ":/images/grin.png"},
       {"^^", ":/images/happy.png"},
+      {"=o", ":/images/surprised.png"},
       {":o", ":/images/surprised.png"},
       {":o)", ":/images/surprised.png"},
       {":-o", ":/images/surprised.png"},
       {":-o)", ":/images/surprised.png"},
+      {"=p", ":/images/tongue.png"},
       {":p", ":/images/tongue.png"},
       {":-p", ":/images/tongue.png"},
+      {"=}", ":/images/waii.png"},
       {":}", ":/images/waii.png"},
       {":(", ":/images/unhappy.png"},
+      {"=(", ":/images/unhappy.png"},
       {NULL, NULL}
     };
   bool thereIsSmiley;

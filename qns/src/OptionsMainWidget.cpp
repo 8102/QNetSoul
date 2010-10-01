@@ -16,9 +16,9 @@
 */
 
 #include <QSettings>
-#include "Options.h"
 #include "QNetsoul.h"
 #include "Encryption.h"
+#include "OptionsWidget.h"
 #include "OptionsMainWidget.h"
 
 OptionsMainWidget::OptionsMainWidget(QWidget* parent)
@@ -34,15 +34,14 @@ OptionsMainWidget::~OptionsMainWidget(void)
 void	OptionsMainWidget::readOptions(QSettings& settings)
 {
   settings.beginGroup("MainOptions");
-  this->_server = settings.value("ip", QString("ns-server.epita.fr")).toString();
-  this->_port = settings.value("port", QString("4242")).toString();
-  this->_login = settings.value("login", QString("")).toString();
-  this->_location = settings.value("location", QString("%L")).toString();
-  this->_comment =
-    settings.value("comment").toString();
-  this->_password = settings.value("password", QString("")).toString();
-  this->_savePassword = settings.value("savepassword", bool(false)).toBool();
-  this->_autoConnect = settings.value("autoconnect", bool(false)).toBool();
+  this->_server = settings.value("ip", "ns-server.epita.fr").toString();
+  this->_port = settings.value("port", "4242").toString();
+  this->_login = settings.value("login").toString();
+  this->_location = settings.value("location", "%L").toString();
+  this->_comment = settings.value("comment").toString();
+  this->_password = settings.value("password").toString();
+  this->_savePassword = settings.value("savepassword", false).toBool();
+  this->_autoConnect = settings.value("autoconnect", false).toBool();
   settings.endGroup();
 
   this->_password = unencrypt(this->_password);
@@ -74,12 +73,8 @@ void	OptionsMainWidget::updateOptions(void)
   this->_options->passwordLineEdit->setText(this->_password);
   this->_options->locationLineEdit->setText(this->_location);
   this->_options->commentLineEdit->setText(this->_comment);
-  (this->_savePassword)?
-    this->_options->savePasswordCheckBox->setCheckState(Qt::Checked) :
-    this->_options->savePasswordCheckBox->setCheckState(Qt::Unchecked);
-  (this->_autoConnect)?
-    this->_options->autoConnectCheckBox->setCheckState(Qt::Checked) :
-    this->_options->autoConnectCheckBox->setCheckState(Qt::Unchecked);
+  this->_options->savePasswordCheckBox->setChecked(this->_savePassword);
+  this->_options->autoConnectCheckBox->setChecked(this->_autoConnect);
 }
 
 void	OptionsMainWidget::saveOptions(void)
@@ -92,9 +87,11 @@ void	OptionsMainWidget::saveOptions(void)
   this->_password = this->_options->passwordLineEdit->text();
   this->_location = this->_options->locationLineEdit->text();
   this->_comment = this->_options->commentLineEdit->text();
-  this->_savePassword = (Qt::Checked == this->_options->savePasswordCheckBox->checkState());
-  this->_autoConnect = (Qt::Checked == this->_options->autoConnectCheckBox->checkState());
-  if (!this->_login.isEmpty() && !this->_password.isEmpty() && this->_connectOnOk)
+  this->_savePassword = this->_options->savePasswordCheckBox->isChecked();
+  this->_autoConnect = this->_options->autoConnectCheckBox->isChecked();
+  if (!this->_login.isEmpty() &&
+      !this->_password.isEmpty() &&
+      this->_connectOnOk)
     emit loginPasswordFilled();
   this->_connectOnOk = false;
 }

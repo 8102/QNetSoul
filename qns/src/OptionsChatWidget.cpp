@@ -15,8 +15,8 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Options.h"
 #include "Encryption.h"
+#include "OptionsWidget.h"
 #include "OptionsChatWidget.h"
 
 OptionsChatWidget::OptionsChatWidget(QWidget* parent)
@@ -31,9 +31,9 @@ OptionsChatWidget::~OptionsChatWidget(void)
 {
 }
 
-void    OptionsChatWidget::setOptions(Options* options)
+void    OptionsChatWidget::setOptions(OptionsWidget* options)
 {
-  OptionsWidget::setOptions(options);
+  AbstractOptions::setOptions(options);
   connect(this->_options->autoReplyComboBox,
           SIGNAL(currentIndexChanged(int)), SLOT(loadReply(int)));
 }
@@ -41,12 +41,13 @@ void    OptionsChatWidget::setOptions(Options* options)
 void    OptionsChatWidget::readOptions(QSettings& settings)
 {
   settings.beginGroup("ChatOptions");
-  this->_exitOnEscape = settings.value("exitonescape", bool(false)).toBool();
-  this->_notifyTyping = settings.value("notifytyping", bool(false)).toBool();
-  this->_smileys = settings.value("smileys", bool(false)).toBool();
-  this->_notifyMsg = settings.value("notifymsg", bool(false)).toBool();
-  this->_notifyState = settings.value("notifystate", bool(false)).toBool();
-  this->_replyComboBoxValue = settings.value("replycomboboxvalue", int(0)).toInt();
+  this->_exitOnEscape = settings.value("exitonescape", false).toBool();
+  this->_notifyTyping = settings.value("notifytyping", false).toBool();
+  this->_smileys = settings.value("smileys", false).toBool();
+  this->_notifyMsg = settings.value("notifymsg", false).toBool();
+  this->_notifyState = settings.value("notifystate", false).toBool();
+  this->_replyComboBoxValue =
+    settings.value("replycomboboxvalue", int(0)).toInt();
   this->_replyLocked = settings.value("replylocked").toString();
   this->_replyAway = settings.value("replyaway").toString();
   this->_replyServer = settings.value("replyserver").toString();
@@ -70,11 +71,11 @@ void    OptionsChatWidget::writeOptions(QSettings& settings)
 
 void    OptionsChatWidget::updateOptions(void)
 {
-  setCheckState(this->_options->chatEscapeCheckBox, this->_exitOnEscape);
-  setCheckState(this->_options->notifyTypingCheckBox, this->_notifyTyping);
-  setCheckState(this->_options->smileysCheckBox, this->_smileys);
-  setCheckState(this->_options->notifyMsgCheckBox, this->_notifyMsg);
-  setCheckState(this->_options->notifyStateCheckBox, this->_notifyState);
+  this->_options->chatEscapeCheckBox->setChecked(this->_exitOnEscape);
+  this->_options->notifyTypingCheckBox->setChecked(this->_notifyTyping);
+  this->_options->smileysCheckBox->setChecked(this->_smileys);
+  this->_options->notifyMsgCheckBox->setChecked(this->_notifyMsg);
+  this->_options->notifyStateCheckBox->setChecked(this->_notifyState);
   this->_options->autoReplyComboBox->setCurrentIndex(this->_replyComboBoxValue);
   loadReply(this->_replyComboBoxValue);
 }

@@ -15,34 +15,32 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OPTIONS_ADVANCED_WIDGET_H_
-#define OPTIONS_ADVANCED_WIDGET_H_
+#ifndef OPTIONS_PROXY_WIDGET_H_
+#define OPTIONS_PROXY_WIDGET_H_
 
 #include <QDir>
 #include <QWidget>
 #include <QNetworkProxy>
-#include "OptionsWidget.h"
+#include "AbstractOptions.h"
 
-class	OptionsAdvancedWidget : public QWidget, public OptionsWidget
+class   OptionsProxyWidget : public QWidget, public AbstractOptions
 {
   Q_OBJECT
 
-public:
-  OptionsAdvancedWidget(QWidget* parent = 0);
-  ~OptionsAdvancedWidget(void);
+    public:
+  OptionsProxyWidget(QWidget* parent = 0);
+  ~OptionsProxyWidget(void);
 
-  //bool	isProxyEnabled(void) const { return this->_useProxy; }
+  void enableProxy(void);
+  void readOptions(QSettings& settings);
+  void writeOptions(QSettings& settings);
+  void updateOptions(void);
+  void saveOptions(void);
+  void setProxy(void);
+  bool validFields(void) const;
 
-  void	enableProxy(void);
-  void	readOptions(QSettings& settings);
-  void	writeOptions(QSettings& settings);
-  void	updateOptions(void);
-  void	saveOptions(void);
-  void	setProxy(void);
-  bool  validFields(void) const;
-
-private:
-  bool	  _useProxy;
+ private:
+  bool    _useProxy;
   QString _proxy;
   QString _proxyPort;
   QString _proxyLogin;
