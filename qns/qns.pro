@@ -95,7 +95,7 @@ UI_SOURCES_DIR = ui
 UI_HEADERS_DIR = headers
 
 unix:  DESTDIR = ../
-win32: DESTDIR = ../../
+win32: DESTDIR = ../
 macx:  DESTDIR = .
 
 win32: RC_FILE = appIcon/windows.rc
