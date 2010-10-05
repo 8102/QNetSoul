@@ -117,7 +117,7 @@ void    Chat::insertMessage(const QString& alias,
   if (scrollBar && scrollBar->value() != scrollBar->maximum())
     scrollBarValue = scrollBar->value();
   QString html("<p>");
-  html += QString("<span style=' color:%1;'>%2 %3</span>").arg(color.name()).arg(getFormatedDateTime()).arg(alias);
+  html += QString("<span style='color:%1;'>%2 %3</span>").arg(color.name()).arg(getFormatedDateTime()).arg(alias);
   html.append(": </p>");
   this->outputTextBrowser->moveCursor(QTextCursor::End);
   this->outputTextBrowser->insertHtml(html);

@@ -44,13 +44,13 @@ namespace
   };
   const State   states[] =
     {
-      {"login",         ":/images/log-in",      QObject::tr("Login")},
-      {"logout",        ":/images/offline",     QObject::tr("Offline")},
-      {"actif",         ":/images/online",      QObject::tr("Online")},
-      {"away",          ":/images/away",        QObject::tr("Away")},
-      {"idle",          ":/images/away",        QObject::tr("Idle")},
-      {"lock",          ":/images/lock",        QObject::tr("Locked")},
-      {"server",        ":/images/server",      QObject::tr("Server")},
+      {"login",   ":/images/log-in.png",   QObject::tr("Login")},
+      {"logout",  ":/images/offline.png",  QObject::tr("Offline")},
+      {"actif",   ":/images/online.png",   QObject::tr("Online")},
+      {"away",    ":/images/away.png",     QObject::tr("Away")},
+      {"idle",    ":/images/away.png",     QObject::tr("Idle")},
+      {"lock",    ":/images/lock.png",     QObject::tr("Locked")},
+      {"server",  ":/images/server.png",   QObject::tr("Server")},
       {NULL, NULL, NULL}
     };
 }
@@ -160,7 +160,6 @@ void    QNetsoul::connectToServer(void)
           quint16 port = this->_options->portLineEdit->text().toUShort(&ok);
           if (ok)
             {
-              this->statusbar->showMessage(tr("Connecting..."), 3000);
               this->_network->connect(this->_options->serverLineEdit->text(),
                                       port);
               return;
@@ -203,6 +202,7 @@ void    QNetsoul::reconnect(void)
 #ifndef QT_NO_DEBUG
   qDebug() << "[QNetsoul::reconnect] Reconnecting...";
 #endif
+  this->statusbar->showMessage(tr("Reconnecting..."));
   disconnect();
   connectToServer();
 }
@@ -222,8 +222,7 @@ void    QNetsoul::updateWidgets(const QAbstractSocket::SocketState& state)
       actionConnect->setEnabled(false);
       actionDisconnect->setEnabled(true);
       actionRefresh->setEnabled(true);
-      // StatusBar
-      this->statusbar->showMessage(tr("Connected"));
+      // StatusBar state notifications are now handled in Network module
       // ComboBox
       this->statusComboBox->setEnabled(true);
       // TrayIconMenu
@@ -236,8 +235,7 @@ void    QNetsoul::updateWidgets(const QAbstractSocket::SocketState& state)
       actionConnect->setEnabled(true);
       actionDisconnect->setEnabled(false);
       actionRefresh->setEnabled(false);
-      // StatusBar
-      this->statusbar->showMessage(tr("Disconnected"));
+      // StatusBar state notifications are now handled in Network module
       // ComboBox
       this->statusComboBox->setEnabled(false);
       this->statusComboBox->setCurrentIndex(0);
@@ -325,9 +323,9 @@ void    QNetsoul::changeStatus(const QStringList& properties)
             disableChat(chat);
           }
         if (this->_trayIcon && this->_options->chatWidget->notifyState())
-	  this->_trayIcon->showMessage
-	    (this->tree->getAliasByLogin(properties.at(0)),
-	     tr("is now ") + states[i].displayState);
+          this->_trayIcon->showMessage
+            (this->tree->getAliasByLogin(properties.at(0)),
+             tr("is now ") + states[i].displayState);
         break;
       }
   this->tree->updateConnectionPoint(properties);
@@ -559,7 +557,7 @@ void    QNetsoul::resetAllContacts(void)
   QHash<int, Chat*>::iterator it = this->_windowsChat.begin();
   QHash<int, Chat*>::iterator end = this->_windowsChat.end();
   for (; it != end; ++it)
-    it.value()->statusLabel->setPixmap(QPixmap(":/images/offline"));
+    it.value()->statusLabel->setPixmap(QPixmap(":/images/offline.png"));
 }
 
 void    QNetsoul::readSettings(void)

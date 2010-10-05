@@ -39,13 +39,13 @@ namespace
   };
   const State   states[] =
     {
-      {"connection",    ":/images/log-in",      QObject::tr("Login")},
-      {"logout",        ":/images/offline",     QObject::tr("Offline")},
-      {"actif",         ":/images/online",      QObject::tr("Online")},
-      {"away",          ":/images/away",        QObject::tr("Away")},
-      {"idle",          ":/images/away",        QObject::tr("Idle")},
-      {"lock",          ":/images/lock",        QObject::tr("Locked")},
-      {"server",        ":/images/server",      QObject::tr("Server")},
+      {"connection",  ":/images/log-in.png",  QObject::tr("Login")},
+      {"logout",      ":/images/offline.png", QObject::tr("Offline")},
+      {"actif",       ":/images/online.png",  QObject::tr("Online")},
+      {"away",        ":/images/away.png",    QObject::tr("Away")},
+      {"idle",        ":/images/away.png",    QObject::tr("Idle")},
+      {"lock",        ":/images/lock.png",    QObject::tr("Locked")},
+      {"server",      ":/images/server.png",  QObject::tr("Server")},
       {NULL, NULL, NULL}
     };
   const QString replaceQuestion =

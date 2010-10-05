@@ -22,6 +22,7 @@
 #include <QTcpSocket>
 #include <QStringList>
 
+class   QNetsoul;
 class   OptionsWidget;
 
 class   Network : public QObject
@@ -53,7 +54,6 @@ class   Network : public QObject
   void  sendStatus(const int& status);
 
  signals:
-  void  reconnectionRequest(void);
   void  handShaking(int step, QStringList);
   void  msg(const QStringList&, const QString&);
   void  state(const QStringList&);
@@ -61,7 +61,8 @@ class   Network : public QObject
   void  typingStatus(const int id, bool typing);
 
   private slots:
-  void  handleSocketError(void);
+  void  handleSocketState(const QAbstractSocket::SocketState& state);
+  void  handleSocketError(const QAbstractSocket::SocketError& error);
   void  processPackets(void);
 
  private:
@@ -69,12 +70,14 @@ class   Network : public QObject
   void  interpretLine(const QString& line);
 
  private:
+  QNetsoul*      _ns;
   OptionsWidget* _options;
   QString        _rbuffer;
   QTcpSocket     _socket;
   int            _handShakingStep;
   QString        _host;
   quint16        _port;
+  int            _retries;
   QTimer         _reconnectionTimer;
 };
 

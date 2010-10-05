@@ -22,23 +22,35 @@
 #include "OptionsWidget.h"
 #include "LocationResolver.h"
 
-Network::Network(QObject* parent)
-  : QObject(parent), _options(NULL), _handShakingStep(0)
+namespace
 {
-  QNetsoul* ns = dynamic_cast<QNetsoul*>(parent);
-  if (ns)
+  const int MAX_RETRIES = 5;
+  const int RECONNECTION_TIME = 5000;
+}
+
+Network::Network(QObject* parent)
+  : QObject(parent), _options(NULL), _handShakingStep(0),
+    _port(3128), _retries(0)
+{
+  this->_ns = dynamic_cast<QNetsoul*>(parent);
+  if (this->_ns)
     {
-      QObject::connect(this, SIGNAL(reconnectionRequest()),
-                       ns, SLOT(reconnect()));
+      this->_reconnectionTimer.setSingleShot(true);
+      QObject::connect(&this->_reconnectionTimer, SIGNAL(timeout()),
+                       this->_ns, SLOT(reconnect()));
       QObject::connect(&this->_socket, SIGNAL(readyRead()),
                        SLOT(processPackets()));
       QObject::connect(&this->_socket,
                        SIGNAL(stateChanged(QAbstractSocket::SocketState)),
-                       ns,
+                       this->_ns,
                        SLOT(updateWidgets(QAbstractSocket::SocketState)));
       QObject::connect(&this->_socket,
+                       SIGNAL(stateChanged(QAbstractSocket::SocketState)),
+                       this,
+                       SLOT(handleSocketState(QAbstractSocket::SocketState)));
+      QObject::connect(&this->_socket,
                        SIGNAL(error(QAbstractSocket::SocketError)),
-                       SLOT(handleSocketError()));
+                       SLOT(handleSocketError(QAbstractSocket::SocketError)));
     }
   else
     qFatal("Network constructor: parent must be a QNetsoul instance !");
@@ -180,14 +192,44 @@ void    Network::sendStatus(const int& status)
     }
 }
 
-void    Network::handleSocketError(void)
+void    Network::handleSocketState(const QAbstractSocket::SocketState& state)
 {
+  switch(state)
+    {
+    case QAbstractSocket::ConnectedState:
+      this->_retries = 0;
+      this->_reconnectionTimer.stop();
+      this->_ns->statusbar->showMessage(tr("Connected"));
+      break;
+    case QAbstractSocket::UnconnectedState:
+      this->_ns->statusbar->showMessage(tr("Disconnected"));
+      break;
+    default:;
+    }
+}
+
+void    Network::handleSocketError(const QAbstractSocket::SocketError& error)
+{
+  Q_UNUSED(error);
 #ifndef QT_NO_DEBUG
   qDebug() << "[Network::handleSocketError]"
            << this->_socket.errorString()
-           << "Socket state:" << this->_socket.state();
+           << "Retries:" << this->_retries + 1;
 #endif
-  emit reconnectionRequest();
+  this->_retries += 1;
+  if (this->_retries < MAX_RETRIES)
+    {
+      this->_reconnectionTimer.start(RECONNECTION_TIME);
+      this->_ns->statusbar->showMessage(tr("Reconnecting in %1 seconds...")
+                                        .arg(RECONNECTION_TIME / 1000));
+    }
+#ifndef QT_NO_DEBUG
+  else
+    {
+      qDebug() << "[Network::handleSocketError]"
+	       << "We are stopping connection retries.";
+    }
+#endif
 }
 
 void    Network::processPackets(void)
@@ -235,7 +277,7 @@ void    Network::interpretLine(const QString& line)
   Q_ASSERT(this->_options);
   QStringList properties;
   QStringList parts = line.split(' ', QString::SkipEmptyParts);
-  const int   size = parts.size();
+  const int size = parts.size();
 
   if (size)
     {
