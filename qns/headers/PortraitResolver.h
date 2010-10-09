@@ -24,6 +24,8 @@
 #include <QNetworkRequest>
 #include <QNetworkAccessManager>
 
+class   TrayIcon;
+
 class   PortraitResolver : public QNetworkAccessManager
 {
   Q_OBJECT
@@ -31,6 +33,8 @@ class   PortraitResolver : public QNetworkAccessManager
     public:
   PortraitResolver(void);
   ~PortraitResolver(void);
+
+  void  setTrayIcon(TrayIcon* ti) { this->_trayIcon = ti; }
 
   void  addRequest(const QStringList& logins);
   void  addRequest(const QString& login, bool fun);
@@ -40,7 +44,7 @@ class   PortraitResolver : public QNetworkAccessManager
   static QDir getPortraitDir(void);
 
   public slots:
-  void	addRequest(const QString& login);
+  void  addRequest(const QString& login);
 
   private slots:
   void  replyFinished(QNetworkReply* reply);
@@ -53,7 +57,8 @@ class   PortraitResolver : public QNetworkAccessManager
   void  setupPortraitDirectory(void);
 
  private:
-  QDir _dir;
+  QDir      _dir;
+  TrayIcon* _trayIcon;
 };
 
 #endif // PORTRAITRESOLVER_H_

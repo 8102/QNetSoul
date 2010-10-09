@@ -17,17 +17,20 @@
 
 #include <QImage>
 #include <QMessageBox>
+#include <QApplication>
 #include <QNetworkProxy>
 #include "Url.h"
+#include "TrayIcon.h"
 #include "PortraitResolver.h"
 
 namespace
 {
   const QString DirName = "portraits";
+  const QString HttpServer = "http://qnetsoul.tuxfamily.org/public/";
 }
 
 PortraitResolver::PortraitResolver(void)
-  : _dir(getPortraitDir())
+  : _dir(getPortraitDir()), _trayIcon(NULL)
 {
   setProxy(QNetworkProxy::NoProxy);
   connect(this, SIGNAL(finished(QNetworkReply*)),
@@ -68,8 +71,7 @@ bool    PortraitResolver::isAvailable(QString& portraitPath,
 
 QString PortraitResolver::buildFilename(const QString& login, const bool fun)
 {
-  // WARNING: test this extension instead jpeg
-  return fun? (login + "1.png") : (login + "0.png");
+  return fun? (login + "1.jpeg") : (login + "0.jpeg");
 }
 
 QDir    PortraitResolver::getPortraitDir(void)
@@ -101,29 +103,31 @@ void    PortraitResolver::replyFinished(QNetworkReply* reply)
     }
   const bool fun = reply->url().toString()
     .section('=', 1, 1).section('&', 0, 0).contains("1");
-  const QString login = reply->url().toString().section('=', -1);
+  const QString login(reply->url().toString().section('=', -1));
+  const QString fileName
+    (QDir::toNativeSeparators(qApp->applicationDirPath()) + QDir::separator()
+     + DirName + QDir::separator() + buildFilename(login, fun));
 
   QImage img = QImage::fromData(reply->readAll());
   if (img.isNull())
     {
 #ifndef QT_NO_DEBUG
       qDebug() << "[PortraitResolver::replyFinished]"
-	       << "img is NULL, website is probably down.";
+               << "img is NULL, website is probably down.";
 #endif
     }
-  else if (img.save(DirName + QDir::separator() + buildFilename(login, fun)))
+  else if (img.save(fileName, "JPEG"))
     {
       if (fun == false)
         emit downloadedPortrait(login);
     }
-#ifndef QT_NO_DEBUG
-  else
+  else if (this->_trayIcon != NULL)
     {
-      qDebug() << "[PortraitResolver::replyFinished]"
-               << "QImage saving failed with"
-               << login;
+      this->_trayIcon->showMessage
+        (tr("Missing plugin") + " (jpeg)",
+         tr("It seems you did not install Qt4 jpeg plugin.") + "<br />" +
+         tr("You can download it here:") + " " + HttpServer);
     }
-#endif
   reply->deleteLater();
 }
 

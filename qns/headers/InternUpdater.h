@@ -22,7 +22,7 @@
 
 class   QProcess;
 class   QLocalServer;
-class	QNetworkReply;
+class   QNetworkReply;
 class   QNetworkAccessManager;
 
 class   InternUpdater : public QObject
@@ -42,11 +42,11 @@ class   InternUpdater : public QObject
   void  quitApplication(void);
 
  private:
-  void	setupNetworkAccessManager(void);
+  void  setupNetworkAccessManager(void);
   bool  replaceUpdaterBinaryIfNeeded(void);
 
   private slots:
-  void	finishedDownload(QNetworkReply* reply);
+  void  finishedDownload(QNetworkReply* reply);
 
  private:
   bool                   _running;

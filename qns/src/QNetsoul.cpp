@@ -65,7 +65,10 @@ QNetsoul::QNetsoul(QWidget* parent)
 {
   setupUi(this);
   if (QSystemTrayIcon::isSystemTrayAvailable())
-    this->_trayIcon = new TrayIcon(this);
+    {
+      this->_trayIcon = new TrayIcon(this);
+      this->_portraitResolver->setTrayIcon(this->_trayIcon);
+    }
   connectQNetsoulModules();
   connectActionsSignals();
   connectNetworkSignals();

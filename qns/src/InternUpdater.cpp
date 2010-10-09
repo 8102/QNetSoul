@@ -50,13 +50,19 @@ InternUpdater::InternUpdater(QWidget* parent)
   if (!this->_server->listen("QNetSoul"))
     {
       if (QLocalServer::removeServer("QNetSoul"))
-        this->_running = this->_server->listen("QNetSoul");
+        {
+#ifndef QT_NO_DEBUG
+          qDebug() << "[InternUpdater::InternUpdater]"
+                   << "QLocalServer removed and listened again.";
+#endif
+          this->_running = this->_server->listen("QNetSoul");
+        }
     }
   else this->_running = true;
 #ifndef QT_NO_DEBUG
   qDebug() << "[InternUpdater::InternUpdater]"
            << (this->_running?
-	       "LocalServer is running." : "LocalServer is not running.");
+               "LocalServer is running." : "LocalServer is not running.");
 #endif
 }
 
@@ -111,10 +117,10 @@ void    InternUpdater::setupNetworkAccessManager(void)
           this, SLOT(finishedDownload(QNetworkReply*)));
   Credentials& instance = Singleton<Credentials>::Instance();
   connect(this->_netManager,
-	  SIGNAL(proxyAuthenticationRequired(const QNetworkProxy&,
-					     QAuthenticator*)),
-	  &instance,
-	  SLOT(handleCredentials(const QNetworkProxy&, QAuthenticator*)));
+          SIGNAL(proxyAuthenticationRequired(const QNetworkProxy&,
+                                             QAuthenticator*)),
+          &instance,
+          SLOT(handleCredentials(const QNetworkProxy&, QAuthenticator*)));
 }
 
 bool    InternUpdater::replaceUpdaterBinaryIfNeeded(void)
@@ -145,7 +151,7 @@ void    InternUpdater::finishedDownload(QNetworkReply* reply)
       if (!downloadPath.exists(dlDir))
         downloadPath.mkdir(dlDir);
       downloadPath.cd(dlDir);
-      QFile bin(downloadPath.path()+QDir::separator() + SevenZipBinaryName);
+      QFile bin(downloadPath.path()+ QDir::separator() + SevenZipBinaryName);
       if (bin.open(QIODevice::WriteOnly))
         {
           bin.write(reply->readAll());
