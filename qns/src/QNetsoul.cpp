@@ -73,7 +73,9 @@ QNetsoul::QNetsoul(QWidget* parent)
   connectActionsSignals();
   connectNetworkSignals();
   QWidget::setAttribute(Qt::WA_AlwaysShowToolTips);
-  setWhatsThis(whatsThis().replace("%CurrentVersion%", currentVersion()));
+  setWhatsThis(whatsThis()
+	       .replace("%CurrentVersion%", currentVersion())
+	       .replace("%Platform%", platform()));
   readSettings();
   this->tree->setOptions(this->_options);
   this->tree->setNetwork(this->_network);

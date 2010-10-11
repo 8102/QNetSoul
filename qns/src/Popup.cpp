@@ -120,7 +120,7 @@ void    Popup::init(void)
   setLayout(&this->_layout);
 
   setMouseTracking(true);
-  setWindowFlags(Qt::ToolTip);
+  setWindowFlags(Qt::ToolTip | Qt::FramelessWindowHint);
   setAttribute(Qt::WA_TranslucentBackground);
 }
 

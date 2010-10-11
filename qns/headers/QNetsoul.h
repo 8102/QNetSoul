@@ -46,7 +46,25 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
 
   static QString currentVersion(void)
   {
-    return "1.0d";
+    return "1.1";
+  }
+  static QString platform(void)
+  {
+    QString platform;
+#if defined(Q_OS_WIN)
+    platform = "Windows";
+#elif defined(Q_OS_LINUX)
+    platform = "Linux";
+#elif defined(Q_OS_MAC)
+    platform = "Mac";
+#else
+    platform = "Other";
+#endif
+    if (sizeof(int*) == 4)
+      platform += " 32 bits";
+    else if (sizeof(int*) == 8)
+      platform += " 64 bits";
+    return platform;
   }
   static QString defaultComment(void)
   {
