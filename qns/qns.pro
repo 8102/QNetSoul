@@ -6,12 +6,15 @@ DEPENDPATH += . \
     headers \
     tpl \
     src \
-    ui
+    ui \
+    ../tools
+
 INCLUDEPATH += . \
     headers \
-    tpl
+    tpl \
+    ../tools
 
-# Input
+# Inputs
 RESOURCES += Images.qrc
 HEADERS += tpl/Singleton.hpp
 HEADERS += headers/QNetsoul.h \
@@ -29,7 +32,6 @@ HEADERS += headers/QNetsoul.h \
     headers/VieDeMerde.h \
     headers/PortraitRequest.h \
     headers/ChuckNorrisFacts.h \
-    headers/Encryption.h \
     headers/Pastebin.h \
     headers/TrayIcon.h \
     headers/AbstractOptions.h \
@@ -42,7 +44,6 @@ HEADERS += headers/QNetsoul.h \
     headers/OptionsProxyWidget.h \
     headers/Popup.h \
     headers/SlidingPopup.h \
-    headers/Randn.h \
     headers/ContactsTree.h \
     headers/ToolTipBuilder.h \
     headers/InternUpdater.h \
@@ -69,7 +70,6 @@ SOURCES += src/main.cpp \
     src/VieDeMerde.cpp \
     src/ChuckNorrisFacts.cpp \
     src/Pastebin.cpp \
-    src/Encryption.cpp \
     src/TrayIcon.cpp \
     src/OptionsWidget.cpp \
     src/OptionsMainWidget.cpp \
@@ -80,12 +80,15 @@ SOURCES += src/main.cpp \
     src/OptionsProxyWidget.cpp \
     src/Popup.cpp \
     src/SlidingPopup.cpp \
-    src/Randn.cpp \
     src/ContactsTree.cpp \
     src/ToolTipBuilder.cpp \
     src/InternUpdater.cpp \
     src/Credentials.cpp \
     src/CredentialsDialog.cpp
+
+# Common inputs
+HEADERS += ../tools/tools.h
+SOURCES += ../tools/tools.cpp
 
 # Output
 TARGET = QNetSoul

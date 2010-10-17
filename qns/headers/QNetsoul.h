@@ -41,30 +41,12 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
   Q_OBJECT
 
     public:
-  QNetsoul(QWidget* parent = 0);
+  QNetsoul(void);
   ~QNetsoul(void);
 
   static QString currentVersion(void)
   {
-    return "1.1";
-  }
-  static QString platform(void)
-  {
-    QString platform;
-#if defined(Q_OS_WIN)
-    platform = "Windows";
-#elif defined(Q_OS_LINUX)
-    platform = "Linux";
-#elif defined(Q_OS_MAC)
-    platform = "Mac";
-#else
-    platform = "Other";
-#endif
-    if (sizeof(int*) == 4)
-      platform += " 32 bits";
-    else if (sizeof(int*) == 8)
-      platform += " 64 bits";
-    return platform;
+    return "1.2";
   }
   static QString defaultComment(void)
   {
@@ -101,6 +83,7 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
   void  resetAllContacts(void);
   void  readSettings(void);
   void  writeSettings(void);
+  void  setupTrayIcon(void);
   void  connectQNetsoulModules(void);
   void  connectActionsSignals(void);
   void  connectNetworkSignals(void);

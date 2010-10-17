@@ -28,26 +28,13 @@
 #include "ToolTipBuilder.h"
 #include "OptionsWidget.h"
 #include "PortraitResolver.h"
+#include "tools.h"
+
+// Import tools.h
+extern const State states[];
 
 namespace
 {
-  struct State
-  {
-    const char*           state;
-    const char*           pixmap;
-    const QString         displayState;
-  };
-  const State   states[] =
-    {
-      {"connection",  ":/images/log-in.png",  QObject::tr("Login")},
-      {"logout",      ":/images/offline.png", QObject::tr("Offline")},
-      {"actif",       ":/images/online.png",  QObject::tr("Online")},
-      {"away",        ":/images/away.png",    QObject::tr("Away")},
-      {"idle",        ":/images/away.png",    QObject::tr("Idle")},
-      {"lock",        ":/images/lock.png",    QObject::tr("Locked")},
-      {"server",      ":/images/server.png",  QObject::tr("Server")},
-      {NULL, NULL, NULL}
-    };
   const QString replaceQuestion =
     QObject::tr("<b>A file named \"%1\" already exists.<br />"
                 "Do you want to replace it ?</b><br /><br />"
@@ -390,8 +377,8 @@ QString ContactsTree::getAliasByLogin(const QString& login) const
   while (*it)
     {
       if (Contact == (*it)->data(0, Type).toInt() &&
-	  login == (*it)->data(0, Login).toString())
-	return (*it)->text(0);
+          login == (*it)->data(0, Login).toString())
+        return (*it)->text(0);
       ++it;
     }
   return login;

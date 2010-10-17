@@ -22,8 +22,8 @@
 #include <QByteArray>
 #include <QNetworkAccessManager>
 #include "Url.h"
-#include "Randn.h"
 #include "Popup.h"
+#include "tools.h"
 #include "ChuckNorrisFacts.h"
 
 namespace
@@ -65,7 +65,7 @@ void    ChuckNorrisFacts::pickAFact(void)
   const int size = this->_facts.size();
   if (size > 0)
     {
-      this->_popup->showUp(this->_facts.at(rand_n(size)), 15000);
+      this->_popup->showUp(this->_facts.at(Tools::rand_n(size)), 15000);
     }
 }
 

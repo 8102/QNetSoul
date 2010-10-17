@@ -17,9 +17,9 @@
 
 #include <QFile>
 #include <QInputDialog>
-#include "Encryption.h"
 #include "OptionsWidget.h"
 #include "OptionsProxyWidget.h"
+#include "tools.h"
 
 OptionsProxyWidget::OptionsProxyWidget(QWidget* parent)
   : QWidget(parent), _useProxy(false)
@@ -49,7 +49,7 @@ void    OptionsProxyWidget::readOptions(QSettings& settings)
   this->_proxyLogin = settings.value("login").toString();
   this->_proxyPassword = settings.value("password").toString();
   settings.endGroup();
-  this->_proxyPassword = unencrypt(this->_proxyPassword);
+  this->_proxyPassword = Tools::unencrypt(this->_proxyPassword);
   setProxy();
 }
 
@@ -59,7 +59,7 @@ void    OptionsProxyWidget::writeOptions(QSettings& settings)
   settings.setValue("proxy", this->_proxy);
   settings.setValue("port", this->_proxyPort);
   settings.setValue("login", this->_proxyLogin);
-  settings.setValue("password", encrypt(this->_proxyPassword));
+  settings.setValue("password", Tools::encrypt(this->_proxyPassword));
   settings.setValue("useproxy", this->_useProxy);
   settings.endGroup();
 }

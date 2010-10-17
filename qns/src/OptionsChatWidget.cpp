@@ -15,7 +15,6 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Encryption.h"
 #include "OptionsWidget.h"
 #include "OptionsChatWidget.h"
 

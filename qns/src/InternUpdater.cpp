@@ -17,15 +17,22 @@
 
 #include <QDir>
 #include <QDebug>
+#include <QTimer>
 #include <QKeyEvent>
 #include <QProcess>
 #include <QLocalServer>
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
 #include "QNetsoul.h"
+#include "TrayIcon.h"
 #include "Credentials.h"
 #include "Singleton.hpp"
 #include "InternUpdater.h"
+#include "tools.h"
+
+extern const QString OutDir;
+extern const QString ServerUrl;
+extern const QString LastVersionUrl;
 
 namespace
 {
@@ -36,11 +43,14 @@ namespace
   const QString UpdaterBinaryName = "Updater";
   const QString SevenZipBinaryName = "7za.bin";
 #endif
-  const QString dlDir = "downloads";
+  const int OneHour = 3600000;
+  const int ReplaceBinaryAttempts = 5;
 }
 
 InternUpdater::InternUpdater(QWidget* parent)
-  : QObject(parent), _running(false)
+  : QObject(parent), _running(false), _checkVersionTimer(NULL),
+    _trayIcon(NULL), _server(NULL), _sevenZipReply(NULL),
+    _checkVersionReply(NULL), _netManager(NULL)
 {
   setupNetworkAccessManager();
   download7zipIfNeeded();
@@ -59,10 +69,18 @@ InternUpdater::InternUpdater(QWidget* parent)
         }
     }
   else this->_running = true;
+  // Periodic version checking
+  if (this->_running == true)
+    {
+      this->_checkVersionTimer = new QTimer(this);
+      connect(this->_checkVersionTimer, SIGNAL(timeout()),
+              this, SLOT(checkLastVersion()));
+      this->_checkVersionTimer->start(OneHour);
+    }
 #ifndef QT_NO_DEBUG
   qDebug() << "[InternUpdater::InternUpdater]"
            << (this->_running?
-               "LocalServer is running." : "LocalServer is not running.");
+               "QLocalServer is running." : "QLocalServer is not running.");
 #endif
 }
 
@@ -72,10 +90,11 @@ InternUpdater::~InternUpdater(void)
 
 bool    InternUpdater::download7zipIfNeeded(void)
 {
+  if (this->_sevenZipReply != NULL) return false; // already downloading
   QDir downloadPath(QDir::current());
-  if (!downloadPath.exists(dlDir))
-    downloadPath.mkdir(dlDir);
-  downloadPath.cd(dlDir);
+  if (!downloadPath.exists(OutDir))
+    downloadPath.mkdir(OutDir);
+  downloadPath.cd(OutDir);
   if (downloadPath.exists(SevenZipBinaryName))
     {
 #ifndef QT_NO_DEBUG
@@ -84,8 +103,8 @@ bool    InternUpdater::download7zipIfNeeded(void)
 #endif
       return false;
     }
-  QUrl url("http://qnetsoul.tuxfamily.org/public/" + SevenZipBinaryName);
-  this->_netManager->get(QNetworkRequest(url));
+  QUrl url(ServerUrl + SevenZipBinaryName);
+  this->_sevenZipReply = this->_netManager->get(QNetworkRequest(url));
 #ifndef QT_NO_DEBUG
   qDebug() << "[InternUpdater::download7zipIfNeeded]"
            << "Downloading" << SevenZipBinaryName;
@@ -110,11 +129,21 @@ void    InternUpdater::startUpdater(void)
   QProcess::startDetached("./" + UpdaterBinaryName, args);
 }
 
+void    InternUpdater::checkLastVersion(void)
+{
+  if (this->_trayIcon == NULL) return;
+  if (this->_checkVersionReply != NULL) return; // already checking
+  const QString platform = Tools::identifyPlatform(QNS_RAW);
+  if (platform.isEmpty()) return; // Unsupported platform
+  QUrl url(LastVersionUrl + platform);
+  this->_checkVersionReply = this->_netManager->get(QNetworkRequest(url));
+}
+
 void    InternUpdater::setupNetworkAccessManager(void)
 {
   this->_netManager = new QNetworkAccessManager(this);
   connect(this->_netManager, SIGNAL(finished(QNetworkReply*)),
-          this, SLOT(finishedDownload(QNetworkReply*)));
+          this, SLOT(handleReplies(QNetworkReply*)));
   Credentials& instance = Singleton<Credentials>::Instance();
   connect(this->_netManager,
           SIGNAL(proxyAuthenticationRequired(const QNetworkProxy&,
@@ -123,15 +152,84 @@ void    InternUpdater::setupNetworkAccessManager(void)
           SLOT(handleCredentials(const QNetworkProxy&, QAuthenticator*)));
 }
 
-bool    InternUpdater::replaceUpdaterBinaryIfNeeded(void)
+void    InternUpdater::handleSevenZipReply(void)
 {
   QDir downloadPath(QDir::current());
-  if (!downloadPath.exists(dlDir)) return false;
-  downloadPath.cd(dlDir);
-  if (!downloadPath.exists(UpdaterBinaryName)) return false;
+  if (!downloadPath.exists(OutDir))
+    downloadPath.mkdir(OutDir);
+  downloadPath.cd(OutDir);
+  QFile bin(downloadPath.path() + QDir::separator() + SevenZipBinaryName);
+  if (bin.open(QIODevice::WriteOnly))
+    {
+      bin.write(this->_sevenZipReply->readAll());
+      bin.close();
+#ifndef QT_NO_DEBUG
+      qDebug() << "[InternUpdater::handleSevenZipReply]"
+               << SevenZipBinaryName
+               << "has been successfully downloaded.";
+#endif
+    }
+#ifndef QT_NO_DEBUG
+  else
+    {
+      qDebug() << "[InternUpdater::handleSevenZipReply]"
+               << "Open failed:" << bin.errorString();
+    }
+#endif
+}
+
+void    InternUpdater::handleCheckVersionReply(void)
+{
+#ifndef QT_NO_DEBUG
+  qDebug() << "[Updater::handleCheckVersionReply]"
+           << "Last version retrieved";
+#endif
+  const QString buffer
+    (QString::fromUtf8(this->_checkVersionReply->readAll()));
+  if (buffer.startsWith("Error:")) return;
+  if (buffer.section(' ', 0, 0) > QNetsoul::currentVersion())
+    this->_trayIcon->showMessage(tr("Update available !"),
+                                 "QNetSoul v" +
+                                 buffer.section(' ', 0, 0) +
+                                 tr(" is released."));
+}
+
+void    InternUpdater::handleReplies(QNetworkReply* reply)
+{
+  if (reply->error() == QNetworkReply::NoError)
+    {
+      if (reply == this->_sevenZipReply)
+        {
+          handleSevenZipReply();
+          this->_sevenZipReply = NULL;
+        }
+      else if (reply == this->_checkVersionReply)
+        {
+          handleCheckVersionReply();
+          this->_checkVersionReply = NULL;
+        }
+    }
+#ifndef QT_NO_DEBUG
+  else
+    {
+      qDebug() << "[InternUpdater::handleReplies]"
+               << "Reply error string:" << reply->errorString();
+      qDebug() << "Reply dump:" << reply;
+    }
+#endif
+  reply->deleteLater();
+}
+
+void    InternUpdater::replaceUpdaterBinaryIfNeeded(void)
+{
+  static int attempts = 0;
+  QDir downloadPath(QDir::current());
+
+  if (!downloadPath.exists(OutDir)) return;
+  downloadPath.cd(OutDir);
+  if (!downloadPath.exists(UpdaterBinaryName)) return;
   QDir destPath(QDir::current());
   destPath.makeAbsolute();
-  //if (!destPath.rename(UpdaterBinaryName, UpdaterBinaryName + ".old"))
   destPath.remove(UpdaterBinaryName);
   const bool moveResult =
     downloadPath.rename(downloadPath.filePath(UpdaterBinaryName),
@@ -140,45 +238,13 @@ bool    InternUpdater::replaceUpdaterBinaryIfNeeded(void)
   qDebug() << "[InternUpdater::replaceUpdaterBinaryIfNeeded]"
            << "moveResult:" << moveResult;
 #endif
-  return moveResult;
-}
-
-void    InternUpdater::finishedDownload(QNetworkReply* reply)
-{
-  if (reply->error() == QNetworkReply::NoError)
+  if (moveResult == false && attempts++ < ReplaceBinaryAttempts)
     {
-      QDir downloadPath(QDir::current());
-      if (!downloadPath.exists(dlDir))
-        downloadPath.mkdir(dlDir);
-      downloadPath.cd(dlDir);
-      QFile bin(downloadPath.path()+ QDir::separator() + SevenZipBinaryName);
-      if (bin.open(QIODevice::WriteOnly))
-        {
-          bin.write(reply->readAll());
-          bin.setPermissions(QFile::ReadOwner  |
-                             QFile::WriteOwner |
-                             QFile::ExeOwner);
-          bin.close();
 #ifndef QT_NO_DEBUG
-          qDebug() << "[InternUpdater::finishedDownload]"
-                   << SevenZipBinaryName
-                   << "has been successfully downloaded.";
+      qDebug() << "[InternUpdater::replaceUpdaterBinaryIfNeeded]"
+               << "replaceUpdaterBinaryIfNeeded called again in five seconds.";
+      qDebug() << "Remaining attempts:" << ReplaceBinaryAttempts - attempts;
 #endif
-        }
-#ifndef QT_NO_DEBUG
-      else
-        {
-          qDebug() << "[InternUpdater::finishedDownload]"
-                   << "Open failed:" << bin.error();
-        }
-#endif
+      QTimer::singleShot(5000, this, SLOT(replaceUpdaterBinaryIfNeeded()));
     }
-#ifndef QT_NO_DEBUG
-  else
-    {
-      qDebug() << "[InternUpdater::finishedDownload]"
-               << "Reply error:" << reply->error();
-    }
-#endif
-  reply->deleteLater();
 }

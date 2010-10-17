@@ -19,11 +19,11 @@
 #define UPDATER_H_
 
 #include <QDir>
-#include <QFile>
 #include <QLocalSocket>
 #include <QNetworkAccessManager>
 #include "ui_Updater.h"
 
+class   QFile;
 class   QKeyEvent;
 class   QNetworkReply;
 
@@ -32,7 +32,7 @@ class   Updater : public QWidget, public Ui_Updater
   Q_OBJECT
 
     public:
-  Updater(QWidget* parent = NULL);
+  Updater(void);
   ~Updater(void);
 
   public slots:
@@ -48,7 +48,6 @@ class   Updater : public QWidget, public Ui_Updater
   void  download(const QString& url, const QString& filename);
   void  install(void);
   bool  unzip(void);
-  bool  replaceBinary(void);
   void  setupDownloadsDir(void);
   void  appendLog(const QString& msg);
 
@@ -56,6 +55,7 @@ class   Updater : public QWidget, public Ui_Updater
   void  handleBytesReceived(void);
   void  handleFinishedRequest(QNetworkReply* reply);
   void  updateProgressBar(qint64 bytesReceived, qint64 bytesTotal);
+  void  replaceQNetSoulBinary(void);
 
  private:
   QFile*                _file;

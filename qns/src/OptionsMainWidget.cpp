@@ -17,9 +17,9 @@
 
 #include <QSettings>
 #include "QNetsoul.h"
-#include "Encryption.h"
 #include "OptionsWidget.h"
 #include "OptionsMainWidget.h"
+#include "tools.h"
 
 OptionsMainWidget::OptionsMainWidget(QWidget* parent)
   : QWidget(parent), _savePassword(false),
@@ -44,7 +44,7 @@ void	OptionsMainWidget::readOptions(QSettings& settings)
   this->_autoConnect = settings.value("autoconnect", false).toBool();
   settings.endGroup();
 
-  this->_password = unencrypt(this->_password);
+  this->_password = Tools::unencrypt(this->_password);
 }
 
 void	OptionsMainWidget::writeOptions(QSettings& settings)
@@ -56,7 +56,7 @@ void	OptionsMainWidget::writeOptions(QSettings& settings)
   settings.setValue("location", this->_location);
   settings.setValue("comment", this->_comment);
   (this->_savePassword) ?
-    settings.setValue("password", encrypt(this->_password)) :
+    settings.setValue("password", Tools::encrypt(this->_password)) :
     settings.remove("password");
   settings.setValue("savepassword", this->_savePassword);
   settings.setValue("autoconnect", this->_autoConnect);

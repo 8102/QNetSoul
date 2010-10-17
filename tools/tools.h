@@ -15,12 +15,27 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ENCRYPTION_H_
-#define ENCRYPTION_H_
+#ifndef TOOLS_H_
+#define TOOLS_H_
 
-#include <QString>
+#define QNS_VERBOSE true
+#define QNS_RAW     false
 
-QString encrypt(const QString& msg);
-QString unencrypt(const QString& msg);
+class QString;
+
+struct State
+{
+  const char*   state;
+  const char*   pixmap;
+  const QString displayState;
+};
+
+namespace Tools
+{
+  QString identifyPlatform(const bool verbose);
+  QString encrypt(const QString& msg);
+  QString unencrypt(const QString& msg);
+  int rand_n(const int n);
+}
 
 #endif

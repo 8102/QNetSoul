@@ -19,6 +19,7 @@
 #include <QDateTime>
 #include <QMessageBox>
 #include <QCryptographicHash>
+
 #include "Url.h"
 #include "Chat.h"
 #include "Network.h"
@@ -33,58 +34,37 @@
 #include "PortraitResolver.h"
 #include "Credentials.h"
 #include "Singleton.hpp"
+#include "tools.h"
 
-namespace
-{
-  struct State
-  {
-    const char*   state;
-    const char*   pixmap;
-    const QString displayState;
-  };
-  const State   states[] =
-    {
-      {"login",   ":/images/log-in.png",   QObject::tr("Login")},
-      {"logout",  ":/images/offline.png",  QObject::tr("Offline")},
-      {"actif",   ":/images/online.png",   QObject::tr("Online")},
-      {"away",    ":/images/away.png",     QObject::tr("Away")},
-      {"idle",    ":/images/away.png",     QObject::tr("Idle")},
-      {"lock",    ":/images/lock.png",     QObject::tr("Locked")},
-      {"server",  ":/images/server.png",   QObject::tr("Server")},
-      {NULL, NULL, NULL}
-    };
-}
+// Imported from tools.h
+extern const State states[];
 
-QNetsoul::QNetsoul(QWidget* parent)
-  : QMainWindow(parent), _network(new Network(this)),
-    _options(new OptionsWidget(this)), _trayIcon(NULL),
-    _portraitResolver(new PortraitResolver), _pastebin(new Pastebin),
-    _popup(new SlidingPopup(300, 200)), _vdm(new VieDeMerde(this->_popup)),
+QNetsoul::QNetsoul(void)
+  : _network(new Network(this)), _options(new OptionsWidget(this)),
+    _trayIcon(NULL), _portraitResolver(new PortraitResolver),
+    _pastebin(new Pastebin), _popup(new SlidingPopup(300, 200)),
+    _vdm(new VieDeMerde(this->_popup)),
     _cnf(new ChuckNorrisFacts(this->_popup)), _ping(new QTimer(this)),
-    _internUpdater(new InternUpdater)
+    _internUpdater(new InternUpdater(this))
 {
   setupUi(this);
-  if (QSystemTrayIcon::isSystemTrayAvailable())
-    {
-      this->_trayIcon = new TrayIcon(this);
-      this->_portraitResolver->setTrayIcon(this->_trayIcon);
-    }
+  setupTrayIcon();
   connectQNetsoulModules();
   connectActionsSignals();
   connectNetworkSignals();
   QWidget::setAttribute(Qt::WA_AlwaysShowToolTips);
   setWhatsThis(whatsThis()
-	       .replace("%CurrentVersion%", currentVersion())
-	       .replace("%Platform%", platform()));
+               .replace("%CurrentVersion%", currentVersion())
+               .replace("%Platform%", Tools::identifyPlatform(QNS_VERBOSE)));
   readSettings();
   this->tree->setOptions(this->_options);
   this->tree->setNetwork(this->_network);
   this->_network->setOptions(this->_options);
   if (QDir::current().exists("contacts.qns"))
     this->tree->loadContacts("contacts.qns");
-  this->_portraitResolver->addRequest(this->tree->getLoginList());
   if (this->_options->mainWidget->autoConnect())
     connectToServer();
+  this->_portraitResolver->addRequest(this->tree->getLoginList());
   const QString startWith = this->_options->funWidget->getStartingModule();
   if (startWith == QObject::tr("Vie de merde"))
     this->_vdm->getVdm();
@@ -100,7 +80,6 @@ QNetsoul::~QNetsoul(void)
   delete this->_cnf;
   delete this->_popup;
   delete this->_pastebin;
-  delete this->_internUpdater;
   delete this->_portraitResolver;
 }
 
@@ -586,6 +565,16 @@ void    QNetsoul::writeSettings(void)
   else
     settings.setValue("pos", this->_oldPos);
   settings.endGroup();
+}
+
+void    QNetsoul::setupTrayIcon(void)
+{
+  if (QSystemTrayIcon::isSystemTrayAvailable())
+    {
+      this->_trayIcon = new TrayIcon(this);
+      this->_portraitResolver->setTrayIcon(this->_trayIcon);
+      this->_internUpdater->setTrayIcon(this->_trayIcon);
+    }
 }
 
 void    QNetsoul::connectQNetsoulModules(void)

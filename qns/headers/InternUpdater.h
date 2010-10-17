@@ -20,6 +20,8 @@
 
 #include <QObject>
 
+class   QTimer;
+class   TrayIcon;
 class   QProcess;
 class   QLocalServer;
 class   QNetworkReply;
@@ -30,27 +32,35 @@ class   InternUpdater : public QObject
   Q_OBJECT
 
     public:
-  InternUpdater(QWidget* parent = NULL);
+  InternUpdater(QWidget* parent);
   ~InternUpdater(void);
 
+  void  setTrayIcon(TrayIcon* trayIcon) { this->_trayIcon = trayIcon; }
   bool  download7zipIfNeeded(void);
 
   public slots:
   void  startUpdater(void);
+  void  checkLastVersion(void);
 
  signals:
   void  quitApplication(void);
 
  private:
   void  setupNetworkAccessManager(void);
-  bool  replaceUpdaterBinaryIfNeeded(void);
+  void  handleSevenZipReply(void);
+  void  handleCheckVersionReply(void);
 
   private slots:
-  void  finishedDownload(QNetworkReply* reply);
+  void  handleReplies(QNetworkReply* reply);
+  void  replaceUpdaterBinaryIfNeeded(void);
 
  private:
   bool                   _running;
+  QTimer*                _checkVersionTimer;
+  TrayIcon*              _trayIcon;
   QLocalServer*          _server;
+  QNetworkReply*         _sevenZipReply;
+  QNetworkReply*         _checkVersionReply;
   QNetworkAccessManager* _netManager;
 };
 

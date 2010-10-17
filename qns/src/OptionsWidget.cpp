@@ -19,7 +19,6 @@
 #include <QSettings>
 #include <QInputDialog>
 #include "OptionsWidget.h"
-#include "Encryption.h"
 
 OptionsWidget::OptionsWidget(QWidget* parent) : QDialog(parent)
 {

@@ -34,7 +34,6 @@ class   TrayIcon : public QSystemTrayIcon
   ~TrayIcon(void);
 
   void  showMessage(const QString& t, const QString& m, int timeout = 10000);
-
   void  setEnabledStatusMenu(bool enabled);
   void  startBlinking(void);
   void  stopBlinking(void);

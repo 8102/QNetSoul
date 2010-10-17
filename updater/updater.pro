@@ -7,15 +7,14 @@ DEPENDPATH += . \
     tpl \
     src \
     ui \
-    ../qns/src \
-    ../qns/headers
+    ../tools
 
 INCLUDEPATH += . \
     headers \
     tpl \
-    ../qns/headers
+    ../tools
 
-# Input
+# Inputs
 FORMS += ui/Updater.ui ui/CredentialsDialog.ui
 
 HEADERS += headers/Updater.h \
@@ -27,9 +26,9 @@ src/Updater.cpp \
 src/Credentials.cpp \
 src/CredentialsDialog.cpp
 
-# Common input
-SOURCES += ../qns/src/Encryption.cpp
-HEADERS += ../qns/headers/Encryption.h
+# Common inputs
+SOURCES += ../tools/tools.cpp
+HEADERS += ../tools/tools.h
 
 # Output
 TARGET = Updater
