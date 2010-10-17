@@ -15,10 +15,11 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ctime>
 #include <string>
 #include <QObject>
 #include <QString>
-#include <stdlib.h>
+#include <cstdlib>
 #include <algorithm>
 #include "tools.h"
 
@@ -50,8 +51,8 @@ namespace
     "}T,f9D2E;SdHt#lY\\3AI|wZ-/K<_`[?o.e$xha*7cq5pzrj!OJy=UL1]R(ui>^'NVm)BF0:Xg@sPQ+{C8kn4vM~Wb\"G&%6";
 }
 
-// When verbose is true, it means platform string is gonna be displayed
-// When verbose is false, string platform is formatted to be a request
+// When verbose is true, platform string is gonna be displayed
+// When verbose is false, platform string is formatted to be a request
 QString Tools::identifyPlatform(const bool verbose)
 {
   QString architecture;
