@@ -633,13 +633,29 @@ void    ContactsTree::dropEvent(QDropEvent* event)
 
   // Group move into another group is forbidden
   if (Group == sourceType && target)
-    if (target->data(0, Type).toInt() == Group)
-      {
+    {
+      if (target->data(0, Type).toInt() == Group)
+        {
 #ifndef QT_NO_DEBUG
-        qDebug() << "Forbidden move: group -> group";
+          qDebug() << "Forbidden move: group -> group"
+		   << "(drop in or around)";
 #endif
-        return;
-      }
+          return;
+        }
+      if (target->data(0, Type).toInt() == Contact)
+        {
+          const QTreeWidgetItem* targetParent = target->parent();
+          // This contact has a group ?
+          if (targetParent && targetParent->data(0, Type).toInt() == Group)
+            {
+#ifndef QT_NO_DEBUG
+              qDebug() << "Forbidden move: group -> group"
+		       << "(drop around contacts)";
+#endif
+              return;
+            }
+        }
+    }
   const bool expanded = source->isExpanded();
   QTreeWidget::dropEvent(event);
   source->setExpanded(expanded);
