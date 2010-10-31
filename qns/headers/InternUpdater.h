@@ -31,30 +31,30 @@ class   InternUpdater : public QObject
 {
   Q_OBJECT
 
-    public:
+  public:
   InternUpdater(QWidget* parent);
   ~InternUpdater(void);
 
   void  setTrayIcon(TrayIcon* trayIcon) { this->_trayIcon = trayIcon; }
   bool  download7zipIfNeeded(void);
 
-  public slots:
+public slots:
   void  startUpdater(void);
   void  checkLastVersion(void);
 
- signals:
+signals:
   void  quitApplication(void);
 
- private:
+private:
   void  setupNetworkAccessManager(void);
   void  handleSevenZipReply(void);
   void  handleCheckVersionReply(void);
 
-  private slots:
+private slots:
   void  handleReplies(QNetworkReply* reply);
   void  replaceUpdaterBinaryIfNeeded(void);
 
- private:
+private:
   bool                   _running;
   QTimer*                _checkVersionTimer;
   TrayIcon*              _trayIcon;

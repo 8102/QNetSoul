@@ -174,14 +174,23 @@ void    Chat::autoReply(const int currentStatus)
     }
 }
 
+// Close chat windows by pressing: Escape or Ctrl+W
 void    Chat::keyPressEvent(QKeyEvent* event)
 {
   Q_ASSERT(this->_options);
-  if (Qt::Key_Escape == event->key() &&
-      this->_options->chatWidget->exitOnEscape())
+  switch(event->key())
     {
-      this->hide();
-      event->ignore();
+    case Qt::Key_W:
+      if (event->modifiers() != Qt::ControlModifier)
+        break;
+    case Qt::Key_Escape:
+      if (this->_options->chatWidget->exitOnEscape())
+        {
+          this->hide();
+          event->ignore();
+        }
+      break;
+    default:;
     }
 }
 

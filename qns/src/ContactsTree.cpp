@@ -46,7 +46,6 @@ ContactsTree::ContactsTree(QWidget* parent)
   : QTreeWidget(parent), _addContactDialog(this),
     _network(NULL), _options(NULL)
 {
-  // Setting up some properties
   setAnimated(true);
   setHeaderHidden(true);
   setDefaultDropAction(Qt::MoveAction);
@@ -61,6 +60,33 @@ ContactsTree::ContactsTree(QWidget* parent)
 
 ContactsTree::~ContactsTree(void)
 {
+}
+
+void    ContactsTree::initTree(void)
+{
+  Q_ASSERT(this->_options);
+
+  const QString contactsPath = this->_options->contactsPathLineEdit->text();
+  if (!contactsPath.isEmpty())
+    {
+#ifndef QT_NO_DEBUG
+      qDebug() << "[ContactsTree::initTree]"
+               << "Contacts path detected, trying to load it.";
+#endif
+      const bool result = loadContacts(contactsPath);
+#ifndef QT_NO_DEBUG
+      qDebug() << "[ContactsTree::initTree]"
+               << "Result of loadContacts(" << contactsPath << "):"
+               << result;
+#endif
+      if (result == true) return;
+      // Erase path of bad file
+      this->_options->contactsPathLineEdit->clear();
+      // Save the fact there is no valid path for the moment
+      this->_options->contactsWidget->writeOptions();
+    }
+  if (QDir::current().exists("contacts.qns"))
+    loadContacts(QDir::currentPath() + QDir::separator() + "contacts.qns");
 }
 
 // Add a new group
@@ -312,18 +338,22 @@ void    ContactsTree::saveContacts(const QString& fileName)
   writer.writeFile(&file);
 }
 
-void    ContactsTree::loadContacts(const QString& fileName)
+bool    ContactsTree::loadContacts(const QString& fileName)
 {
   QFile file(fileName);
 
   this->clear();
+#ifndef QT_NO_DEBUG
+  qDebug() << "[ContactsTree::loadContacts]"
+           << "Loading" << fileName;
+#endif
   if (!file.open(QFile::ReadOnly | QFile::Text))
     {
       QMessageBox::warning(this, "QNetSoul " + tr("Contacts"),
                            tr("Cannot read file %1:\n%2.")
                            .arg(fileName)
                            .arg(file.errorString()));
-      return;
+      return false;
     }
   Q_ASSERT(this->_options);
   ContactsReader reader(this, this->_options);
@@ -336,7 +366,11 @@ void    ContactsTree::loadContacts(const QString& fileName)
                            .arg(reader.lineNumber())
                            .arg(reader.columnNumber())
                            .arg(reader.errorString()));
+      return false;
     }
+  this->_options->contactsPathLineEdit->setText(fileName);
+  this->_options->contactsWidget->writeOptions();
+  return true;
 }
 
 QStringList ContactsTree::getLoginList(void) const
@@ -560,9 +594,21 @@ void    ContactsTree::copyIp(void)
     clipboard->setText(ip);
 }
 
-// Slot
 void    ContactsTree::saveContacts(void)
 {
+  Q_ASSERT(this->_options);
+
+  if (topLevelItemCount() == 0) return;
+  if (this->_options->contactsPathLineEdit->text().isEmpty())
+    saveContactsAs();
+  else
+    saveContacts(this->_options->contactsPathLineEdit->text());
+}
+
+// Slot
+void    ContactsTree::saveContactsAs(void)
+{
+  if (topLevelItemCount() == 0) return;
   QString fileName =
     QFileDialog::getSaveFileName(this, tr("Save Contacts File"),
                                  QDir::currentPath(),
@@ -638,7 +684,7 @@ void    ContactsTree::dropEvent(QDropEvent* event)
         {
 #ifndef QT_NO_DEBUG
           qDebug() << "Forbidden move: group -> group"
-		   << "(drop in or around)";
+                   << "(drop in or around)";
 #endif
           return;
         }
@@ -650,7 +696,7 @@ void    ContactsTree::dropEvent(QDropEvent* event)
             {
 #ifndef QT_NO_DEBUG
               qDebug() << "Forbidden move: group -> group"
-		       << "(drop around contacts)";
+                       << "(drop around contacts)";
 #endif
               return;
             }
@@ -778,7 +824,9 @@ void    ContactsTree::createContextMenus(void)
   this->_treeMenu
     .addAction(tr("&Load Contacts"), this, SLOT(loadContacts()));
   this->_treeMenu
-    .addAction(tr("&Save Contacts As..."), this, SLOT(saveContacts()));
+    .addAction(tr("&Save Contacts"), this, SLOT(saveContacts()));
+  this->_treeMenu
+    .addAction(tr("&Save Contacts As..."), this, SLOT(saveContactsAs()));
 
   // group menu
   this->_groupMenu

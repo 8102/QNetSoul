@@ -32,7 +32,7 @@ class   ContactsTree : public QTreeWidget
 {
   Q_OBJECT
 
-    public:
+  public:
   enum ItemRole { Type = Qt::UserRole,
                   Login, Id, Ip, Promo, State, Location, Comment, IconPath };
   enum ItemType { Group, Contact, ConnectionPoint };
@@ -43,6 +43,7 @@ class   ContactsTree : public QTreeWidget
   void  setOptions(OptionsWidget* options) { this->_options = options; }
   void  setNetwork(Network* network) { this->_network = network; }
 
+  void  initTree(void);
   bool  addGroup(const QString& groupName);
   bool  updateConnectionPoint(const QStringList& properties);
   void  removeAllConnectionPoints(void);
@@ -50,12 +51,12 @@ class   ContactsTree : public QTreeWidget
   void  removeContact(const QString& groupName, const QString& contactName);
   void  setPortrait(const QString& login, const QString& portraitPath);
   void  saveContacts(const QString& fileName);
-  void  loadContacts(const QString& fileName);
+  bool  loadContacts(const QString& fileName);
   QStringList getLoginList(void) const;
   QStringList getGroupList(void) const;
   QString getAliasByLogin(const QString& login) const;
 
-  public slots:
+public slots:
   void  addGroup(void);
   void  addContact(void);
   bool  addContact(const QStringList& properties);
@@ -67,29 +68,30 @@ class   ContactsTree : public QTreeWidget
   void  sortContacts(void);
   void  copyIp(void);
   void  saveContacts(void);
+  void  saveContactsAs(void);
   void  loadContacts(void);
   void  refreshContacts(void);
   void  monitorContacts(void);
 
- signals:
+signals:
   void  downloadPortrait(const QString& login);
   void  openConversation(const QStringList&);
   void  contactRemoved(const QString& login);
 
- protected:
-  virtual void  dropEvent(QDropEvent* event);
-  virtual void  contextMenuEvent(QContextMenuEvent* event);
+protected:
+  virtual void dropEvent(QDropEvent* event);
+  virtual void contextMenuEvent(QContextMenuEvent* event);
 
- private:
+private:
   bool  existingGroup(const QString& name) const;
   bool  existingContact(const QString& login, QTreeWidgetItem** dst) const;
-  void	openConversation(QTreeWidgetItem* connectionPoint);
+  void  openConversation(QTreeWidgetItem* connectionPoint);
   void  createContextMenus(void);
 
-  private slots:
-  void	onItemDoubleClicked(QTreeWidgetItem* item);
+private slots:
+  void  onItemDoubleClicked(QTreeWidgetItem* item);
 
- private:
+private:
   QMenu          _treeMenu;
   QMenu          _groupMenu;
   QAction*       _sortContacts;

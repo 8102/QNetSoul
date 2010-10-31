@@ -60,8 +60,7 @@ QNetsoul::QNetsoul(void)
   this->tree->setOptions(this->_options);
   this->tree->setNetwork(this->_network);
   this->_network->setOptions(this->_options);
-  if (QDir::current().exists("contacts.qns"))
-    this->tree->loadContacts("contacts.qns");
+  this->tree->initTree();
   if (this->_options->mainWidget->autoConnect())
     connectToServer();
   this->_portraitResolver->addRequest(this->tree->getLoginList());
@@ -72,6 +71,7 @@ QNetsoul::QNetsoul(void)
     this->_cnf->getFact();
   Credentials& instance = Singleton<Credentials>::Instance();
   instance.setOptions(this->_options);
+  this->_internUpdater->checkLastVersion();
 }
 
 QNetsoul::~QNetsoul(void)
@@ -249,7 +249,7 @@ void    QNetsoul::disableChats(const QString& login)
 void    QNetsoul::saveStateBeforeQuiting(void)
 {
   if (this->tree->topLevelItemCount() > 0)
-    this->tree->saveContacts("contacts.qns");
+    this->tree->saveContacts();
   writeSettings();
   qApp->quit();
 }
@@ -610,6 +610,8 @@ void    QNetsoul::connectActionsSignals(void)
           this->tree, SLOT(loadContacts()));
   connect(actionSaveContacts, SIGNAL(triggered()),
           this->tree, SLOT(saveContacts()));
+  connect(actionSaveContactsAs, SIGNAL(triggered()),
+          this->tree, SLOT(saveContactsAs()));
   // Featurettes
   connect(actionVDM, SIGNAL(triggered()), this->_vdm, SLOT(getVdm()));
   connect(actionCNF, SIGNAL(triggered()), this->_cnf, SLOT(getFact()));

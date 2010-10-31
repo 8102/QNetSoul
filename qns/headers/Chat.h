@@ -28,7 +28,7 @@ class   Chat : public QWidget, public Ui_Chat
 {
   Q_OBJECT
 
-    public:
+  public:
   Chat(const int id, const QString& name, const QString& location);
   virtual ~Chat(void);
 
@@ -48,17 +48,17 @@ class   Chat : public QWidget, public Ui_Chat
   void    setPortrait(void); // if existing
   void    autoReply(const int currentStatus);
 
- protected:
+protected:
   void  keyPressEvent(QKeyEvent*);
   void  showEvent(QShowEvent*);
   void  hideEvent(QHideEvent*);
   void  closeEvent(QCloseEvent*);
 
-  private slots:
+private slots:
   void  sendMessage(void);
   void  handleTypingSignal(void);
 
- private:
+private:
   int            _id;
   QString        _alias;
   QString        _login;

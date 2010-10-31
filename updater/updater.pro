@@ -42,4 +42,4 @@ win32: DESTDIR = ../
 macx:  DESTDIR = .
 
 win32: RC_FILE = appIcon/windows.rc
-#macx:  ICON = appIcon/updater.icns
+macx:  ICON = appIcon/updater.icns

@@ -32,13 +32,23 @@ void    OptionsContactsWidget::readOptions(QSettings& settings)
   settings.beginGroup("ContactsOptions");
   this->_contactBehavior =
     settings.value("contactBehavior", ContactBehavior::EXPAND).toInt();
+  this->_options->contactsPathLineEdit->setText
+    (settings.value("contactspath").toString());
   settings.endGroup();
+}
+
+void    OptionsContactsWidget::writeOptions(void)
+{
+  QSettings settings("Epitech", "QNetsoul");
+  writeOptions(settings);
 }
 
 void    OptionsContactsWidget::writeOptions(QSettings& settings)
 {
   settings.beginGroup("ContactsOptions");
   settings.setValue("contactBehavior", this->_contactBehavior);
+  settings.setValue("contactspath",
+                    this->_options->contactsPathLineEdit->text());
   settings.endGroup();
 }
 

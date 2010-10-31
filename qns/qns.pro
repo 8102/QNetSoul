@@ -102,4 +102,4 @@ win32: DESTDIR = ../
 macx:  DESTDIR = .
 
 win32: RC_FILE = appIcon/windows.rc
-#macx:  ICON = appIcon/qnetsoul.icns
+macx:  ICON = appIcon/qnetsoul.icns

@@ -40,26 +40,26 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
 {
   Q_OBJECT
 
-    public:
+  public:
   QNetsoul(void);
   ~QNetsoul(void);
 
   static QString currentVersion(void)
   {
-    return "1.2c";
+    return "1.3";
   }
   static QString defaultComment(void)
   {
     return QString("-=[QNetSoul v%1]=-").arg(currentVersion());
   }
-  static void  openOptionsDialog(OptionsWidget* options,
-                                 const int currentTab = -1,
-                                 QWidget* focus = NULL);
+  static void openOptionsDialog(OptionsWidget* options,
+                                const int currentTab = -1,
+                                QWidget* focus = NULL);
 
- protected:
+protected:
   void  closeEvent(QCloseEvent*);
 
-  private slots:
+private slots:
   void  connectToServer(void);
   void  ping(void);
   void  reconnect(void);
@@ -77,7 +77,7 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
   void  setPortrait(const QString&);
   void  aboutQNetSoul(void);
 
- private:
+private:
   Chat* getChat(const int id);
   void  disableChat(Chat* chat);
   void  resetAllContacts(void);

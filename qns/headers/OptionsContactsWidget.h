@@ -28,20 +28,22 @@ class   OptionsContactsWidget : public QWidget, public AbstractOptions
 {
   Q_OBJECT
 
-    public:
+  public:
   OptionsContactsWidget(QWidget* parent = NULL);
   ~OptionsContactsWidget(void);
 
   // Behavior on double cliking on it.
-  int contactBehavior(void) const { return this->_contactBehavior; }
+  int  contactBehavior(void) const { return this->_contactBehavior; }
 
   void readOptions(QSettings& settings);
+  void writeOptions(void);
   void writeOptions(QSettings& settings);
   void updateOptions(void);
   void saveOptions(void);
 
- private:
-  int _contactBehavior;
+private:
+  int     _contactBehavior;
+  QString _contactsPath;
 };
 
 #endif

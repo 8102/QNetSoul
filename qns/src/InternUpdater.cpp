@@ -131,10 +131,31 @@ void    InternUpdater::startUpdater(void)
 
 void    InternUpdater::checkLastVersion(void)
 {
-  if (this->_trayIcon == NULL) return;
-  if (this->_checkVersionReply != NULL) return; // already checking
+  if (this->_trayIcon == NULL)
+    {
+#ifndef QT_NO_DEBUG
+      qDebug() << "[InternUpdater::checkLastVersion]"
+               << "Unable to check: no tray icon.";
+#endif
+      return;
+    }
+  if (this->_checkVersionReply != NULL)
+    {
+#ifndef QT_NO_DEBUG
+      qDebug() << "[InternUpdater::checkLastVersion]"
+               << "Unable to check: already checking.";
+#endif
+      return;
+    }
   const QString platform = Tools::identifyPlatform(QNS_RAW);
-  if (platform.isEmpty()) return; // Unsupported platform
+  if (platform.isEmpty())
+    {
+#ifndef QT_NO_DEBUG
+      qDebug() << "[InternUpdater::checkLastVersion]"
+               << "Unable to check: unsupported platform.";
+#endif
+      return;
+    }
   QUrl url(LastVersionUrl + platform);
   this->_checkVersionReply = this->_netManager->get(QNetworkRequest(url));
 }
@@ -186,12 +207,19 @@ void    InternUpdater::handleCheckVersionReply(void)
 #endif
   const QString buffer
     (QString::fromUtf8(this->_checkVersionReply->readAll()));
-  if (buffer.startsWith("Error:")) return;
+  if (buffer.startsWith("Error:"))
+    {
+#ifndef QT_NO_DEBUG
+      qDebug() << "[Updater::handleCheckVersionReply]"
+	       << buffer;
+#endif
+      return;
+    }
   if (buffer.section(' ', 0, 0) > QNetsoul::currentVersion())
     this->_trayIcon->showMessage(tr("Update available !"),
                                  "QNetSoul v" +
                                  buffer.section(' ', 0, 0) +
-                                 tr(" is released."));
+                                 tr(" is released."), 30000);
 }
 
 void    InternUpdater::handleReplies(QNetworkReply* reply)

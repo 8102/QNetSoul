@@ -55,36 +55,35 @@ namespace
 // When verbose is false, platform string is formatted to be a request
 QString Tools::identifyPlatform(const bool verbose)
 {
-  QString architecture;
+  QString os, architecture, version;
 
   // Identify Operating System
 #if defined(Q_OS_WIN)
-  const QString os = verbose? "Windows" : "Win";
+  os = verbose? "Windows" : "Win";
 #elif defined(Q_OS_LINUX)
-  const QString os = "Linux";
+  os = "Linux";
 #elif defined(Q_OS_MAC)
-  const QString os = verbose? "Macintosh" : "Mac";
+  os = verbose? "Macintosh" : "Mac";
 #else
   if (verbose == false) return "";
   return "Undetected operating system";
 #endif
 
   // Identify Architecture
-  if (sizeof(int*) == 4)
-    architecture = verbose? "32 bits" : "32";
-  else if (sizeof(int*) == 8)
-    architecture = verbose? "64 bits" : "64";
-  else
-    {
-      if (verbose == false) return "";
-      return "Undetected architecture";
-    }
+#if (QT_POINTER_SIZE == 4)
+  architecture = verbose? "32 bits" : "32";
+#elif (QT_POINTER_SIZE == 8)
+  architecture = verbose? "64 bits" : "64";
+#else
+  if (verbose == false) return "";
+  return "Undetected architecture";
+#endif
 
   // Identify Version
 #if defined (QT_SHARED) || defined (QT_DLL)
-  const QString version = verbose? QObject::tr("Shared") : "shared";
+  version = verbose? QObject::tr("Shared") : "shared";
 #else
-  const QString version = verbose? QObject::tr("Static") : "static";
+  version = verbose? QObject::tr("Static") : "static";
 #endif
 
   if (verbose)
