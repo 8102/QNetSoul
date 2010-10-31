@@ -86,7 +86,8 @@ void    ContactsTree::initTree(void)
       this->_options->contactsWidget->writeOptions();
     }
   if (QDir::current().exists("contacts.qns"))
-    loadContacts(QDir::currentPath() + QDir::separator() + "contacts.qns");
+    loadContacts(QDir::toNativeSeparators(QDir::currentPath() + "/")
+		 + "contacts.qns");
 }
 
 // Add a new group
@@ -368,7 +369,8 @@ bool    ContactsTree::loadContacts(const QString& fileName)
                            .arg(reader.errorString()));
       return false;
     }
-  this->_options->contactsPathLineEdit->setText(fileName);
+  this->_options->contactsPathLineEdit->setText
+    (QDir::toNativeSeparators(fileName));
   this->_options->contactsWidget->writeOptions();
   return true;
 }
