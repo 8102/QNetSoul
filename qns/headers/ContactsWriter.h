@@ -28,6 +28,8 @@ class   ContactsWriter : public QXmlStreamWriter
 {
  public:
   ContactsWriter(QTreeWidget* tree, OptionsWidget* options);
+  ~ContactsWriter(void);
+
   bool  writeFile(QIODevice* device);
 
  private:

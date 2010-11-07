@@ -45,22 +45,18 @@ void    PortraitResolver::addRequest(const QStringList& logins)
 {
   const int size = logins.size();
   for (int i = 0; i < size; ++i)
-    addRequest(logins[i], false);
-}
-
-void    PortraitResolver::addRequest(const QString& login, bool fun)
-{
-  if (this->_dir.exists(buildFilename(login, fun))) return;
-  QUrl url(QString("http://www.epitech.net/intra/photo.php?fun=%1&login=%2")
-           .arg(fun).arg(login));
-  get(QNetworkRequest(url));
+    {
+      addRequest(logins[i], QNS_FUN);
+      addRequest(logins[i], QNS_NORMAL);
+    }
 }
 
 bool    PortraitResolver::isAvailable(QString& portraitPath,
-                                      const QString& login)
+                                      const QString& login,
+                                      bool fun)
 {
   const QDir portraitDir = getPortraitDir();
-  const QString fileName = buildFilename(login, false);
+  const QString fileName = buildFilename(login, fun);
   if (portraitDir.exists(fileName))
     {
       portraitPath = portraitDir.dirName() + QDir::separator() + fileName;
@@ -83,10 +79,12 @@ QDir    PortraitResolver::getPortraitDir(void)
   return portraitPath;
 }
 
-void    PortraitResolver::addRequest(const QString& login)
+void    PortraitResolver::addRequest(const QString& login, bool fun)
 {
-  addRequest(login, true);
-  addRequest(login, false);
+  if (this->_dir.exists(buildFilename(login, fun))) return;
+  QUrl url(QString("http://www.epitech.net/intra/photo.php?fun=%1&login=%2")
+           .arg(fun).arg(login));
+  get(QNetworkRequest(url));
 }
 
 void    PortraitResolver::replyFinished(QNetworkReply* reply)

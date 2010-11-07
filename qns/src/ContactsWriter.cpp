@@ -24,6 +24,10 @@ ContactsWriter::ContactsWriter(QTreeWidget* tree, OptionsWidget* options)
   setAutoFormatting(true);
 }
 
+ContactsWriter::~ContactsWriter(void)
+{
+}
+
 bool    ContactsWriter::writeFile(QIODevice* device)
 {
   setDevice(device);
@@ -64,6 +68,7 @@ void    ContactsWriter::writeItem(QTreeWidgetItem *item)
                        item->data(0, ContactsTree::Login).toString());
       writeTextElement("promo",
                        item->data(0, ContactsTree::Promo).toString());
+      writeTextElement("fun", item->data(0, ContactsTree::Fun).toString());
       writeEndElement();
     }
 }

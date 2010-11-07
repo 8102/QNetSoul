@@ -22,7 +22,10 @@
 #include "AbstractOptions.h"
 
 // EXPAND is the default behavior
-namespace ContactBehavior{ enum { EXPAND, OPEN_CONVERSATION, BOTH }; }
+namespace ContactBehavior
+{
+  enum { EXPAND, OPEN_CONVERSATION, EXPAND_AND_OPEN, TOGGLE_PORTRAIT };
+}
 
 class   OptionsContactsWidget : public QWidget, public AbstractOptions
 {

@@ -31,18 +31,18 @@ class   Updater : public QWidget, public Ui_Updater
 {
   Q_OBJECT
 
-    public:
+  public:
   Updater(void);
   ~Updater(void);
 
-  public slots:
+public slots:
   void  checkVersion(void);
 
- protected:
+protected:
   void  keyPressEvent(QKeyEvent* event);
   void  closeEvent(QCloseEvent* event);
 
- private:
+private:
   void  initProxyFromSettings(void);
   void  retrieveLastVersion(void);
   void  download(const QString& url, const QString& filename);
@@ -51,17 +51,19 @@ class   Updater : public QWidget, public Ui_Updater
   void  setupDownloadsDir(void);
   void  appendLog(const QString& msg);
 
-  private slots:
+private slots:
   void  handleBytesReceived(void);
   void  handleFinishedRequest(QNetworkReply* reply);
+  void  handleLastVersionRequest(QNetworkReply* reply);
+  void  handleDownloadRequest(QNetworkReply* reply);
   void  updateProgressBar(qint64 bytesReceived, qint64 bytesTotal);
   void  replaceQNetSoulBinary(void);
 
- private:
+private:
+  bool                  _locked; // when app is locked, user cannot close it
   QFile*                _file;
-  QNetworkReply*        _dlReply; // download last version reply
   QNetworkReply*        _lvReply; // last version php reply
-  QNetworkReply*        _7zReply; // 7zip download reply
+  QNetworkReply*        _dlReply; // download last version reply
   QNetworkAccessManager _manager;
   QLocalSocket          _socket;
   QDir                  _downloadPath;

@@ -34,7 +34,8 @@ class   ContactsTree : public QTreeWidget
 
   public:
   enum ItemRole { Type = Qt::UserRole,
-                  Login, Id, Ip, Promo, State, Location, Comment, IconPath };
+                  Login, Id, Ip, Promo, State,
+                  Location, Comment, IconPath, Fun };
   enum ItemType { Group, Contact, ConnectionPoint };
 
   ContactsTree(QWidget* parent = NULL);
@@ -66,6 +67,7 @@ public slots:
   void  editCurrentItem(void);
   void  removeCurrentItem(void);
   void  sortContacts(void);
+  void  togglePortrait(void);
   void  copyIp(void);
   void  saveContacts(void);
   void  saveContactsAs(void);
@@ -74,27 +76,27 @@ public slots:
   void  monitorContacts(void);
 
 signals:
-  void  downloadPortrait(const QString& login);
+  void  downloadPortrait(const QString& login, bool fun);
   void  openConversation(const QStringList&);
   void  contactRemoved(const QString& login);
 
 protected:
   virtual void dropEvent(QDropEvent* event);
   virtual void contextMenuEvent(QContextMenuEvent* event);
+  virtual void mouseDoubleClickEvent(QMouseEvent* event);
 
 private:
   bool  existingGroup(const QString& name) const;
   bool  existingContact(const QString& login, QTreeWidgetItem** dst) const;
   void  openConversation(QTreeWidgetItem* connectionPoint);
+  void  togglePortrait(QTreeWidgetItem* contact);
   void  createContextMenus(void);
-
-private slots:
-  void  onItemDoubleClicked(QTreeWidgetItem* item);
 
 private:
   QMenu          _treeMenu;
   QMenu          _groupMenu;
   QAction*       _sortContacts;
+  QAction*       _portraitType;
   QMenu          _contactMenu;
   QMenu          _connectionPointMenu;
   AddContact     _addContactDialog;

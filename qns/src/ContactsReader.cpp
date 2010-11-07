@@ -20,6 +20,11 @@
 #include "ToolTipBuilder.h"
 #include "PortraitResolver.h"
 
+namespace
+{
+  const char* errVersion = "The file is not a qns version 1.0 file.";
+}
+
 ContactsReader::ContactsReader(QTreeWidget* tree, OptionsWidget* options)
   : _tree(tree), _options(options)
 {
@@ -37,7 +42,7 @@ bool    ContactsReader::read(QIODevice *device)
           if (name() == "qns" && attributes().value("version") == "1.0")
             readQNS();
           else
-            raiseError(QObject::tr("The file is not a qns version 1.0 file."));
+            raiseError(QObject::tr(errVersion));
         }
     }
   return !error();
@@ -125,7 +130,7 @@ void    ContactsReader::readContact(QTreeWidgetItem* parent)
 {
   Q_ASSERT(isStartElement() && name() == "Contact");
 
-  QString login, portraitPath;
+  QString login, portraitPath, fun;
   QTreeWidgetItem* contact = createChildItem(parent);
   const bool expanded = (attributes().value("expanded") == "yes");
 
@@ -133,6 +138,7 @@ void    ContactsReader::readContact(QTreeWidgetItem* parent)
   contact->setIcon(0, QIcon(":/images/contact.png"));
   contact->setData(0, ContactsTree::Type, ContactsTree::Contact);
   contact->setData(0, ContactsTree::IconPath, ":/images/contact.png");
+  contact->setData(0, ContactsTree::Fun, QNS_NORMAL);
   contact->setFlags(Qt::ItemIsSelectable  |
                     Qt::ItemIsEditable    |
                     Qt::ItemIsEnabled     |
@@ -155,6 +161,11 @@ void    ContactsReader::readContact(QTreeWidgetItem* parent)
             }
           else if (name() == "promo")
             contact->setData(0, ContactsTree::Promo, readElementText());
+          else if (name() == "fun")
+            {
+              fun = readElementText();
+              contact->setData(0, ContactsTree::Fun, fun);
+            }
           else readUnknownElement();
         }
     }
@@ -168,7 +179,7 @@ void    ContactsReader::readContact(QTreeWidgetItem* parent)
 #endif
       return;
     }
-  if (PortraitResolver::isAvailable(portraitPath, login))
+  if (PortraitResolver::isAvailable(portraitPath, login, fun == "true"))
     {
       contact->setIcon(0, QIcon(portraitPath));
       contact->setData(0, ContactsTree::IconPath, portraitPath);

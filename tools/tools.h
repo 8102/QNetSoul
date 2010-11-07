@@ -32,6 +32,8 @@ struct State
 
 namespace Tools
 {
+  QString qnetsoulVersion(void);
+  QString defaultComment(void);
   QString identifyPlatform(const bool verbose);
   QString encrypt(const QString& msg);
   QString unencrypt(const QString& msg);

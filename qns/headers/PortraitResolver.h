@@ -24,39 +24,42 @@
 #include <QNetworkRequest>
 #include <QNetworkAccessManager>
 
+#define QNS_NORMAL false
+#define QNS_FUN    true
+
 class   TrayIcon;
 
 class   PortraitResolver : public QNetworkAccessManager
 {
   Q_OBJECT
 
-    public:
+  public:
   PortraitResolver(void);
   ~PortraitResolver(void);
 
   void  setTrayIcon(TrayIcon* ti) { this->_trayIcon = ti; }
 
   void  addRequest(const QStringList& logins);
-  void  addRequest(const QString& login, bool fun);
 
-  static bool isAvailable(QString& path, const QString& login);
+  static bool isAvailable(QString& portraitsPath,
+                          const QString& login,
+                          bool fun = QNS_NORMAL);
   static QString buildFilename(const QString& login, const bool fun);
   static QDir getPortraitDir(void);
 
-  public slots:
-  void  addRequest(const QString& login);
+public slots:
+  void  addRequest(const QString& login, bool fun);
 
-  private slots:
+private slots:
   void  replyFinished(QNetworkReply* reply);
 
- signals:
+signals:
   void  downloadedPortrait(const QString& login);
 
- private:
-  enum Attribute { Login = QNetworkRequest::User, Fun };
+private:
   void  setupPortraitDirectory(void);
 
- private:
+private:
   QDir      _dir;
   TrayIcon* _trayIcon;
 };

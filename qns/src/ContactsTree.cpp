@@ -43,8 +43,8 @@ namespace
 }
 
 ContactsTree::ContactsTree(QWidget* parent)
-  : QTreeWidget(parent), _addContactDialog(this),
-    _network(NULL), _options(NULL)
+  : QTreeWidget(parent), _sortContacts(NULL), _portraitType(NULL),
+    _addContactDialog(this), _network(NULL), _options(NULL)
 {
   setAnimated(true);
   setHeaderHidden(true);
@@ -53,8 +53,6 @@ ContactsTree::ContactsTree(QWidget* parent)
   setEditTriggers(QAbstractItemView::EditKeyPressed);
   connect(&this->_addContactDialog, SIGNAL(newContact(const QStringList&)),
           this, SLOT(addContact(const QStringList&)));
-  connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
-          this, SLOT(onItemDoubleClicked(QTreeWidgetItem*)));
   createContextMenus();
 }
 
@@ -87,7 +85,7 @@ void    ContactsTree::initTree(void)
     }
   if (QDir::current().exists("contacts.qns"))
     loadContacts(QDir::toNativeSeparators(QDir::currentPath() + "/")
-		 + "contacts.qns");
+                 + "contacts.qns");
 }
 
 // Add a new group
@@ -485,13 +483,18 @@ bool    ContactsTree::addContact(const QStringList& properties)
   contact->setData(0, Login, properties.at(1));
   contact->setData(0, Promo, tr("Undefined yet"));
   contact->setData(0, IconPath, ":/images/contact.png");
+  contact->setData(0, Fun, QNS_NORMAL);
   contact->setIcon(0, QIcon(":/images/contact.png"));
   if (PortraitResolver::isAvailable(portraitPath, properties.at(1)))
     {
       contact->setIcon(0, QIcon(portraitPath));
       contact->setData(0, IconPath, portraitPath);
     }
-  else emit downloadPortrait(properties.at(1));
+  else
+    {
+      emit downloadPortrait(properties.at(1), QNS_NORMAL);
+      emit downloadPortrait(properties.at(1), QNS_FUN);
+    }
   Contact::buildToolTip(contact);
 
   // Update group tool tip
@@ -582,6 +585,14 @@ void    ContactsTree::sortContacts(void)
   QTreeWidgetItem* item = currentItem();
   if (item == NULL) return;
   item->sortChildren(0, Qt::AscendingOrder);
+}
+
+// Slot used by contact contextMenu
+void    ContactsTree::togglePortrait(void)
+{
+  QTreeWidgetItem* contact = currentItem();
+  if (contact == NULL) return;
+  togglePortrait(contact);
 }
 
 // Slot used by connection point contextMenu
@@ -746,6 +757,47 @@ void    ContactsTree::contextMenuEvent(QContextMenuEvent* event)
     }
 }
 
+void    ContactsTree::mouseDoubleClickEvent(QMouseEvent* event)
+{
+  Q_UNUSED(event);
+  QTreeWidgetItem* item = currentItem();
+
+  if (item == NULL) return;
+  if (ConnectionPoint == item->data(0, Type).toInt())
+    {
+      openConversation(item);
+    }
+  else if (Contact == item->data(0, Type).toInt())
+    {
+      Q_ASSERT(this->_options);
+      const int behavior = this->_options->contactsWidget->contactBehavior();
+      switch(behavior)
+        {
+        case ContactBehavior::EXPAND:
+          item->setExpanded(!item->isExpanded());
+          break;
+        case ContactBehavior::OPEN_CONVERSATION:
+          if (item->childCount() == 0) break;
+          openConversation(item->child(0));
+          break;
+        case ContactBehavior::EXPAND_AND_OPEN:
+          if (!item->isExpanded())
+            item->setExpanded(true);
+          if (item->childCount() == 0) break;
+          openConversation(item->child(0));
+          break;
+        case ContactBehavior::TOGGLE_PORTRAIT:
+          togglePortrait(item);
+          break;
+        default: item->setExpanded(!item->isExpanded());
+        }
+    }
+  else
+    {
+      item->setExpanded(!item->isExpanded());
+    }
+}
+
 bool    ContactsTree::existingGroup(const QString& name) const
 {
   const QTreeWidgetItem* root = invisibleRootItem();
@@ -811,6 +863,21 @@ void    ContactsTree::openConversation(QTreeWidgetItem* connectionPoint)
   emit openConversation(properties);
 }
 
+void    ContactsTree::togglePortrait(QTreeWidgetItem* contact)
+{
+  QString path;
+  const QString login = contact->data(0, Login).toString();
+  const bool currentType = contact->data(0, Fun).toBool();
+
+  if (PortraitResolver::isAvailable(path, login, !currentType))
+    {
+      contact->setData(0, IconPath, path);
+      contact->setData(0, Fun, !currentType);
+      contact->setIcon(0, QIcon(path));
+    }
+  else emit downloadPortrait(login, !currentType);
+}
+
 void    ContactsTree::createContextMenus(void)
 {
   // tree menu
@@ -841,45 +908,11 @@ void    ContactsTree::createContextMenus(void)
   // contact menu
   this->_contactMenu
     .addAction(tr("&Set alias"), this, SLOT(editCurrentItem()));
+  this->_portraitType = this->_contactMenu
+    .addAction(tr("&Toggle portrait"), this, SLOT(togglePortrait()));
   this->_contactMenu
     .addAction(tr("&Remove Contact"),this,SLOT(removeCurrentItem()));
 
   // connection point menu
   this->_connectionPointMenu.addAction(tr("&Copy ip"), this, SLOT(copyIp()));
-}
-
-void    ContactsTree::onItemDoubleClicked(QTreeWidgetItem* item)
-{
-  if (item == NULL) return;
-  if (ConnectionPoint == item->data(0, Type).toInt())
-    {
-      openConversation(item);
-    }
-  else if (Contact == item->data(0, Type).toInt())
-    {
-      Q_ASSERT(this->_options);
-
-      const int behavior = this->_options->contactsWidget->contactBehavior();
-      switch(behavior)
-        {
-        case ContactBehavior::EXPAND:
-          item->setExpanded(!item->isExpanded());
-          break;
-        case ContactBehavior::OPEN_CONVERSATION:
-          if (item->childCount() == 0) break;
-          openConversation(item->child(0));
-          break;
-        case ContactBehavior::BOTH:
-          if (!item->isExpanded())
-            item->setExpanded(true);
-          if (item->childCount() == 0) break;
-          openConversation(item->child(0));
-          break;
-        default: item->setExpanded(!item->isExpanded());
-        }
-    }
-  else
-    {
-      item->setExpanded(!item->isExpanded());
-    }
 }

@@ -101,6 +101,13 @@ bool    InternUpdater::download7zipIfNeeded(void)
       qDebug() << "[InternUpdater::download7zipIfNeeded]"
                << SevenZipBinaryName << "is already downloaded.";
 #endif
+      // Check if 7z has exec rights
+      QFile bin(downloadPath.path() +QDir::separator()+ SevenZipBinaryName);
+      if (bin.open(QIODevice::ReadOnly))
+	{
+	  bin.setPermissions(bin.permissions() | QFile::ExeOwner);
+	  bin.close();
+	}
       return false;
     }
   QUrl url(ServerUrl + SevenZipBinaryName);
@@ -124,7 +131,7 @@ void    InternUpdater::startUpdater(void)
       return;
     }
   QStringList args;
-  args << QNetsoul::currentVersion()
+  args << Tools::qnetsoulVersion()
        << QDir::currentPath();
   QProcess::startDetached("./" + UpdaterBinaryName, args);
 }
@@ -183,6 +190,9 @@ void    InternUpdater::handleSevenZipReply(void)
   if (bin.open(QIODevice::WriteOnly))
     {
       bin.write(this->_sevenZipReply->readAll());
+      bin.setPermissions(QFile::ReadOwner  |
+                         QFile::WriteOwner |
+                         QFile::ExeOwner);
       bin.close();
 #ifndef QT_NO_DEBUG
       qDebug() << "[InternUpdater::handleSevenZipReply]"
@@ -211,11 +221,11 @@ void    InternUpdater::handleCheckVersionReply(void)
     {
 #ifndef QT_NO_DEBUG
       qDebug() << "[Updater::handleCheckVersionReply]"
-	       << buffer;
+               << buffer;
 #endif
       return;
     }
-  if (buffer.section(' ', 0, 0) > QNetsoul::currentVersion())
+  if (buffer.section(' ', 0, 0) > Tools::qnetsoulVersion())
     this->_trayIcon->showMessage(tr("Update available !"),
                                  "QNetSoul v" +
                                  buffer.section(' ', 0, 0) +

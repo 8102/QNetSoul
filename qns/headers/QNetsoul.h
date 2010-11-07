@@ -44,14 +44,6 @@ class   QNetsoul : public QMainWindow, public Ui_QNetsoul
   QNetsoul(void);
   ~QNetsoul(void);
 
-  static QString currentVersion(void)
-  {
-    return "1.3b";
-  }
-  static QString defaultComment(void)
-  {
-    return QString("-=[QNetSoul v%1]=-").arg(currentVersion());
-  }
   static void openOptionsDialog(OptionsWidget* options,
                                 const int currentTab = -1,
                                 QWidget* focus = NULL);

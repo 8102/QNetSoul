@@ -275,7 +275,12 @@
          </item>
          <item>
           <property name="text">
-           <string>Both</string>
+           <string>Expand and Open</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Toggle portrait type</string>
           </property>
          </item>
         </widget>

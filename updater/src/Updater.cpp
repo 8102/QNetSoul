@@ -54,8 +54,8 @@ namespace
 }
 
 Updater::Updater(void)
-  : _file(NULL), _dlReply(NULL), _lvReply(NULL),
-    _7zReply(NULL), _downloadPath(QDir::current())
+  : _locked(false), _file(NULL), _lvReply(NULL), _dlReply(NULL),
+    _downloadPath(QDir::current())
 {
   setupUi(this);
   move(400, 300);
@@ -95,7 +95,8 @@ void    Updater::checkVersion(void)
 
 void    Updater::keyPressEvent(QKeyEvent* event)
 {
-  if (event->key() == Qt::Key_Escape)
+  if (this->_locked == false &&
+      event->key() == Qt::Key_Escape)
     qApp->quit();
 }
 
@@ -104,7 +105,10 @@ void    Updater::closeEvent(QCloseEvent* event)
 #ifndef QT_NO_DEBUG
   qDebug() << "[Updater::closeEvent]";
 #endif
-  QWidget::closeEvent(event);
+  if (this->_locked == false)
+    QWidget::closeEvent(event);
+  else
+    event->ignore();
 }
 
 void    Updater::initProxyFromSettings(void)
@@ -181,9 +185,15 @@ void    Updater::download(const QString& url, const QString& filename)
 void    Updater::install(void)
 {
   appendLog(tr("Installing last version of QNetSoul"));
-  if (unzip() == false) return;
+  if (unzip() == false)
+    {
+      appendLog(tr("Error: unzip failed."));
+      return;
+    }
   if (this->_downloadPath.exists(QNetSoulBinaryName) == false)
     {
+      appendLog(tr("Error: ") + QNetSoulBinaryName +
+                tr(" cannot be found."));
 #ifndef QT_NO_DEBUG
       qDebug() << "[Updater::install]" << QNetSoulBinaryName + " cannot be found...";
 #endif
@@ -193,6 +203,7 @@ void    Updater::install(void)
                            tr("QNetSoul is about to restart.") + "<br />" +
                            tr("When you are ready, press Ok."));
   // Shutting down QNetSoul to replace binary
+  this->_locked = true;
   this->_socket.connectToServer("QNetSoul");
   this->_socket.waitForDisconnected(3000);
   appendLog(tr("QNetSoul binary is about to be replaced in few seconds...."));
@@ -202,20 +213,26 @@ void    Updater::install(void)
 // 7zip powered !
 bool    Updater::unzip(void)
 {
+  this->_locked = true;
   QProcess* unzip = new QProcess(this);
   QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
   unzip->setProcessEnvironment(env);
   unzip->setWorkingDirectory(this->_downloadPath.path());
+  const QString cmd =
+    this->_downloadPath.path() + QDir::separator() + SevenZipBinaryName;
   QStringList args;
-  args << "e"
+  args << "-y" << "e"
        << this->_downloadPath.path() + QDir::separator() + "out";
-  unzip->start(this->_downloadPath.path() + QDir::separator() +
-               SevenZipBinaryName, args);
+  unzip->start(cmd, args);
   const bool result = unzip->waitForFinished(3000);
-  delete unzip;
+  qDebug() << "result:" << result;
 #ifndef QT_NO_DEBUG
-  qDebug() << "[Updater::unzip]" << "7zip result:" << result;
+  qDebug() << "[Updater::unzip]";
+  qDebug() << "cmd:" << cmd;
+  qDebug() << "args:" << args;
 #endif
+  delete unzip;
+  this->_locked = false;
   return result;
 }
 
@@ -236,16 +253,18 @@ void    Updater::replaceQNetSoulBinary(void)
   if (moveResult == false)
     {
       this->label->setText(tr("Last version is not installed yet"));
-      appendLog(tr("Failure: ") + QNetSoulBinaryName + tr(" is still running."));
+      appendLog(tr("Failure: ") + QNetSoulBinaryName +
+                tr(" is still running."));
       appendLog(tr("Solution: replace binaries by hand."));
-      return;
     }
-  if (QProcess::startDetached("./" + QNetSoulBinaryName))
+  else if (QProcess::startDetached("./" + QNetSoulBinaryName))
     {
       this->label->setText(tr("Last version successfully installed !"));
       appendLog(tr("QNetSoul has been successfully updated :)"));
-      appendLog(tr("NB: Updater binary will be replaced when you'll close this window."));
+      appendLog(tr("NB: Updater binary will be replaced when "
+                   "you'll close this window."));
     }
+  this->_locked = false;
 }
 
 void    Updater::setupDownloadsDir(void)
@@ -275,34 +294,7 @@ void    Updater::handleFinishedRequest(QNetworkReply* reply)
       qDebug() << "[Updater::handleFinishedRequest]"
                << "Last version retrieved";
 #endif
-      if (reply->error() == QNetworkReply::NoError)
-        {
-          const QString buffer(QString::fromUtf8(reply->readAll()));
-          if (buffer.startsWith("Error:"))
-            {
-              appendLog(buffer);
-            }
-          else if (buffer.section(' ', 0, 0) >
-                   QCoreApplication::arguments().at(1))
-            {
-              this->label->setText(tr("A new version is available !"));
-              const QString msg = QString(tr("Downloading QNetSoul v%1 on TuxFamily"))
-                .arg(buffer.section(' ', 0, 0));
-              appendLog(msg);
-              setupDownloadsDir();
-              download(ServerUrl + buffer.section(' ', -1), "out");
-            }
-          else
-            {
-              this->label->setText(tr("Your version is up-to-date."));
-              appendLog(tr("You got the last version for your platform: v")
-                        + QCoreApplication::arguments().at(1));
-            }
-        }
-      else
-        {
-          appendLog(reply->errorString());
-        }
+      handleLastVersionRequest(reply);
       this->_lvReply = NULL;
     }
   else if (reply == this->_dlReply)
@@ -312,19 +304,57 @@ void    Updater::handleFinishedRequest(QNetworkReply* reply)
       qDebug() << "[Updater::handleFinishedRequest]"
                << "Download is now finished";
 #endif
-      this->_file->close();
+      handleDownloadRequest(reply);
       this->_dlReply = NULL;
-      if (reply->error() == QNetworkReply::NoError)
+    }
+  reply->deleteLater();
+}
+
+void    Updater::handleLastVersionRequest(QNetworkReply* reply)
+{
+  if (reply->error() == QNetworkReply::NoError)
+    {
+      const QString buffer(QString::fromUtf8(reply->readAll()));
+      if (buffer.startsWith("Error:"))
         {
-          install();
+          appendLog(buffer);
+        }
+      else if (buffer.section(' ', 0, 0) >
+               QCoreApplication::arguments().at(1))
+        {
+          this->label->setText(tr("A new version is available !"));
+          const QString msg =
+            QString(tr("Downloading QNetSoul v%1 on TuxFamily"))
+            .arg(buffer.section(' ', 0, 0));
+          appendLog(msg);
+          setupDownloadsDir();
+          download(ServerUrl + buffer.section(' ', -1), "out");
         }
       else
         {
-          this->_file->remove();
-          appendLog(reply->errorString());
+          this->label->setText(tr("Your version is up-to-date."));
+          appendLog(tr("You got the last version for your platform: v")
+                    + QCoreApplication::arguments().at(1));
         }
     }
-  reply->deleteLater();
+  else
+    {
+      appendLog(reply->errorString());
+    }
+}
+
+void    Updater::handleDownloadRequest(QNetworkReply* reply)
+{
+  this->_file->close();
+  if (reply->error() == QNetworkReply::NoError)
+    {
+      install();
+    }
+  else
+    {
+      this->_file->remove();
+      appendLog(reply->errorString());
+    }
 }
 
 void    Updater::updateProgressBar(qint64 bytesReceived, qint64 bytesTotal)

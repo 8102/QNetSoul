@@ -49,6 +49,27 @@ namespace
 
   const std::string code =
     "}T,f9D2E;SdHt#lY\\3AI|wZ-/K<_`[?o.e$xha*7cq5pzrj!OJy=UL1]R(ui>^'NVm)BF0:Xg@sPQ+{C8kn4vM~Wb\"G&%6";
+
+  // called from rand_n function
+  void  init_seed(void)
+  {
+    static bool init = false;
+    if (init)
+      {
+        srand((unsigned)time(NULL));
+        init = true;
+      }
+  }
+}
+
+QString Tools::qnetsoulVersion(void)
+{
+  return "1.4";
+}
+
+QString Tools::defaultComment(void)
+{
+  return QString("-=[QNetSoul v%1]=-").arg(qnetsoulVersion());
 }
 
 // When verbose is true, platform string is gonna be displayed
@@ -63,7 +84,19 @@ QString Tools::identifyPlatform(const bool verbose)
 #elif defined(Q_OS_LINUX)
   os = "Linux";
 #elif defined(Q_OS_MAC)
-  os = verbose? "Macintosh" : "Mac";
+  os = verbose? "Mac OS" : "Mac";
+#elif defined(Q_OS_FREEBSD)
+  if (verbose == false) return "";
+  os = "FreeBSD";
+#elif defined(Q_OS_NETBSD)
+  if (verbose == false) return "";
+  os = "NetBSD";
+#elif defined(Q_OS_OPENBSD)
+  if (verbose == false) return "";
+  os = "OpenBSD";
+#elif defined(Q_OS_HURD) // haha
+  if (verbose == false) return "";
+  os = "GNU Hurd";
 #else
   if (verbose == false) return "";
   return "Undetected operating system";
@@ -116,19 +149,6 @@ QString Tools::unencrypt(const QString& msg)
           break;
         }
   return msg.fromStdString(std_msg);
-}
-
-namespace
-{
-  void  init_seed(void)
-  {
-    static bool init = false;
-    if (init)
-      {
-        srand((unsigned)time(NULL));
-        init = true;
-      }
-  }
 }
 
 // Source code imported from developpez.com

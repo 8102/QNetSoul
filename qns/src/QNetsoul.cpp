@@ -54,7 +54,7 @@ QNetsoul::QNetsoul(void)
   connectNetworkSignals();
   QWidget::setAttribute(Qt::WA_AlwaysShowToolTips);
   setWhatsThis(whatsThis()
-               .replace("%CurrentVersion%", currentVersion())
+               .replace("%CurrentVersion%", Tools::qnetsoulVersion())
                .replace("%Platform%", Tools::identifyPlatform(QNS_VERBOSE)));
   readSettings();
   this->tree->setOptions(this->_options);
@@ -83,6 +83,7 @@ QNetsoul::~QNetsoul(void)
   delete this->_portraitResolver;
 }
 
+// Static
 void    QNetsoul::openOptionsDialog(OptionsWidget* options,
                                     const int currentTab,
                                     QWidget* focus)
@@ -445,7 +446,7 @@ void    QNetsoul::processHandShaking(int step, QStringList args)
         if (location.isEmpty() || location.contains("%L"))
           this->_network->resolveLocation(location);
         if (comment.isEmpty())
-          comment = QNetsoul::defaultComment();
+          comment = Tools::defaultComment();
         message.append("ext_user_log ");
         message.append(this->_options->loginLineEdit->text() + ' ');
         message.append(hex);
@@ -587,8 +588,8 @@ void    QNetsoul::connectQNetsoulModules(void)
           SLOT(setPortrait(const QString&)));
   connect(this->tree, SIGNAL(openConversation(const QStringList&)),
           this, SLOT(showConversation(const QStringList&)));
-  connect(this->tree, SIGNAL(downloadPortrait(const QString&)),
-          this->_portraitResolver, SLOT(addRequest(const QString&)));
+  connect(this->tree, SIGNAL(downloadPortrait(const QString&, bool)),
+          this->_portraitResolver, SLOT(addRequest(const QString&, bool)));
   connect(this->tree, SIGNAL(contactRemoved(const QString&)),
           SLOT(disableChats(const QString&)));
 }
