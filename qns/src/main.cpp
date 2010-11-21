@@ -20,8 +20,8 @@
 
 int main(int argc, char** argv)
 {
-  QApplication	app(argc, argv);
-  QNetsoul	netsoul;
+  QApplication  app(argc, argv);
+  QNetsoul      netsoul;
 
   netsoul.show();
   return app.exec();

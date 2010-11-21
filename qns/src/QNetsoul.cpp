@@ -35,8 +35,9 @@
 #include "Credentials.h"
 #include "Singleton.hpp"
 #include "tools.h"
+#include "pluginsmanager.h"
 
-// Imported from tools.h
+// Imported from tools.cpp
 extern const State states[];
 
 QNetsoul::QNetsoul(void)
@@ -45,10 +46,13 @@ QNetsoul::QNetsoul(void)
     _pastebin(new Pastebin), _popup(new SlidingPopup(300, 200)),
     _vdm(new VieDeMerde(this->_popup)),
     _cnf(new ChuckNorrisFacts(this->_popup)), _ping(new QTimer(this)),
-    _internUpdater(new InternUpdater(this))
+    _internUpdater(new InternUpdater(this)),
+    _pluginsManager(new PluginsManager)
 {
   setupUi(this);
   setupTrayIcon();
+  this->_pluginsManager->init(this->menuPlugins, this->_popup);
+  this->_pluginsManager->loadDefaultDirectory();
   connectQNetsoulModules();
   connectActionsSignals();
   connectNetworkSignals();
@@ -80,6 +84,7 @@ QNetsoul::~QNetsoul(void)
   delete this->_cnf;
   delete this->_popup;
   delete this->_pastebin;
+  delete this->_pluginsManager;
   delete this->_portraitResolver;
 }
 
@@ -550,7 +555,7 @@ void    QNetsoul::readSettings(void)
   QSettings settings("Epitech", "QNetsoul");
 
   settings.beginGroup("MainWindow");
-  resize(settings.value("size", QSize(268, 584)).toSize());
+  resize(settings.value("size", QSize(280, 584)).toSize());
   move(settings.value("pos", QPoint(501, 232)).toPoint());
   settings.endGroup();
 }
@@ -613,7 +618,9 @@ void    QNetsoul::connectActionsSignals(void)
           this->tree, SLOT(saveContacts()));
   connect(actionSaveContactsAs, SIGNAL(triggered()),
           this->tree, SLOT(saveContactsAs()));
-  // Featurettes
+  // Plugins
+  connect(actionPluginsManager, SIGNAL(triggered()),
+	  this->_pluginsManager, SLOT(show()));
   connect(actionVDM, SIGNAL(triggered()), this->_vdm, SLOT(getVdm()));
   connect(actionCNF, SIGNAL(triggered()), this->_cnf, SLOT(getFact()));
   connect(actionPastebin, SIGNAL(triggered()),

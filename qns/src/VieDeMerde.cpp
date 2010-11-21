@@ -19,7 +19,6 @@
 #include <QDebug>
 #include <QRegExp>
 #include <QNetworkReply>
-#include "Url.h"
 #include "VieDeMerde.h"
 #include "Popup.h"
 

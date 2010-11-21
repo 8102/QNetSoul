@@ -35,6 +35,7 @@ class   InternUpdater;
 class   OptionsWidget;
 class   ChuckNorrisFacts;
 class   PortraitResolver;
+class   PluginsManager;
 
 class   QNetsoul : public QMainWindow, public Ui_QNetsoul
 {
@@ -95,6 +96,7 @@ private:
   ChuckNorrisFacts* _cnf;
   QTimer*           _ping;
   InternUpdater*    _internUpdater;
+  PluginsManager*   _pluginsManager;
 };
 
 #endif // QNETSOUL_H_

@@ -21,7 +21,6 @@
 #include <QString>
 #include <QByteArray>
 #include <QNetworkAccessManager>
-#include "Url.h"
 #include "Popup.h"
 #include "tools.h"
 #include "ChuckNorrisFacts.h"
@@ -83,7 +82,7 @@ void    ChuckNorrisFacts::replyFinished(QNetworkReply* reply)
   else
     {
       qDebug() << "[ChuckNorrisFacts::replyFinished]"
-	       << "Reply error:" << reply->errorString();
+               << "Reply error:" << reply->errorString();
     }
 #endif
   reply->deleteLater();

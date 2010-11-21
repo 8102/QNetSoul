@@ -29,22 +29,22 @@ class   ChuckNorrisFacts : public QObject
 {
   Q_OBJECT
 
-    public:
+  public:
   ChuckNorrisFacts(Popup* popup);
   virtual ~ChuckNorrisFacts(void);
 
   void  setProxy(const QNetworkProxy& p) { this->_manager->setProxy(p); }
 
-  public slots:
+public slots:
   void  getFact(void);
 
- private:
+private:
   void  pickAFact(void);
 
-  private slots:
+private slots:
   void  replyFinished(QNetworkReply* reply);
 
- private:
+private:
   Popup*                  _popup;
   QStringList             _facts;
   QNetworkAccessManager*  _manager;

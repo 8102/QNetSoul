@@ -37,6 +37,7 @@ namespace Tools
   QString identifyPlatform(const bool verbose);
   QString encrypt(const QString& msg);
   QString unencrypt(const QString& msg);
+  void replaceHtmlSpecialChars(QString& text);
   int rand_n(const int n);
 }
 

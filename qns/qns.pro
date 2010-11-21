@@ -4,15 +4,21 @@ QT += network
 
 DEPENDPATH += . \
     headers \
+    interfaces \
     tpl \
     src \
     ui \
-    ../tools
+    ../tools \
+    ../plugins/pluginsmanager/ui \
+    ../plugins/pluginsmanager/src \
+    ../plugins/pluginsmanager/headers \
 
 INCLUDEPATH += . \
     headers \
+    interfaces \
     tpl \
-    ../tools
+    ../tools \
+    ../plugins/pluginsmanager/headers \
 
 # Inputs
 RESOURCES += Images.qrc
@@ -54,7 +60,8 @@ FORMS += ui/QNetsoul.ui \
     ui/Options.ui \
     ui/AddContact.ui \
     ui/Chat.ui \
-    ui/CredentialsDialog.ui
+    ui/CredentialsDialog.ui \
+    ../plugins/pluginsmanager/ui/pluginsmanager.ui \
 
 SOURCES += src/main.cpp \
     src/QNetsoul.cpp \
@@ -85,6 +92,15 @@ SOURCES += src/main.cpp \
     src/InternUpdater.cpp \
     src/Credentials.cpp \
     src/CredentialsDialog.cpp
+
+# Interfaces
+HEADERS += interfaces/iplugindescriptor.h \
+interfaces/ipopupplugin.h \
+interfaces/iwidgetplugin.h \
+
+# Plugins inputs
+SOURCES += ../plugins/pluginsmanager/src/pluginsmanager.cpp
+HEADERS += ../plugins/pluginsmanager/headers/pluginsmanager.h
 
 # Common inputs
 HEADERS += ../tools/tools.h

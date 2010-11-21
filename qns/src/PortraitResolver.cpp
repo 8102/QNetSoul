@@ -27,6 +27,7 @@ namespace
 {
   const QString DirName = "portraits";
   const QString HttpServer = "http://qnetsoul.tuxfamily.org/public/";
+  const QString UrlBase = "http://www.epitech.eu/intra/photos/";
 }
 
 PortraitResolver::PortraitResolver(void)
@@ -67,7 +68,7 @@ bool    PortraitResolver::isAvailable(QString& portraitPath,
 
 QString PortraitResolver::buildFilename(const QString& login, const bool fun)
 {
-  return fun? (login + "1.jpeg") : (login + "0.jpeg");
+  return fun? (login + "1.jpg") : (login + "0.jpg");
 }
 
 QDir    PortraitResolver::getPortraitDir(void)
@@ -81,9 +82,9 @@ QDir    PortraitResolver::getPortraitDir(void)
 
 void    PortraitResolver::addRequest(const QString& login, bool fun)
 {
+  if (fun == true) return; // temporary disable fun requests
   if (this->_dir.exists(buildFilename(login, fun))) return;
-  QUrl url(QString("http://www.epitech.net/intra/photo.php?fun=%1&login=%2")
-           .arg(fun).arg(login));
+  QUrl url(UrlBase + login + ".jpg");
   get(QNetworkRequest(url));
 }
 
@@ -99,9 +100,9 @@ void    PortraitResolver::replyFinished(QNetworkReply* reply)
       reply->deleteLater();
       return;
     }
-  const bool fun = reply->url().toString()
-    .section('=', 1, 1).section('&', 0, 0).contains("1");
-  const QString login(reply->url().toString().section('=', -1));
+  const bool fun = false;
+  const QString login(reply->url().toString()
+		      .section('.', -2, -2).section('/', -1));
   const QString fileName
     (QDir::toNativeSeparators(qApp->applicationDirPath()) + QDir::separator()
      + DirName + QDir::separator() + buildFilename(login, fun));
@@ -123,7 +124,7 @@ void    PortraitResolver::replyFinished(QNetworkReply* reply)
     {
       this->_trayIcon->showMessage
         (tr("Missing plugin") + " (jpeg)",
-         tr("It seems you did not install Qt4 jpeg plugin.") + "<br />" +
+         tr("It seems you did not install Qt4 jpeg plugin.") + "\n" +
          tr("You can download it here:") + " " + HttpServer);
     }
   reply->deleteLater();

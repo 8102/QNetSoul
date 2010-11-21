@@ -15,35 +15,30 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SLIDING_POPUP_H_
-#define SLIDING_POPUP_H_
+#ifndef INTERFACE_POPUP_PLUGIN_H_
+#define INTERFACE_POPUP_PLUGIN_H_
 
-#include "Popup.h"
+#include <QObject>
+#include "iplugindescriptor.h"
 
-class   SlidingPopup : public Popup
+class QString;
+
+class IPopupPlugin : public QObject, public IPluginDescriptor
 {
   Q_OBJECT
 
   public:
-  SlidingPopup(const int width, const int height);
-  ~SlidingPopup(void);
+  virtual ~IPopupPlugin(void) {}
 
-protected:
-  virtual void  showAnimation(void);
-  virtual void  stopAnimation(void);
+public slots:
+  virtual void fetchText(void) = 0; // Entry point
+  virtual void displayFetchedText(void) = 0;
+  virtual void displayLastFetchedText(void) = 0;
 
-protected slots:
-  virtual void  hideAnimation(void);
-
-private slots:
-  virtual void  moveUp(void);
-  virtual void  moveDown(void);
-
-private:
-  QTimer* _showAnimationTimer;
-  QTimer* _hideAnimationTimer;
-  QTimer* _stopShowingTimer;
-  QTimer* _stopHidingTimer;
+signals:
+  void readyToDisplay(QString text, const int ms);
 };
+
+Q_DECLARE_INTERFACE(IPopupPlugin, "QNetSoul.IPopupPlugin/1.0");
 
 #endif

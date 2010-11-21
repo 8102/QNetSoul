@@ -18,7 +18,6 @@
 #ifndef ADDCONTACT_H
 #define ADDCONTACT_H
 
-#include <QDialog>
 #include "ui_AddContact.h"
 
 class	AddContact : public QDialog, public Ui_AddContact

@@ -15,35 +15,23 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SLIDING_POPUP_H_
-#define SLIDING_POPUP_H_
+#ifndef INTERFACE_PLUGIN_DESCRIPTOR_H_
+#define INTERFACE_PLUGIN_DESCRIPTOR_H_
 
-#include "Popup.h"
+class QIcon;
+class QString;
+class QKeySequence;
 
-class   SlidingPopup : public Popup
+class IPluginDescriptor
 {
-  Q_OBJECT
-
-  public:
-  SlidingPopup(const int width, const int height);
-  ~SlidingPopup(void);
-
-protected:
-  virtual void  showAnimation(void);
-  virtual void  stopAnimation(void);
-
-protected slots:
-  virtual void  hideAnimation(void);
-
-private slots:
-  virtual void  moveUp(void);
-  virtual void  moveDown(void);
-
-private:
-  QTimer* _showAnimationTimer;
-  QTimer* _hideAnimationTimer;
-  QTimer* _stopShowingTimer;
-  QTimer* _stopHidingTimer;
+public:
+  virtual ~IPluginDescriptor(void) {}
+  virtual QString name(void) = 0; // unique name (intern)
+  virtual QString title(void) = 0; // displayed text
+  virtual QString version(void) = 0; // X.X.X
+  virtual QString description(void) = 0;
+  virtual QIcon icon(void) = 0;
+  virtual QKeySequence shortcut(void) = 0;
 };
 
 #endif

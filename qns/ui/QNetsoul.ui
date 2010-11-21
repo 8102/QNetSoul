@@ -154,17 +154,18 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionSaveContacts"/>
     <addaction name="actionSaveContactsAs"/>
    </widget>
-   <widget class="QMenu" name="menuFeaturettes">
+   <widget class="QMenu" name="menuPlugins">
     <property name="title">
-     <string>&amp;Misc</string>
+     <string>&amp;Plugins</string>
     </property>
+    <addaction name="actionPluginsManager"/>
     <addaction name="actionVDM"/>
     <addaction name="actionCNF"/>
     <addaction name="actionPastebin"/>
    </widget>
    <addaction name="menuQNetsoul"/>
    <addaction name="menuAccount"/>
-   <addaction name="menuFeaturettes"/>
+   <addaction name="menuPlugins"/>
    <addaction name="menuOptions"/>
    <addaction name="menuAbout"/>
   </widget>
@@ -389,6 +390,11 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionPluginsManager">
+   <property name="text">
+    <string>&amp;Plugins manager</string>
    </property>
   </action>
  </widget>

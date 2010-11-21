@@ -64,7 +64,7 @@ namespace
 
 QString Tools::qnetsoulVersion(void)
 {
-  return "1.4";
+  return "1.5";
 }
 
 QString Tools::defaultComment(void)
@@ -98,8 +98,7 @@ QString Tools::identifyPlatform(const bool verbose)
   if (verbose == false) return "";
   os = "GNU Hurd";
 #else
-  if (verbose == false) return "";
-  return "Undetected operating system";
+  (verbose == false)? return "" : return "Undetected operating system";
 #endif
 
   // Identify Architecture
@@ -149,6 +148,15 @@ QString Tools::unencrypt(const QString& msg)
           break;
         }
   return msg.fromStdString(std_msg);
+}
+
+void Tools::replaceHtmlSpecialChars(QString& text)
+{
+  text.replace("&amp;", "&");
+  text.replace("&#039;", "'");
+  text.replace("&quot;", "\"");
+  text.replace("&lt;", "<");
+  text.replace("&gt;", ">");
 }
 
 // Source code imported from developpez.com
