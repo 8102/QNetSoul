@@ -83,6 +83,7 @@ void    ContactsTree::initTree(void)
       // Save the fact there is no valid path for the moment
       this->_options->contactsWidget->writeOptions();
     }
+  // Trying to load default filename
   if (QDir::current().exists("contacts.qns"))
     loadContacts(QDir::toNativeSeparators(QDir::currentPath() + "/")
                  + "contacts.qns");
@@ -334,7 +335,14 @@ void    ContactsTree::saveContacts(const QString& fileName)
     }
   Q_ASSERT(this->_options);
   ContactsWriter writer(this, this->_options);
-  writer.writeFile(&file);
+  if (writer.writeFile(&file) == true)
+    {
+      if (this->_options->contactsPathLineEdit->text().isEmpty())
+        {
+          this->_options->contactsPathLineEdit->setText(fileName);
+          this->_options->contactsWidget->writeOptions();
+        }
+    }
 }
 
 bool    ContactsTree::loadContacts(const QString& fileName)

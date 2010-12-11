@@ -254,8 +254,7 @@ void    QNetsoul::disableChats(const QString& login)
 
 void    QNetsoul::saveStateBeforeQuiting(void)
 {
-  if (this->tree->topLevelItemCount() > 0)
-    this->tree->saveContacts();
+  this->tree->saveContacts();
   writeSettings();
   qApp->quit();
 }
@@ -620,7 +619,7 @@ void    QNetsoul::connectActionsSignals(void)
           this->tree, SLOT(saveContactsAs()));
   // Plugins
   connect(actionPluginsManager, SIGNAL(triggered()),
-	  this->_pluginsManager, SLOT(show()));
+          this->_pluginsManager, SLOT(show()));
   connect(actionVDM, SIGNAL(triggered()), this->_vdm, SLOT(getVdm()));
   connect(actionCNF, SIGNAL(triggered()), this->_cnf, SLOT(getFact()));
   connect(actionPastebin, SIGNAL(triggered()),

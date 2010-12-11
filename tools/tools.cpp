@@ -15,11 +15,11 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <ctime>
+#include <QTime>
 #include <string>
+#include <cstdlib>
 #include <QObject>
 #include <QString>
-#include <cstdlib>
 #include <algorithm>
 #include "tools.h"
 
@@ -56,7 +56,7 @@ namespace
     static bool init = false;
     if (init)
       {
-        srand((unsigned)time(NULL));
+        qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
         init = true;
       }
   }
@@ -64,7 +64,7 @@ namespace
 
 QString Tools::qnetsoulVersion(void)
 {
-  return "1.5";
+  return "1.5b";
 }
 
 QString Tools::defaultComment(void)
@@ -82,7 +82,7 @@ QString Tools::identifyPlatform(const bool verbose)
 #if defined(Q_OS_WIN)
   os = verbose? "Windows" : "Win";
 #elif defined(Q_OS_LINUX)
-  os = "Linux";
+  os = verbose? "GNU/Linux" : "Linux";
 #elif defined(Q_OS_MAC)
   os = verbose? "Mac OS" : "Mac";
 #elif defined(Q_OS_FREEBSD)
