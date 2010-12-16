@@ -64,7 +64,7 @@ namespace
 
 QString Tools::qnetsoulVersion(void)
 {
-  return "1.5b";
+  return "1.5c";
 }
 
 QString Tools::defaultComment(void)

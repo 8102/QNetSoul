@@ -227,7 +227,7 @@ void    Network::handleSocketError(const QAbstractSocket::SocketError& error)
   else
     {
       qDebug() << "[Network::handleSocketError]"
-	       << "We are stopping connection retries.";
+               << "We are stopping connection retries.";
     }
 #endif
 }
@@ -332,8 +332,8 @@ void    Network::interpretLine(const QString& line)
                          << parts.at(1).section(':', 3, 3).section('@', -1) // ip
                          << parts.at(1).section(':', -1) // group
                          << parts.at(4).section(':', 0, 0) // state
-                         << url_decode(parts.at(1).section(':', -2, -2).toStdString().c_str()) // Location
-                         << ""; // Comment
+                         << url_decode(parts.at(1).section(':', -2, -2).toStdString().c_str()) // location
+                         << ""; // comment
               emit state(properties);
             }
           else if (("login" == parts.at(3) || "logout" == parts.at(3)) && (size >= 4))
@@ -343,8 +343,8 @@ void    Network::interpretLine(const QString& line)
                          << parts.at(1).section(':', 3, 3).section('@', -1) // ip
                          << parts.at(1).section(':', -1) // group
                          << parts.at(3) // state
-                         << url_decode(parts.at(1).section(':', -2, -2).toStdString().c_str()) // Location
-                         << ""; // Comment
+                         << url_decode(parts.at(1).section(':', -2, -2).toStdString().c_str()) // location
+                         << ""; // comment
               emit state(properties);
             }
           else if ("who" == parts.at(3) && size >= 15)
@@ -358,8 +358,11 @@ void    Network::interpretLine(const QString& line)
                          << parts.at(6) // ip
                          << parts.at(13) // group
                          << parts.at(14).section(':', 0, 0) // state
-                         << url_decode(parts.at(12).toStdString().c_str()) // Location
-                         << url_decode(parts.at(15).toStdString().c_str()); // Comment
+                         << url_decode(parts.at(12).toStdString().c_str()); // location
+              if (size < 16)
+                properties << ""; // blank comment
+              else
+                properties << url_decode(parts.at(15).toStdString().c_str()); // comment
               emit who(properties);
             }
           else if (("dotnetSoul_UserTyping" == parts.at(3) || "dotnetSoul_UserCancelledTyping" == parts.at(3)) && size >= 4)
@@ -388,12 +391,12 @@ void    Network::interpretLine(const QString& line)
                    << "Reason:" << line;
 #endif
         }
+#ifndef QT_NO_DEBUG
       else
         {
-#ifndef QT_NO_DEBUG
           qDebug() << "[Network::interpretLine]"
                    << "Unparsed command:" << line;
-#endif
         }
+#endif
     }
 }

@@ -141,10 +141,10 @@ bool    ContactsTree::updateConnectionPoint(const QStringList& properties)
     if (Contact == root->child(i)->data(0, Type).toInt() &&
         properties.at(0) == root->child(i)->data(0, Login))
       {
-#ifndef QT_NO_DEBUG
-        qDebug() << "[ContactsTree::updateConnectionPoint]"
-                 << "Contact found, he has no group";
-#endif
+        // #ifndef QT_NO_DEBUG
+        //         qDebug() << "[ContactsTree::updateConnectionPoint]"
+        //                  << "Contact found, he has no group";
+        // #endif
         contact = root->child(i);
         break;
       }
@@ -155,10 +155,10 @@ bool    ContactsTree::updateConnectionPoint(const QStringList& properties)
         for (int j = 0; j < groupChildCount; ++j)
           if (properties.at(0) == group->child(j)->data(0, Login))
             {
-#ifndef QT_NO_DEBUG
-              qDebug() << "[ContactsTree::updateConnectionPoint]"
-                       << "Contact found, he has a group";
-#endif
+              // #ifndef QT_NO_DEBUG
+              //               qDebug() << "[ContactsTree::updateConnectionPoint]"
+              //                        << "Contact found, he has a group";
+              // #endif
               contact = group->child(j);
               break;
             }
