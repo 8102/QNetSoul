@@ -27,7 +27,7 @@ namespace
 {
   const QString DirName = "portraits";
   const QString HttpServer = "http://qnetsoul.tuxfamily.org/public/";
-  const QString UrlBase = "http://www.epitech.eu/intra/photos/";
+  const QString UrlBase = "https://cdn.local.epitech.eu/userprofil/profilview/";
 }
 
 PortraitResolver::PortraitResolver(void)
