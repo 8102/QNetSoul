@@ -25,9 +25,9 @@
 
 namespace
 {
-  const QString DirName = "portraits";
+  const QString DirName = ".config/QNetSoul/portraits";
   const QString HttpServer = "http://qnetsoul.tuxfamily.org/public/";
-  const QString UrlBase = "https://cdn.local.epitech.eu/userprofil/profilview/";
+  const QString UrlBase = "http://cdn.local.epitech.net/userprofil/profilview/";
 }
 
 PortraitResolver::PortraitResolver(void)
@@ -58,9 +58,10 @@ bool    PortraitResolver::isAvailable(QString& portraitPath,
 {
   const QDir portraitDir = getPortraitDir();
   const QString fileName = buildFilename(login, fun);
+
   if (portraitDir.exists(fileName))
     {
-      portraitPath = portraitDir.dirName() + QDir::separator() + fileName;
+      portraitPath = portraitDir.path() + QDir::separator() + fileName;
       return true;
     }
   return false;
@@ -71,11 +72,12 @@ QString PortraitResolver::buildFilename(const QString& login, const bool fun)
   return fun? (login + "1.jpg") : (login + "0.jpg");
 }
 
-QDir    PortraitResolver::getPortraitDir(void)
+QDir	PortraitResolver::getPortraitDir(void)
 {
-  QDir portraitPath(QDir::currentPath());
+  QDir	portraitPath(QDir::homePath());
+
   if (!portraitPath.exists(DirName))
-    portraitPath.mkdir(DirName);
+    portraitPath.mkpath(DirName);
   portraitPath.cd(DirName);
   return portraitPath;
 }
@@ -95,7 +97,8 @@ void    PortraitResolver::replyFinished(QNetworkReply* reply)
 #ifndef QT_NO_DEBUG
       qDebug() << "[PortraitResolver::replyFinished]"
                << "Reply failed, reason:"
-               << reply->error();
+               << reply->error()
+	       << reply->errorString();
 #endif
       reply->deleteLater();
       return;
@@ -104,7 +107,7 @@ void    PortraitResolver::replyFinished(QNetworkReply* reply)
   const QString login(reply->url().toString()
 		      .section('.', -2, -2).section('/', -1));
   const QString fileName
-    (QDir::toNativeSeparators(qApp->applicationDirPath()) + QDir::separator()
+    (QDir::toNativeSeparators(QDir::homePath()) + QDir::separator()
      + DirName + QDir::separator() + buildFilename(login, fun));
 
   QImage img = QImage::fromData(reply->readAll());
@@ -130,9 +133,9 @@ void    PortraitResolver::replyFinished(QNetworkReply* reply)
   reply->deleteLater();
 }
 
-void    PortraitResolver::setupPortraitDirectory(void)
+void	PortraitResolver::setupPortraitDirectory(void)
 {
   if (!this->_dir.exists(DirName))
-    this->_dir.mkdir(DirName);
+    this->_dir.mkpath(DirName);
   this->_dir.cd(DirName);
 }
