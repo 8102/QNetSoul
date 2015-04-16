@@ -551,7 +551,7 @@ void    QNetsoul::resetAllContacts(void)
 
 void    QNetsoul::readSettings(void)
 {
-  QSettings settings("Epitech", "QNetsoul");
+  QSettings settings("QNetSoul", "QNetsoul");
 
   settings.beginGroup("MainWindow");
   resize(settings.value("size", QSize(280, 584)).toSize());
@@ -561,7 +561,7 @@ void    QNetsoul::readSettings(void)
 
 void    QNetsoul::writeSettings(void)
 {
-  QSettings settings("Epitech", "QNetsoul");
+  QSettings settings("QNetSoul", "QNetsoul");
 
   settings.beginGroup("MainWindow");
   settings.setValue("size", size());

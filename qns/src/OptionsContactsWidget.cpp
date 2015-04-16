@@ -39,7 +39,7 @@ void    OptionsContactsWidget::readOptions(QSettings& settings)
 
 void    OptionsContactsWidget::writeOptions(void)
 {
-  QSettings settings("Epitech", "QNetsoul");
+  QSettings settings("QNetSoul", "QNetsoul");
   writeOptions(settings);
 }
 

@@ -41,7 +41,7 @@ OptionsWidget::~OptionsWidget(void)
 
 void    OptionsWidget::readOptionSettings(void)
 {
-  QSettings settings("Epitech", "QNetsoul");
+  QSettings settings("QNetSoul", "QNetsoul");
 
   this->mainWidget->readOptions(settings);
   this->contactsWidget->readOptions(settings);
@@ -53,7 +53,7 @@ void    OptionsWidget::readOptionSettings(void)
 
 void    OptionsWidget::writeOptionSettings(void)
 {
-  QSettings settings("Epitech", "QNetsoul");
+  QSettings settings("QNetSoul", "QNetsoul");
 
   this->mainWidget->writeOptions(settings);
   this->contactsWidget->writeOptions(settings);

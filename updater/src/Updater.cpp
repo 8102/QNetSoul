@@ -113,7 +113,7 @@ void    Updater::closeEvent(QCloseEvent* event)
 
 void    Updater::initProxyFromSettings(void)
 {
-  QSettings settings("Epitech", "QNetsoul");
+  QSettings settings("QNetSoul", "QNetsoul");
 
   settings.beginGroup("AdvancedOptions");
   if (settings.value("useproxy", bool(false)).toBool() == true)
