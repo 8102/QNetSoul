@@ -24,7 +24,7 @@
 #include "tools.h"
 
 // Exported to Updater and InternUpdater
-extern const QString OutDir = "downloads";
+extern const QString OutDir = ".config/QNetSoul/downloads";
 extern const QString ServerUrl = "http://qnetsoul.tuxfamily.org/public/";
 extern const QString ServerName = "TuxFamily";
 extern const QString LastVersionUrl = ServerUrl + "GetLastVersion?platform=";

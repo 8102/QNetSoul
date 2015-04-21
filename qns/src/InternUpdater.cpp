@@ -91,9 +91,9 @@ InternUpdater::~InternUpdater(void)
 bool    InternUpdater::download7zipIfNeeded(void)
 {
   if (this->_sevenZipReply != NULL) return false; // already downloading
-  QDir downloadPath(QDir::current());
+  QDir downloadPath(QDir::homePath());
   if (!downloadPath.exists(OutDir))
-    downloadPath.mkdir(OutDir);
+    downloadPath.mkpath(OutDir);
   downloadPath.cd(OutDir);
   if (downloadPath.exists(SevenZipBinaryName))
     {
@@ -182,9 +182,9 @@ void    InternUpdater::setupNetworkAccessManager(void)
 
 void    InternUpdater::handleSevenZipReply(void)
 {
-  QDir downloadPath(QDir::current());
+  QDir downloadPath(QDir::homePath());
   if (!downloadPath.exists(OutDir))
-    downloadPath.mkdir(OutDir);
+    downloadPath.mkpath(OutDir);
   downloadPath.cd(OutDir);
   QFile bin(downloadPath.path() + QDir::separator() + SevenZipBinaryName);
   if (bin.open(QIODevice::WriteOnly))
@@ -261,7 +261,7 @@ void    InternUpdater::handleReplies(QNetworkReply* reply)
 void    InternUpdater::replaceUpdaterBinaryIfNeeded(void)
 {
   static int attempts = 0;
-  QDir downloadPath(QDir::current());
+  QDir downloadPath(QDir::homePath());
 
   if (!downloadPath.exists(OutDir)) return;
   downloadPath.cd(OutDir);

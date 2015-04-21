@@ -55,7 +55,7 @@ namespace
 
 Updater::Updater(void)
   : _locked(false), _file(NULL), _lvReply(NULL), _dlReply(NULL),
-    _downloadPath(QDir::current())
+    _downloadPath(QDir::homePath())
 {
   setupUi(this);
   move(400, 300);
@@ -166,7 +166,7 @@ void    Updater::download(const QString& url, const QString& filename)
 {
   Q_ASSERT(this->_file == NULL);
   Q_ASSERT(!filename.isEmpty());
-  this->_file = new QFile(OutDir + QDir::separator() + filename);
+  this->_file = new QFile(QDir::homePath() + OutDir + QDir::separator() + filename);
   if (!this->_file->open(QIODevice::WriteOnly))
     {
 #ifndef QT_NO_DEBUG
@@ -270,7 +270,7 @@ void    Updater::replaceQNetSoulBinary(void)
 void    Updater::setupDownloadsDir(void)
 {
   if (!this->_downloadPath.exists(OutDir))
-    this->_downloadPath.mkdir(OutDir);
+    this->_downloadPath.mkpath(OutDir);
   this->_downloadPath.cd(OutDir);
   this->_downloadPath.makeAbsolute();
 }
