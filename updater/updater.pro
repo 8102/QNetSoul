@@ -1,6 +1,6 @@
 CONFIG += release
 TEMPLATE = app
-QT += network
+QT += network widgets
 
 DEPENDPATH += . \
     headers \

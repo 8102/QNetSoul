@@ -65,7 +65,7 @@ void    Pastebin::pastebinIt(void)
       post_content.prepend("paste_private=1&paste_code=");
       this->_manager.post
         (QNetworkRequest(QUrl("http://pastebin.com/api_public.php")),
-         post_content.toAscii());
+         post_content.toStdString().data());
     }
   else
     {

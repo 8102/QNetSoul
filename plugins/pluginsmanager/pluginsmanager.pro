@@ -1,8 +1,6 @@
+QT += widget
 TEMPLATE = app
 CONFIG += release
-
-#TEMPLATE = lib
-#CONFIG += plugin static release
 
 DEPENDPATH += . \
 headers \

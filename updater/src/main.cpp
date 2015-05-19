@@ -15,7 +15,7 @@
   along with QNetSoul.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QtGui>
+#include <QtWidgets>
 #include "Updater.h"
 
 int     main(int argc, char** argv)
