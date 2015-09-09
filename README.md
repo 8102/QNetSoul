@@ -7,7 +7,7 @@ It allows students to connect to the internet and discuss between them.
 ##Build instructions (Linux)
 
 ###Dependencies
-Make sure to install Qt 4 first.
+Make sure to install Qt 5 first.
 
 ---
 
@@ -19,8 +19,8 @@ Once you have installed all dependencies, you need to compile the application:
 git clone https://github.com/8102/QNetSoul.git
 cd QNetSoul
 
-# Compile (We use qmake-qt4 to force the use of Qt 4 insted of Qt 5)
-qmake-qt4 && make
+# Compile (We use qmake-qt5 to force the use of Qt 5 and not a link to another version of Qt)
+qmake-qt5 && make
 
 # Have fun!
 ./QNetSoul
