@@ -98,5 +98,3 @@ void VieDeMerdePlugin::handleFinishedRequests(QNetworkReply* reply)
 #endif
   reply->deleteLater();
 }
-
-Q_EXPORT_PLUGIN2(TARGET, VieDeMerdePlugin);

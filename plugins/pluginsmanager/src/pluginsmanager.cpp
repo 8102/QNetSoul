@@ -54,7 +54,7 @@ PluginsManager::PluginsManager(QWidget* parent)
   connect(this->loadPushButton, SIGNAL(clicked()), this, SLOT(loadPlugin()));
   QHeaderView* view = this->tableWidget->horizontalHeader();
   if (view)
-    view->setResizeMode(QHeaderView::ResizeToContents);
+    view->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 PluginsManager::~PluginsManager(void)

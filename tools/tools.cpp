@@ -64,7 +64,7 @@ namespace
 
 QString Tools::qnetsoulVersion(void)
 {
-  return "1.5c";
+  return "1.6";
 }
 
 QString Tools::defaultComment(void)
@@ -126,9 +126,9 @@ QString Tools::identifyPlatform(const bool verbose)
 QString Tools::encrypt(const QString& msg)
 {
   std::string std_msg = msg.toStdString();
-  const int msg_size = std_msg.length();
+  const long long int msg_size = std_msg.length();
 
-  for (int i = 0; i < msg_size; ++i)
+  for (long long int i = 0; i < msg_size; ++i)
     std_msg[i] = code[std_msg[i] - 33];
 
   return msg.fromStdString(std_msg);
@@ -137,11 +137,11 @@ QString Tools::encrypt(const QString& msg)
 QString Tools::unencrypt(const QString& msg)
 {
   std::string std_msg = msg.toStdString();
-  const int msg_size = std_msg.length();
-  const int cipher_size = code.length();
+  const long long int msg_size = std_msg.length();
+  const long long int cipher_size = code.length();
 
-  for (int i = 0; i < msg_size; ++i)
-    for (int j = 0; j < cipher_size; ++j)
+  for (long long int i = 0; i < msg_size; ++i)
+    for (long long int j = 0; j < cipher_size; ++j)
       if (code[j] == std_msg[i])
         {
           std_msg[i] = ascii_table[j];
